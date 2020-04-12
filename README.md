@@ -37,11 +37,13 @@ Tests  |TODO|TODO|
 ## Getting started
 
 ### How to run the example project
-* `cd example`
-* `npm install`
-* `cd ios`
-* `pod install`
-* `npm run android` or `npm run ios`
+```properties
+cd example
+npm install
+cd ios
+pod install
+npm run android` or `npm run ios
+``` 
 
 ### Installation
 `yarn add rn-contact-tracing`
