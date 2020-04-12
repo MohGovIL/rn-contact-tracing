@@ -25,11 +25,12 @@ Scan in foreground | :white_check_mark: |  :white_check_mark: |
 Advertise in foreground | :white_check_mark: |  :white_check_mark: | 
 Scan in background | :white_check_mark: | TODO |
 Advertise in background | :white_check_mark: | TODO | 
-Save scanned data into DB | :white_check_mark: | TODO | 
+Save scanned data into local DB | :white_check_mark: | TODO | 
 Return scanned data to JS | :white_check_mark: | TODO | 
-Define configuration from JS (intervals..) | TODO | TODO | 
-Receive _public_key_ from JS  |TODO|TODO| 
-Generate _public_key_ from the native code  |TODO|TODO| 
+Pass scannng & advertising configuration from JS (intervals..) | TODO | TODO | 
+Receive _public_keys_ from JS  |TODO|TODO| 
+Generate _public_keys_ from the native code  |TODO|TODO| 
+Deal with permissions |TODO|TODO| 
 Tests  |TODO|TODO| 
 
 
@@ -54,7 +55,6 @@ or
 * Android API 21+
 
 
-
 ## Methods
 * [`startBLEScan`](#startBLEScan)
 * [`stopBLEScan`](#stopBLEScan)
@@ -66,7 +66,8 @@ or
 * [`cleanDevicesDB`](#cleanDevicesDB)
 * [`setPublicKeys`](#setPublicKeys)
 
-#### Events to JS
+
+#### Events from Native to JS
 - `scanningStatus` - event can be true/false
 - `advertisingStatus` - event can be  true/false
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
