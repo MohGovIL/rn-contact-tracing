@@ -18,6 +18,23 @@ TBD
 ##### Limitations
 TBD
 
+
+## Working plan
+
+- [x] Android - scan in background
+- [x] Android - advertise in background
+- [ ] Android - consider replace the foreground service to JobScheduler
+- [ ] iOS - scan in background
+- [ ] iOS - advertise in background
+- [x] Android - save detected devices in DB and return to JS
+- [ ] iOS - save detected devices in DB and return to JS
+- [ ] Pass config file from JS (i.e scan/advertise interval)
+- [ ] Receive the list of PubKeys from JS 
+- [ ] Generate Keys from the native code 
+
+ 
+## Getting started
+
 ### How to run the example project
 * `cd example`
 * `npm install`
@@ -25,23 +42,18 @@ TBD
 * `pod install`
 * `npm run android` or `npm run ios`
 
-
-## Getting started
-
+### Installation
 `yarn add rn-contact-tracing`
 
 or
 
 `npm install rn-contact-tracing --save`
 
-
-## Supported Platforms
+### Supported Platforms
 * iOS 10+
 * Android API 21+
 
-### Android
 
-### iOS
 
 ## Methods
 * [`startBLEScan`](#startBLEScan)
@@ -54,7 +66,7 @@ or
 * [`cleanDevicesDB`](#cleanDevicesDB)
 * [`setPublicKeys`](#setPublicKeys)
 
-## Events to JS
+#### Events to JS
 - `scanningStatus` - event can be true/false
 - `advertisingStatus` - event can be  true/false
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
