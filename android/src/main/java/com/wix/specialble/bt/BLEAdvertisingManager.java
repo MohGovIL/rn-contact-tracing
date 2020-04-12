@@ -67,7 +67,6 @@ public class BLEAdvertisingManager {
         dataBuilder.addServiceUuid(pUuid);
         dataBuilder.setIncludeDeviceName(false);
         dataBuilder.setIncludeTxPowerLevel(true);
-        dataBuilder.addManufacturerData(1023, testString);
         dataBuilder.addServiceData(pUuid, publicKey.getBytes(Charset.forName("UTF-8")));
         dataBuilder.build();
 
