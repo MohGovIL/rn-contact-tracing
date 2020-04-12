@@ -1,6 +1,14 @@
 {
   "name": "rn-contact-tracing",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wix-incubator/rn-contact-tracing.git"
+  },
+  "contributors": [
+    "Lev Vidrak <levv@wix.com>",
+    "Ran Greenberg <rang@wix.com>"
+  ],
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
