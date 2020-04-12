@@ -1,6 +1,8 @@
 {
   "name": "rn-contact-tracing",
+  "title": "Rn Special Ble",
   "version": "0.0.2",
+  "description": "TODO",
   "repository": {
     "type": "git",
     "url": "https://github.com/wix-incubator/rn-contact-tracing.git"
@@ -9,28 +11,28 @@
     "Lev Vidrak <levv@wix.com>",
     "Ran Greenberg <rang@wix.com>"
   ],
-  "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start",
-    "test": "jest",
-    "lint": "eslint ."
+  "author": {
+    "name": "Lev",
+    "email": "lev.vidrak@gmail.com"
   },
+  "keywords": [
+    "react-native",
+    "COVID-19",
+    "BLE"
+  ],
   "dependencies": {
     "react": "16.11.0",
     "react-native": "0.62.2"
   },
-  "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/runtime": "^7.9.2",
-    "@react-native-community/eslint-config": "^1.0.0",
-    "babel-jest": "^25.3.0",
-    "eslint": "^6.8.0",
-    "jest": "^25.3.0",
-    "metro-react-native-babel-preset": "^0.59.0",
-    "react-test-renderer": "16.11.0"
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react": "^16.8.1",
+    "react-native": ">=0.60.0-rc.0 <1.0.x"
   },
-  "jest": {
-    "preset": "react-native"
+  "devDependencies": {
+    "react": "^16.9.0",
+    "react-native": "^0.61.5"
   }
 }

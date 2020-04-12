@@ -10,7 +10,7 @@ const path = require('path');
 module.exports = {
     resolver: {
         extraNodeModules: {
-            'rn-special-ble': path.resolve(__dirname, '../'),
+            'rn-contact-tracing': path.resolve(__dirname, '../'),
             'react-native': path.resolve(__dirname, 'node_modules/react-native'),
         },
     },
