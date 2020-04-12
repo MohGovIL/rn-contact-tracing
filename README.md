@@ -1,6 +1,6 @@
-# rn-contact-tracing 
+# RN-Contact-Tracing 
 
-## WIP Library Don't Use in Production
+## WIP Library - Don't Use in Production
 
 ## About
 This is a React-Native library for tracing close contact between 2 devices.
@@ -17,6 +17,14 @@ TBD
 
 ##### Limitations
 TBD
+
+### How to run the example project
+* `cd example`
+* `npm install`
+* `cd ios`
+* `pod install`
+* `npm run android` or `npm run ios`
+
 
 ## Getting started
 
