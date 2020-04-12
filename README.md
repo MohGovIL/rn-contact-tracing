@@ -3,14 +3,13 @@
 ## WIP Library - Don't Use in Production
 
 ## About
-This is a React-Native library for tracing close contact between 2 devices.
-We do this by advertising & scanning messages, over BLE (Bluetooth Low Energy), with the same ServiceUUID.
-The library can do the following:
-1. Advertise over BLE a messages with specific ServiceUUID and predefined PublicKey 
-2. Scan for for a specific ServiceUUID BLE signals and store the scanned info into local device storage
+This is a react-native library for tracing close contact between 2 mobile devices by exchanging tokens over BLE (Bluetooth Low Energy).
+The library eventually will do the following:
+
+1. Advertise messages with specific _service_uuid_ and predefined _public_key_ 
+2. Scan for for BLE signals with a specific _service_uuid_  store the scanned data into local device storage
    - timestamp, other-device-PubKey,RSSI (signal strength)
-3. On Android these operations can be done in background 
-4. On iOS - ???
+3. Provide simple API for JS to init these tasks in background and retrive the scanned _public_key_ 
 
 ##### Why did we build this lib?
 TBD
@@ -18,21 +17,22 @@ TBD
 ##### Limitations
 TBD
 
-
 ## Working plan
 
-- [x] Android - scan in background
-- [x] Android - advertise in background
-- [ ] Android - consider replace the foreground service to JobScheduler
-- [ ] iOS - scan in background
-- [ ] iOS - advertise in background
-- [x] Android - save detected devices in DB and return to JS
-- [ ] iOS - save detected devices in DB and return to JS
-- [ ] Pass config file from JS (i.e scan/advertise interval)
-- [ ] Receive the list of PubKeys from JS 
-- [ ] Generate Keys from the native code 
+ Functionality | Andorid | iOS |
+:------------ | :-------------| :-------------| 
+Scan in foreground | :white_check_mark: |  :white_check_mark: | 
+Advertise in foreground | :white_check_mark: |  :white_check_mark: | 
+Scan in background | :white_check_mark: | TODO |
+Advertise in background | :white_check_mark: | TODO | 
+Save scanned data into DB | :white_check_mark: | TODO | 
+Return scanned data to JS | :white_check_mark: | TODO | 
+Define configuration from JS (intervals..) | TODO | TODO | 
+Receive _public_key_ from JS  |TODO|TODO| 
+Generate _public_key_ from the native code  |TODO|TODO| 
+Tests  |TODO|TODO| 
 
- 
+
 ## Getting started
 
 ### How to run the example project
