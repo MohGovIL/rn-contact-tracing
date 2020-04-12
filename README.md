@@ -8,7 +8,7 @@ The library eventually will do the following:
 
 1. Advertise messages with specific _service_uuid_ and predefined _public_key_ 
 2. Scan for for BLE signals with a specific _service_uuid_  store the scanned data into local device storage
-   - timestamp, other-device-PubKey,RSSI (signal strength)
+   - _timestamp_, _other_public_key_ ,_rssi_ (signal strength)
 3. Provide simple API for JS to init these tasks in background and retrive the scanned _public_key_ 
 
 ##### Why did we build this lib?
