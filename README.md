@@ -42,7 +42,8 @@ cd example
 npm install
 cd ios
 pod install
-npm run android` or `npm run ios
+For Android - npm run android 
+For iOS - npm run ios
 ``` 
 
 ### Installation
