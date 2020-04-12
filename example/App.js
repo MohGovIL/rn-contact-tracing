@@ -21,7 +21,7 @@ import {
 import SpecialBle from 'rn-contact-tracing';
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
-const PUBLIC_KEY = '123456';
+const PUBLIC_KEY = '1234567';
 const TAG = "EXAMPLE";
 
 
