@@ -15,7 +15,7 @@ This is temporary implementation until Google & Apple will release the full [Con
 
 ##### Why did we build this lib?
 Due to COVID-19 pandemic, several health authorities released apps that will help to identify and notify people that are at risk of exposure.  
-Some of these apps are written with RN and based on tracking user location and willing to add BLE based functionality, such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native).  
+Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), so they willing to add BLE based functionality.  
 There are lots of great libs that implement ble native-module for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted something very basic:
 * Run BLE functionality & execute some basic business logic in background (generate keys, decide what save to DB)
 * Reduce the amount of dependencies    
