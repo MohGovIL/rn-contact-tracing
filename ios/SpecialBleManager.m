@@ -7,6 +7,9 @@
 //
 #import "SpecialBleManager.h"
 
+NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
+NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
+NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 @interface SpecialBleManager ()
 
@@ -17,6 +20,7 @@
 @property (nonatomic, strong) RCTEventEmitter* eventEmitter;
 @property (nonatomic, strong) NSString* scanUUIDString;
 @property (nonatomic, strong) NSString* advertiseUUIDString;
+
 
 @end
 
@@ -55,7 +59,14 @@
     if (self.cbManager.state == CBManagerStatePoweredOn) {
         NSLog(@"Start scanning for %@", UUID);
         [self.cbManager scanForPeripheralsWithServices:@[UUID] options:nil];
+        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
     }
+}
+
+- (void)stopScan:(RCTEventEmitter*)emitter {
+    [self.cbManager stopScan];
+    [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:NO]];
+    self.scanUUIDString = nil;
 }
 
 -(void)advertise:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter {
@@ -69,6 +80,13 @@
         [self _setServiceAndCharacteristics:serviceUUIDString];
     }
 }
+
+- (void)stopAdvertise:(RCTEventEmitter*)emitter {
+    [self.cbPeripheral stopAdvertising];
+    [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:NO]];
+    self.advertiseUUIDString = nil;
+}
+
 
 #pragma mark - private methods
 
@@ -92,6 +110,7 @@
 -(void) _advertise {
     if (self.cbPeripheral.state == CBManagerStatePoweredOn){
         [self.cbPeripheral startAdvertising:@{CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
+        [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:YES]];
     }
 }
 

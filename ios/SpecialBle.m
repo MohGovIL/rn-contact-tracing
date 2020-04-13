@@ -26,11 +26,15 @@ RCT_EXPORT_METHOD(startBLEScan:(NSString *) serviceUUID) {
 }
 
 RCT_EXPORT_METHOD(stopBLEScan) {
-  RCTLogInfo(@"stopBLEScan TBD");
+    [[SpecialBleManager sharedManager] stopScan:self];
 }
 
 RCT_EXPORT_METHOD(advertise:(NSString *) serviceUUID data:(NSString*)data) {
   [[SpecialBleManager sharedManager] advertise:serviceUUID withEventEmitter:self];
+}
+
+RCT_EXPORT_METHOD(stopAdvertise) {
+    [[SpecialBleManager sharedManager] stopAdvertise:self];
 }
 
 RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID interval:(int) interval) {
@@ -40,5 +44,9 @@ RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID interval:(int) interv
 
 RCT_EXPORT_METHOD(stopBLEService) {
   RCTLogInfo(@"stopBLEService TBD");
+}
+
+RCT_EXPORT_METHOD(getAllDevices:(id)callback) {
+  RCTLogInfo(@"getAllDevices TBD");
 }
 @end
