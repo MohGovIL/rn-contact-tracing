@@ -17,12 +17,10 @@ This is temporary implementation until Google & Apple will release the full [Con
 Due to COVID-19 pandemic, several health authorities released apps that will help to identify and notify people that are at risk of exposure.  
 Some of these apps are written with RN and based on tracking user location and willing to add BLE based functionality, such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native).  
 There are lots of great libs that implement ble native-module for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted something very basic:
-* To run ble functionality in background  
-* Execute some basic business logic in background (generate keys, save to DB)  
+* Run BLE functionality & execute some basic business logic in background (generate keys, decide what save to DB)
 * Reduce the amount of dependencies    
 
-In addition, there are several great apps written for the same purpose in native ([COVID19CZ](https://github.com/covid19cz), [OpenTrace](https://github.com/opentrace-community)),
-but they includes the full business logic (UI..) that we don't want to use. 
+In addition, there are several great apps written for the same purpose in native ([COVID19CZ](https://github.com/covid19cz), [OpenTrace](https://github.com/opentrace-community)),but they includes the full business logic (UI..) that we don't want to use. 
   
   
 ##### Privacy (what do we advertise and save to DB)
