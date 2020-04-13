@@ -9,11 +9,26 @@ The library eventually will do the following:
 1. Advertise messages with specific _service_uuid_ and predefined _public_key_ 
 2. Scan for for BLE signals with a specific _service_uuid_  store the scanned data into local device storage
    - _timestamp_, _other_public_key_ ,_rssi_ (signal strength)
-3. Provide simple API for JS to init these tasks in background and retrive the scanned _public_key_ 
+3. Provide simple API for JS to init these tasks in background and retrieve the scanned _public_key_ 
+
+This is temporary implementation until Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/)
 
 ##### Why did we build this lib?
+Due to COVID-19 pandemic, several health authorities released apps that will help to identify and notify people that are at risk of exposure.  
+Some of these apps are written with RN and based on tracking user location and willing to add BLE based functionality, such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native).  
+There are lots of great libs that implement ble native-module for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted something very basic:
+* To run ble functionality in background  
+* Execute some basic business logic in background (generate keys, save to DB)  
+* Reduce the amount of dependencies    
+
+In addition, there are several great apps written for the same purpose in native ([COVID19CZ](https://github.com/covid19cz), [OpenTrace](https://github.com/opentrace-community)),
+but they includes the full business logic (UI..) that we don't want to use. 
+  
+  
+##### Privacy (what do we advertise and save to DB)
 TBD
 
+ 
 ##### Limitations
 TBD
 
