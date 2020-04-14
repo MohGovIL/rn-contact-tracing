@@ -126,15 +126,22 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
  didDiscoverPeripheral:(CBPeripheral *)peripheral
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI {
-    NSString* name = @"null";
-    NSString* address = @"null";
+    NSString* name = @"";
+    NSString* address = @"";
     
     NSLog(@"Discovered device with name: %@", peripheral.name);
-    if (peripheral) {
+    if (peripheral && peripheral.name != nil) {
         name = peripheral.name;
-        address = peripheral.name;
     }
-    [self.eventEmitter sendEventWithName:@"foundDevice" body:@{@"device_name": name, @"device_address": name}];
+    
+    if (advertisementData && [advertisementData[CBAdvertisementDataServiceUUIDsKey] count] > 0) {
+        address = ((CBUUID*)advertisementData[CBAdvertisementDataServiceUUIDsKey][0]).UUIDString;
+    }
+    [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:@{
+        @"device_name": name,
+        @"device_address": address,
+        @"device_rssi": [RSSI stringValue]
+    }];
 }
 
 #pragma mark - CBPeripheralDelegate
