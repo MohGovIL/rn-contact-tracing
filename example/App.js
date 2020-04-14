@@ -19,6 +19,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
+import {requestLocationPermssion} from './src/Permissions'
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
 const PUBLIC_KEY = '12345678901234567';
@@ -36,7 +37,7 @@ const App: () => React$Node = () => {
     eventEmitter.addListener('scanningStatus', (status) => setScanningStatus(status));
     eventEmitter.addListener('advertisingStatus', (status) => setAdvertisingStatus(status));
     eventEmitter.addListener('foundDevice', (event) => {
-      console.log(event);  
+      console.log(event);
       _getAllDevicesFromDB();
       },
     );
@@ -95,11 +96,21 @@ const App: () => React$Node = () => {
   }
 
 
+  function _requestLocationPermission() {
+    requestLocationPermssion();
+  }
+
+
     return (
         <View style={styles.container}>
+            <View style={styles.subContainer}>
+                <Text>Scanning: {scanningStatus.toString()} </Text>
+                <Text>Advertising: {advertisingStatus.toString()}</Text>
+                <TouchableOpacity style={styles.btn} onPress={_requestLocationPermission}>
+                    <Text>Location Permission</Text>
+                </TouchableOpacity>
 
-            <Text>Scanning: {scanningStatus.toString()} </Text>
-            <Text>Advertising: {advertisingStatus.toString()}</Text>
+            </View>
             <View style={styles.subContainer}>
                 <TouchableOpacity style={styles.btn} onPress={_startScan}>
                     <Text>Start Scan</Text>
@@ -162,12 +173,13 @@ const App: () => React$Node = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 10,
     marginHorizontal: 5,
   },
   subContainer: {
     flexWrap: 'wrap',
     flexDirection: 'row',
+    alignItems: 'center'
   },
   btn: {
     marginHorizontal: 5,
