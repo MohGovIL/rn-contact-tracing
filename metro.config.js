@@ -8,16 +8,9 @@
 const path = require('path');
 
 module.exports = {
-    resolver: {
-        extraNodeModules: {
-            'rn-contact-tracing': path.resolve(__dirname, '../'),
-            'react-native': path.resolve(__dirname, 'node_modules/react-native'),
-        },
-    },
-    projectRoot: path.resolve(__dirname, './'),
+    projectRoot: path.resolve(`${__dirname}/example`),
     watchFolders: [
         __dirname,
-        path.resolve(__dirname, "../"),
     ],
     transformer: {
         getTransformOptions: async () => ({
