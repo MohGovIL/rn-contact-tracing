@@ -45,7 +45,7 @@ Receive _public_keys_ from JS  |TODO|TODO| |
 Generate _public_keys_ from the native code  |TODO|TODO| |
 Deal with permissions |TODO|TODO| |
 Tests  |TODO|TODO| |
-geatures for rssi calibration  |TODO|TODO|Taboola|
+Features for rssi calibration  |TODO|TODO|Taboola|
 
 
 ## Getting started
