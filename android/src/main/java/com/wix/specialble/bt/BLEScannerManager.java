@@ -73,13 +73,13 @@ public class BLEScannerManager {
     class SpecialBLEScanCallback extends ScanCallback {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            byte [] bytePK = result.getScanRecord().getManufacturerSpecificData(1023);
+//            ParcelUuid pUuid = new ParcelUuid(UUID.fromString("00000000-0000-1000-8000-00805F9B34FB"));
+            ParcelUuid pUuid = result.getScanRecord().getServiceUuids().get(0);
+            byte [] bytePK = result.getScanRecord().getServiceData(pUuid);
             String pk = bytePK!=null ? new String (bytePK,Charset.forName("UTF-8")) : "NaN";
             super.onScanResult(callbackType, result);
             Device newDevice = new Device(pk,
-                    result.getDevice().getName(),
                     result.getDevice().getAddress(),
-                    "scanRecordData",
                     result.getRssi());
             updateNewDevice(newDevice);
         }
@@ -108,7 +108,7 @@ public class BLEScannerManager {
                     dbClient.addDevice(newDevice);
                     EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
                 }
-                else if (oldDevice.getRssi()>newDevice.getRssi()){
+                else if (oldDevice.getRssi()>newDevice.getRssi() + 3  ||  oldDevice.getRssi()<newDevice.getRssi() -3){
                     dbClient.updateDevice(newDevice);
                     EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
                 }
