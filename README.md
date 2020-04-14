@@ -58,6 +58,7 @@ pod install
 For Android - npm run android 
 For iOS - npm run ios
 ``` 
+In Android - approve location permission manually
 
 ### Installation
 `yarn add rn-contact-tracing`
