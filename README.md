@@ -52,14 +52,13 @@ Features for rssi calibration  |TODO|TODO|Taboola|
 
 ### How to run the example project
 ```properties
-cd example
 npm install
-cd ios
+cd example/ios
 pod install
 For Android - npm run android 
 For iOS - npm run ios
 ``` 
-In Android - approve location permission manually
+In Android - Click on Request Location Permission button
 
 ### Installation
 `yarn add rn-contact-tracing`
