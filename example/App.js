@@ -6,9 +6,10 @@ import {
   FlatList,
   View,
   StyleSheet,
+  PermissionsAndroid,
+  Platform
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
-import {requestLocationPermssion} from './src/Permissions'
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
 const PUBLIC_KEY = '12345678901234567';
@@ -84,66 +85,46 @@ const App: () => React$Node = () => {
     SpecialBle.setPublicKeys(publicKeys);
   }
 
-
-  function _requestLocationPermission() {
-    requestLocationPermssion();
+// request location permission (only for Android)
+  async function _requestLocationPermission() {
+      try {
+          const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              alert("Location Permission Granted");
+          } else {
+              alert("Location Permission Denied");
+          }
+      } catch (err) {
+          console.warn(err);
+      }
   }
-
 
     return (
         <View style={styles.container}>
             <View style={styles.subContainer}>
                 <Text>Scanning: {scanningStatus.toString()} </Text>
                 <Text>Advertising: {advertisingStatus.toString()}</Text>
-                <TouchableOpacity style={styles.btn} onPress={_requestLocationPermission}>
-                    <Text>Location Permission</Text>
-                </TouchableOpacity>
-
+                {_renderPermissionButton()}
             </View>
             <View style={styles.subContainer}>
-                <TouchableOpacity style={styles.btn} onPress={_startScan}>
-                    <Text>Start Scan</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.btn} onPress={_stoptScan}>
-                    <Text>Stop Scan</Text>
-                </TouchableOpacity>
+                {_renderButton('Start Scan', _startScan)}
+                {_renderButton('Stop Scan', _stoptScan)}
             </View>
             <View style={styles.subContainer}>
-                <TouchableOpacity style={styles.btn} onPress={_advertise}>
-                    <Text>Start Advertise</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.btn} onPress={_stopAdvertise}>
-                    <Text>Stop Advertise</Text>
-                </TouchableOpacity>
+                {_renderButton('Start Advertise', _advertise)}
+                {_renderButton('Stop Advertise', _stopAdvertise)}
             </View>
             <View style={styles.subContainer}>
-                <TouchableOpacity style={styles.btn} onPress={_startBLEService}>
-                    <Text>Start BLE service</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.btn} onPress={_stopBLEService}>
-                    <Text>Stop BLE service</Text>
-                </TouchableOpacity>
-
-
-                <TouchableOpacity style={styles.btn} onPress={_getAllDevicesFromDB}>
-                    <Text>Get all devices from DB</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.btn} onPress={_cleanAllDevicesFromDB}>
-                    <Text>Remove Devices from DB</Text>
-                </TouchableOpacity>
+                {_renderButton('Start BLE service', _startBLEService)}
+                {_renderButton('Stop BLE service', _stopBLEService)}
+                {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}
+                {_renderButton('Remove Devices from DB', _cleanAllDevicesFromDB)}
             </View>
             <View style={styles.subContainer}>
-                <TouchableOpacity style={styles.btn} onPress={_setPublicKeys}>
-                    <Text>Set public Keys</Text>
-                </TouchableOpacity>
+                {_renderButton('Set public Keys', _setPublicKeys)}
             </View>
-
-
-
 
             <FlatList
                 data={devices}
@@ -156,13 +137,29 @@ const App: () => React$Node = () => {
             />
         </View>
     );
+
+    function _renderButton(text, onClick) {
+            return (
+                <TouchableOpacity style={styles.btn} onPress={onClick}>
+                    <Text>{text}</Text>
+                </TouchableOpacity>
+            )
+    }
+
+    function _renderPermissionButton() {
+        if (Platform.OS === 'android')
+            return (
+             _renderButton('Location Permission', _requestLocationPermission)
+            );
+        return null;
+    }
 };
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 25,
     marginHorizontal: 5,
   },
   subContainer: {
