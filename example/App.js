@@ -159,7 +159,7 @@ const App: () => React$Node = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 25,
+    paddingTop: 100,
     marginHorizontal: 5,
   },
   subContainer: {
