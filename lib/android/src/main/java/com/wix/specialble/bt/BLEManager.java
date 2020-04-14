@@ -42,9 +42,11 @@ public class BLEManager {
     public void init() {
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
-        bluetoothAdapter.enable();
-        bleScanner = BLEScannerManager.getInstance(context, bluetoothAdapter);
-        bleAdvertiser = BLEAdvertisingManager.getInstance(context, bluetoothAdapter);
+        if (bluetoothAdapter != null) {
+            bluetoothAdapter.enable();
+            bleScanner = BLEScannerManager.getInstance(context, bluetoothAdapter);
+            bleAdvertiser = BLEAdvertisingManager.getInstance(context, bluetoothAdapter);
+        }
     }
 
     public void startScan(String serviceUUID) {
