@@ -9,6 +9,28 @@
 /* Begin PBXBuildFile section */
 		262F140F243F48DB000E352C /* SpecialBleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 262F140B243F48DB000E352C /* SpecialBleManager.m */; };
 		262F1410243F48DB000E352C /* SpecialBle.m in Sources */ = {isa = PBXBuildFile; fileRef = 262F140C243F48DB000E352C /* SpecialBle.m */; };
+		26AD8C3724462298005CABA9 /* BluetraceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1924462298005CABA9 /* BluetraceUtils.swift */; };
+		26AD8C3824462298005CABA9 /* Encounter+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1C24462298005CABA9 /* Encounter+Event.swift */; };
+		26AD8C3924462298005CABA9 /* ConfigureDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1D24462298005CABA9 /* ConfigureDatabaseManager.swift */; };
+		26AD8C3A24462298005CABA9 /* EncounterMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1E24462298005CABA9 /* EncounterMessageManager.swift */; };
+		26AD8C3B24462298005CABA9 /* Encounter+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1F24462298005CABA9 /* Encounter+CoreDataProperties.swift */; };
+		26AD8C3C24462298005CABA9 /* Encounter+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2024462298005CABA9 /* Encounter+CoreDataClass.swift */; };
+		26AD8C3D24462298005CABA9 /* tracer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2124462298005CABA9 /* tracer.xcdatamodeld */; };
+		26AD8C3E24462298005CABA9 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2324462298005CABA9 /* DatabaseManager.swift */; };
+		26AD8C3F24462298005CABA9 /* Encounter+EncounterRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2424462298005CABA9 /* Encounter+EncounterRecord.swift */; };
+		26AD8C4024462298005CABA9 /* EncounterRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2624462298005CABA9 /* EncounterRecord.swift */; };
+		26AD8C4124462298005CABA9 /* BluetraceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2724462298005CABA9 /* BluetraceConfig.swift */; };
+		26AD8C4224462298005CABA9 /* PeripheralController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2824462298005CABA9 /* PeripheralController.swift */; };
+		26AD8C4324462298005CABA9 /* BluetoothHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2A24462298005CABA9 /* BluetoothHandler.swift */; };
+		26AD8C4424462298005CABA9 /* BluetoothHandlerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2B24462298005CABA9 /* BluetoothHandlerBridge.m */; };
+		26AD8C4524462298005CABA9 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2E24462298005CABA9 /* Logger.swift */; };
+		26AD8C4624462298005CABA9 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2F24462298005CABA9 /* DeviceInfo.swift */; };
+		26AD8C4724462298005CABA9 /* Bluetrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3124462298005CABA9 /* Bluetrace.swift */; };
+		26AD8C4824462298005CABA9 /* BluetraceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3224462298005CABA9 /* BluetraceProtocol.swift */; };
+		26AD8C4924462298005CABA9 /* BluetraceV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3324462298005CABA9 /* BluetraceV2.swift */; };
+		26AD8C4A24462298005CABA9 /* BluetraceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3424462298005CABA9 /* BluetraceManager.swift */; };
+		26AD8C4B24462298005CABA9 /* CentralController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3524462298005CABA9 /* CentralController.swift */; };
+		26AD8C4C24462298005CABA9 /* BlueTraceLocalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3624462298005CABA9 /* BlueTraceLocalNotifications.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +51,29 @@
 		262F140C243F48DB000E352C /* SpecialBle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBle.m; sourceTree = "<group>"; };
 		262F140D243F48DB000E352C /* SpecialBle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBle.h; sourceTree = "<group>"; };
 		262F140E243F48DB000E352C /* SpecialBleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBleManager.h; sourceTree = "<group>"; };
+		26AD8C1924462298005CABA9 /* BluetraceUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceUtils.swift; sourceTree = "<group>"; };
+		26AD8C1C24462298005CABA9 /* Encounter+Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+Event.swift"; sourceTree = "<group>"; };
+		26AD8C1D24462298005CABA9 /* ConfigureDatabaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigureDatabaseManager.swift; sourceTree = "<group>"; };
+		26AD8C1E24462298005CABA9 /* EncounterMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncounterMessageManager.swift; sourceTree = "<group>"; };
+		26AD8C1F24462298005CABA9 /* Encounter+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		26AD8C2024462298005CABA9 /* Encounter+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+CoreDataClass.swift"; sourceTree = "<group>"; };
+		26AD8C2224462298005CABA9 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		26AD8C2324462298005CABA9 /* DatabaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		26AD8C2424462298005CABA9 /* Encounter+EncounterRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+EncounterRecord.swift"; sourceTree = "<group>"; };
+		26AD8C2624462298005CABA9 /* EncounterRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncounterRecord.swift; sourceTree = "<group>"; };
+		26AD8C2724462298005CABA9 /* BluetraceConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceConfig.swift; sourceTree = "<group>"; };
+		26AD8C2824462298005CABA9 /* PeripheralController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralController.swift; sourceTree = "<group>"; };
+		26AD8C2A24462298005CABA9 /* BluetoothHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothHandler.swift; sourceTree = "<group>"; };
+		26AD8C2B24462298005CABA9 /* BluetoothHandlerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothHandlerBridge.m; sourceTree = "<group>"; };
+		26AD8C2C24462298005CABA9 /* BluetoothDemo-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BluetoothDemo-Bridging-Header.h"; sourceTree = "<group>"; };
+		26AD8C2E24462298005CABA9 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		26AD8C2F24462298005CABA9 /* DeviceInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
+		26AD8C3124462298005CABA9 /* Bluetrace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bluetrace.swift; sourceTree = "<group>"; };
+		26AD8C3224462298005CABA9 /* BluetraceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceProtocol.swift; sourceTree = "<group>"; };
+		26AD8C3324462298005CABA9 /* BluetraceV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceV2.swift; sourceTree = "<group>"; };
+		26AD8C3424462298005CABA9 /* BluetraceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceManager.swift; sourceTree = "<group>"; };
+		26AD8C3524462298005CABA9 /* CentralController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CentralController.swift; sourceTree = "<group>"; };
+		26AD8C3624462298005CABA9 /* BlueTraceLocalNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlueTraceLocalNotifications.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,9 +95,88 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		26AD8C1824462298005CABA9 /* Bluetrace */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C1924462298005CABA9 /* BluetraceUtils.swift */,
+				26AD8C1A24462298005CABA9 /* Database */,
+				26AD8C2724462298005CABA9 /* BluetraceConfig.swift */,
+				26AD8C2824462298005CABA9 /* PeripheralController.swift */,
+				26AD8C2924462298005CABA9 /* Bridge */,
+				26AD8C2D24462298005CABA9 /* Utils */,
+				26AD8C3024462298005CABA9 /* Protocol */,
+				26AD8C3424462298005CABA9 /* BluetraceManager.swift */,
+				26AD8C3524462298005CABA9 /* CentralController.swift */,
+				26AD8C3624462298005CABA9 /* BlueTraceLocalNotifications.swift */,
+			);
+			path = Bluetrace;
+			sourceTree = "<group>";
+		};
+		26AD8C1A24462298005CABA9 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C1B24462298005CABA9 /* Models */,
+				26AD8C2524462298005CABA9 /* Structs */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		26AD8C1B24462298005CABA9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C1C24462298005CABA9 /* Encounter+Event.swift */,
+				26AD8C1D24462298005CABA9 /* ConfigureDatabaseManager.swift */,
+				26AD8C1E24462298005CABA9 /* EncounterMessageManager.swift */,
+				26AD8C1F24462298005CABA9 /* Encounter+CoreDataProperties.swift */,
+				26AD8C2024462298005CABA9 /* Encounter+CoreDataClass.swift */,
+				26AD8C2124462298005CABA9 /* tracer.xcdatamodeld */,
+				26AD8C2324462298005CABA9 /* DatabaseManager.swift */,
+				26AD8C2424462298005CABA9 /* Encounter+EncounterRecord.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		26AD8C2524462298005CABA9 /* Structs */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C2624462298005CABA9 /* EncounterRecord.swift */,
+			);
+			path = Structs;
+			sourceTree = "<group>";
+		};
+		26AD8C2924462298005CABA9 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C2A24462298005CABA9 /* BluetoothHandler.swift */,
+				26AD8C2B24462298005CABA9 /* BluetoothHandlerBridge.m */,
+				26AD8C2C24462298005CABA9 /* BluetoothDemo-Bridging-Header.h */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		26AD8C2D24462298005CABA9 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C2E24462298005CABA9 /* Logger.swift */,
+				26AD8C2F24462298005CABA9 /* DeviceInfo.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		26AD8C3024462298005CABA9 /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8C3124462298005CABA9 /* Bluetrace.swift */,
+				26AD8C3224462298005CABA9 /* BluetraceProtocol.swift */,
+				26AD8C3324462298005CABA9 /* BluetraceV2.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				26AD8C1824462298005CABA9 /* Bluetrace */,
 				262F140E243F48DB000E352C /* SpecialBleManager.h */,
 				262F140B243F48DB000E352C /* SpecialBleManager.m */,
 				262F140D243F48DB000E352C /* SpecialBle.h */,
@@ -118,8 +242,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26AD8C4C24462298005CABA9 /* BlueTraceLocalNotifications.swift in Sources */,
+				26AD8C3F24462298005CABA9 /* Encounter+EncounterRecord.swift in Sources */,
+				26AD8C3924462298005CABA9 /* ConfigureDatabaseManager.swift in Sources */,
+				26AD8C4B24462298005CABA9 /* CentralController.swift in Sources */,
+				26AD8C4024462298005CABA9 /* EncounterRecord.swift in Sources */,
+				26AD8C3B24462298005CABA9 /* Encounter+CoreDataProperties.swift in Sources */,
+				26AD8C4424462298005CABA9 /* BluetoothHandlerBridge.m in Sources */,
+				26AD8C3E24462298005CABA9 /* DatabaseManager.swift in Sources */,
+				26AD8C3D24462298005CABA9 /* tracer.xcdatamodeld in Sources */,
+				26AD8C4624462298005CABA9 /* DeviceInfo.swift in Sources */,
+				26AD8C3824462298005CABA9 /* Encounter+Event.swift in Sources */,
+				26AD8C4524462298005CABA9 /* Logger.swift in Sources */,
 				262F1410243F48DB000E352C /* SpecialBle.m in Sources */,
+				26AD8C4824462298005CABA9 /* BluetraceProtocol.swift in Sources */,
+				26AD8C4324462298005CABA9 /* BluetoothHandler.swift in Sources */,
+				26AD8C3A24462298005CABA9 /* EncounterMessageManager.swift in Sources */,
+				26AD8C4924462298005CABA9 /* BluetraceV2.swift in Sources */,
+				26AD8C4724462298005CABA9 /* Bluetrace.swift in Sources */,
 				262F140F243F48DB000E352C /* SpecialBleManager.m in Sources */,
+				26AD8C3724462298005CABA9 /* BluetraceUtils.swift in Sources */,
+				26AD8C4224462298005CABA9 /* PeripheralController.swift in Sources */,
+				26AD8C4A24462298005CABA9 /* BluetraceManager.swift in Sources */,
+				26AD8C4124462298005CABA9 /* BluetraceConfig.swift in Sources */,
+				26AD8C3C24462298005CABA9 /* Encounter+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,7 +315,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -212,7 +358,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -232,6 +378,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = SpecialBle;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -248,6 +395,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = SpecialBle;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -273,6 +421,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		26AD8C2124462298005CABA9 /* tracer.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				26AD8C2224462298005CABA9 /* Model.xcdatamodel */,
+			);
+			currentVersion = 26AD8C2224462298005CABA9 /* Model.xcdatamodel */;
+			path = tracer.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 58B511D31A9E6C8500147676 /* Project object */;
 }
