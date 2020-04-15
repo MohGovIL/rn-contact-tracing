@@ -336,7 +336,7 @@ SPEC CHECKSUMS:
   React-RCTText: 9ccc88273e9a3aacff5094d2175a605efa854dbe
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
-  rn-contact-tracing: 6797fcc3f8974da98f8513a89d7f15b1d73d2f3e
+  rn-contact-tracing: 81fd350f4a280d4409557f36bdb0750ed4a93b80
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
 PODFILE CHECKSUM: 051de7df8f0403f6ece9cbcc2fd9eb05f971b4db
