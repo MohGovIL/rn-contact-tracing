@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,11 +34,11 @@ public class Device {
     public Device() {
     }
 
-    public Device(String key, String name, String address, String data, int rssi ) {
-        publicKey = key==null ? "NaN" : key;
-        deviceName = name==null ? "NaN" : name;
-        deviceData = data==null ? "NaN" : data;
-        deviceAddress = address==null ? "NaN" : address;
+    public Device(String key, String name, String address, String data, int rssi) {
+        publicKey = key == null ? "NaN" : key;
+        deviceName = name == null ? "NaN" : name;
+        deviceData = data == null ? "NaN" : data;
+        deviceAddress = address == null ? "NaN" : address;
         this.rssi = rssi;
     }
 

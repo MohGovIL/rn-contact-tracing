@@ -78,6 +78,7 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation 'de.siegmar:fastcsv:1.0.3'
 }
 
 def configureReactNativePom(def pom) {

@@ -87,6 +87,11 @@ const App: () => React$Node = () => {
     _getAllDevicesFromDB();
   }
 
+  // save all devices from DB to CSV
+  function _saveAllDevicesFromDbToCsv() {
+    SpecialBle.saveAllDevicesCsv();
+  }
+
   // add list of public_keys
   function _setPublicKeys() {
     let publicKeys = ['12345','12346','12347','12348','12349']
@@ -133,6 +138,10 @@ const App: () => React$Node = () => {
 
                 <TouchableOpacity style={styles.btn} onPress={_cleanAllDevicesFromDB}>
                     <Text>Remove Devices from DB</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.btn} onPress={_saveAllDevicesFromDbToCsv}>
+                    <Text>Save Devices from DB to Device</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.subContainer}>

@@ -48,7 +48,7 @@ public class BLEManager {
     }
 
     public void startScan(String serviceUUID) {
-        bleScanner.startScan(serviceUUID);
+//        bleScanner.startScan(serviceUUID);
     }
 
     public void stopScan() {

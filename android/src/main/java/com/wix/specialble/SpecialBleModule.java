@@ -2,8 +2,8 @@ package com.wix.specialble;
 
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -18,6 +18,7 @@ import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
+import com.wix.specialble.util.CSVUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void getAllDevices(Callback callback) {
         List<Device> devices = bleManager.getAllDevices();
         WritableArray retArray = new WritableNativeArray();
-        for(Device device : devices){
+        for (Device device : devices) {
             retArray.pushMap(device.toWritableMap());
         }
         callback.invoke(retArray);
@@ -92,11 +93,16 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setPublicKeys(ReadableArray pubKeys) {
         ArrayList<PublicKey> pkList = new ArrayList<>();
-        for(int i=0; i<pubKeys.size(); i++){
+        for (int i = 0; i < pubKeys.size(); i++) {
             String pkString = pubKeys.getString(i);
-            PublicKey pk = new PublicKey(i,pkString);
+            PublicKey pk = new PublicKey(i, pkString);
             pkList.add(pk);
         }
         DBClient.getInstance(reactContext).insertAllKeys(pkList);
+    }
+
+    @ReactMethod
+    public void saveAllDevicesCsv() {
+        CSVUtil.saveAllDevicesAsCSV(reactContext, bleManager.getAllDevices());
     }
 }
