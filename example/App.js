@@ -10,6 +10,7 @@ import {
   Platform
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
+import {Button, Badge, Colors} from 'react-native-ui-lib';
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
 const PUBLIC_KEY = '12345678901234567';
@@ -47,7 +48,7 @@ const App: () => React$Node = () => {
   }
 
   // Start advertising with SERVICE_UUID & PUBLIC_KEY
-  function _advertise() {
+  function _startAdvertise() {
     SpecialBle.advertise(SERVICE_UUID,PUBLIC_KEY);
   }
 
@@ -104,8 +105,8 @@ const App: () => React$Node = () => {
     return (
         <View style={styles.container}>
             <View style={styles.subContainer}>
-                <Text>Scanning: {scanningStatus.toString()} </Text>
-                <Text>Advertising: {advertisingStatus.toString()}</Text>
+                {_statusBadge('Scanning',scanningStatus.toString() == 'true')}
+                {_statusBadge('Advertising', advertisingStatus.toString() == 'true')}
                 {_renderPermissionButton()}
             </View>
             <View style={styles.subContainer}>
@@ -113,7 +114,7 @@ const App: () => React$Node = () => {
                 {_renderButton('Stop Scan', _stoptScan)}
             </View>
             <View style={styles.subContainer}>
-                {_renderButton('Start Advertise', _advertise)}
+                {_renderButton('Start Advertise', _startAdvertise)}
                 {_renderButton('Stop Advertise', _stopAdvertise)}
             </View>
             <View style={styles.subContainer}>
@@ -140,10 +141,30 @@ const App: () => React$Node = () => {
 
     function _renderButton(text, onClick) {
             return (
-                <TouchableOpacity style={styles.btn} onPress={onClick}>
-                    <Text>{text}</Text>
-                </TouchableOpacity>
-            )
+            <Button
+              backgroundColor={Colors.blue30}
+              label={text}
+              size='small'
+              borderRadius={0}
+              labelStyle={{fontWeight: '600'}}
+              style={{marginBottom: 20, marginHorizontal:10}}
+              enableShadow
+              onPress={onClick}
+            />
+            );
+    }
+
+    function _statusBadge(statusName, isOn) {
+        return (
+        <View style={styles.statusContainer}>
+            <Text>{statusName}</Text>
+            <Badge
+                style={{marginHorizontal:10}}
+                size="small"
+                backgroundColor={isOn == true ? Colors.green30 : Colors.red30}
+            />
+        </View>
+        );
     }
 
     function _renderPermissionButton() {
@@ -161,6 +182,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 100,
     marginHorizontal: 5,
+  },
+  statusContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   subContainer: {
     flexWrap: 'wrap',
