@@ -17,8 +17,11 @@ public class BLEManager {
     ReactApplicationContext context;
     private BLEScannerManager bleScanner;
     private BLEAdvertisingManager bleAdvertiser;
-
     private static BLEManager sBLEManagerInstance;
+
+    public enum BLEProtocol {
+        GAP, GATT
+    }
 
     private BLEManager(ReactApplicationContext context) {
         this.context = context;

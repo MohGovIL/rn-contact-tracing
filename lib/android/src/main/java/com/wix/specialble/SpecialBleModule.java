@@ -12,10 +12,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
 
@@ -99,4 +103,35 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         }
         DBClient.getInstance(reactContext).insertAllKeys(pkList);
     }
+
+
+    @ReactMethod
+    public void getConfig(Callback callback) {
+        Config config = Config.getInstance(reactContext);
+        WritableMap configMap = new WritableNativeMap();
+        configMap.putString("serviceUUID", config.getServiceUUID());
+        configMap.putDouble("scanDuration", config.getScanDuration());
+        configMap.putDouble("scanInterval", config.getScanInterval());
+        configMap.putInt("scanMode", config.getScanMode()); //
+        configMap.putInt("scanMatchMode", config.getScanMatchMode());
+        configMap.putDouble("advertiseDuration", config.getAdvertiseDuration());
+        configMap.putDouble("advertiseInterval", config.getAdvertiseInterval());
+        configMap.putInt("advertiseMode", config.getAdvertiseMode());
+        configMap.putInt("advertiseTXPowerLevel", config.getAdvertiseTXPowerLevel());
+        callback.invoke(configMap);
+    }
+
+
+    @ReactMethod
+    public void SetConfig(ReadableMap configMap) {
+        Config config = Config.getInstance(reactContext);
+        config.setServiceUUID(configMap.getString("serviceUUID"));
+        config.setScanDuration((long) configMap.getDouble("scanDuration"));
+        config.setScanInterval((long) configMap.getDouble("scanInterval"));
+        config.setScanMode(configMap.getInt("scanMode"));
+        config.setAdvertiseInterval((long) configMap.getDouble("advertiseInterval"));
+        config.setAdvertiseMode(configMap.getInt("advertiseMode"));
+        config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));
+    }
+
 }

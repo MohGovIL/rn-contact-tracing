@@ -8,6 +8,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.AsyncTask;
 import android.os.ParcelUuid;
+import android.text.TextUtils;
 import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -15,6 +16,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.ReadableType;
 import com.wix.specialble.EventToJSDispatcher;
+import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 
 import java.nio.charset.Charset;
@@ -51,13 +53,25 @@ public class BLEScannerManager {
     public void startScan(String serviceUUID) {
         bluetoothAdapter.enable();
         if (bluetoothAdapter.isEnabled()) {
-            ScanFilter filter = new ScanFilter.Builder()
-                    .setServiceUuid(new ParcelUuid(UUID.fromString(serviceUUID)))
-                    .build();
+
+            Config config = Config.getInstance(context);
+            serviceUUID = TextUtils.isEmpty(serviceUUID) ? config.getServiceUUID() : serviceUUID;
+            int scanMode = config.getScanMode();
+            int scanMatchMode = config.getScanMatchMode();
+            long scanDuration = config.getScanDuration();
+
+
+            ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(serviceUUID))).build();
             ArrayList filters = new ArrayList<ScanFilter>();
             filters.add(filter);
 
-            ScanSettings settings = new ScanSettings.Builder().build();
+            ScanSettings settings = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                settings = new ScanSettings.Builder().setMatchMode(scanMatchMode).build();
+            }
+            else{
+                settings = new ScanSettings.Builder().build();
+            }
 
             bluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().startScan(filters, settings, bleScanCallback);
             EventToJSDispatcher.getInstance(context).sendScanningStatus(true);
@@ -73,14 +87,24 @@ public class BLEScannerManager {
     class SpecialBLEScanCallback extends ScanCallback {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-//            ParcelUuid pUuid = new ParcelUuid(UUID.fromString("00000000-0000-1000-8000-00805F9B34FB"));
+
             ParcelUuid pUuid = result.getScanRecord().getServiceUuids().get(0);
             byte [] bytePK = result.getScanRecord().getServiceData(pUuid);
+
             String pk = bytePK!=null ? new String (bytePK,Charset.forName("UTF-8")) : "NaN";
+
+            int tx = 0;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                tx= result.getTxPower();
+            }
             super.onScanResult(callbackType, result);
-            Device newDevice = new Device(pk,
+            Device newDevice = new Device( System.currentTimeMillis(),
+                    pk,
                     result.getDevice().getAddress(),
-                    result.getRssi());
+                    BLEManager.BLEProtocol.GAP.toString(),
+                    result.getRssi(),
+                    tx);
+
             updateNewDevice(newDevice);
         }
 
@@ -106,12 +130,11 @@ public class BLEScannerManager {
                 Device oldDevice = dbClient.getDeviceByKey(newDevice.getPublicKey());
                 if(oldDevice==null){
                     dbClient.addDevice(newDevice);
-                    EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
                 }
-                else if (oldDevice.getRssi()>newDevice.getRssi() + 3  ||  oldDevice.getRssi()<newDevice.getRssi() -3){
+                else if (oldDevice.getRssi()>newDevice.getRssi()+3 || oldDevice.getRssi()<newDevice.getRssi()-3){
                     dbClient.updateDevice(newDevice);
-                    EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
                 }
+                EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
             }
         });
     }

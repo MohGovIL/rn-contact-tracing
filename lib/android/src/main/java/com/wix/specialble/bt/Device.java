@@ -19,19 +19,31 @@ public class Device {
     @PrimaryKey
     private String publicKey = "";
 
+    @ColumnInfo(name = "timestamp")
+    private long timestamp = 0;
+
     @ColumnInfo(name = "device_address")
     private String deviceAddress = "";
 
     @ColumnInfo(name = "rssi")
     private int rssi = 0;
 
+    @ColumnInfo(name = "tx")
+    private int tx = 0;
+
+    @ColumnInfo(name = "device_protocol")
+    private String deviceProtocol = "";
+
     public Device() {
     }
 
-    public Device(String key, String address, int rssi ) {
+    public Device(long timestamp, String key, String address, String protocol, int rssi, int tx ) {
+        this.timestamp = timestamp;
         publicKey = key==null ? "NaN" : key;
         deviceAddress = address==null ? "NaN" : address;
+        deviceProtocol = protocol==null ? "NaN" : protocol;
         this.rssi = rssi;
+        this.tx = tx;
     }
 
     public String getPublicKey() {
@@ -46,6 +58,13 @@ public class Device {
         this.deviceAddress = deviceAddress;
     }
 
+    public String getDeviceProtocol() {
+        return deviceProtocol;
+    }
+
+    public void setDeviceProtocol(String deviceProtocol) {
+        this.deviceProtocol = deviceProtocol;
+    }
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
@@ -62,14 +81,33 @@ public class Device {
 
     public WritableMap toWritableMap() {
         WritableMap deviceWritableMap = Arguments.createMap();
+        deviceWritableMap.putDouble("device_timestamp", timestamp);
         deviceWritableMap.putString("public_key", publicKey);
         deviceWritableMap.putString("device_address", deviceAddress);
         deviceWritableMap.putInt("device_rssi", rssi);
+        deviceWritableMap.putInt("device_tx", tx);
+        deviceWritableMap.putString("device_protocol", deviceProtocol);
         return deviceWritableMap;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-    public void fromJSONString(String jsonString) {
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getTx() {
+        return tx;
+    }
+
+    public void setTx(int tx) {
+        this.tx = tx;
+    }
+
+
+/*    public void fromJSONString(String jsonString) {
         try {
             JSONObject jsonObj = new JSONObject(jsonString);
             publicKey = jsonObj.getString("public_key");
@@ -90,5 +128,5 @@ public class Device {
             e.printStackTrace();
         }
         return item.toString();
-    }
+    }*/
 }

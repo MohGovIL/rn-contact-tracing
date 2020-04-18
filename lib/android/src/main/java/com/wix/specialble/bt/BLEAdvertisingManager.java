@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.wix.specialble.EventToJSDispatcher;
+import com.wix.specialble.config.Config;
 
 import java.nio.charset.Charset;
 import java.util.UUID;
@@ -59,8 +60,8 @@ public class BLEAdvertisingManager {
     }
 
     public void startAdvertise(String serviceUUID, String publicKey) {
+        Config config = Config.getInstance(context);
 
-        byte[] testString = publicKey.getBytes();
         ParcelUuid pUuid = new ParcelUuid(UUID.fromString(serviceUUID));
 
         AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
@@ -71,11 +72,11 @@ public class BLEAdvertisingManager {
         dataBuilder.build();
 
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
-        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
-        settingsBuilder.setTimeout(180000);
-        settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
+        settingsBuilder.setAdvertiseMode(config.getAdvertiseMode());
+        settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
+        settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
+        settingsBuilder.setConnectable(false);
         settingsBuilder.build();
-
 
         advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
 

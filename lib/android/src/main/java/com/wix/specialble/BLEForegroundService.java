@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.wix.specialble.bt.BLEManager;
+import com.wix.specialble.config.Config;
 
 public class BLEForegroundService extends Service {
 
@@ -28,25 +29,49 @@ public class BLEForegroundService extends Service {
         }
     }
 
-    private Handler handler = new Handler();
+    private static Handler handler = new Handler();
     private String mServiceUUID = "";
     private String mData = "";
 
 
-    private Runnable runnableCode = new Runnable() {
+    private Runnable scanRunnable = new Runnable() {
         @Override
         public void run() {
             bleManager.startScan(mServiceUUID);
-            bleManager.advertise(mServiceUUID, mData);
-            handler.postDelayed(this, 120000);
+            BLEForegroundService.handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bleManager.stopScan();
+                    handler.postDelayed(scanRunnable,Config.getInstance(BLEForegroundService.this).getScanInterval());
+                }
+            }, Config.getInstance(BLEForegroundService.this).getScanDuration());
         }
     };
+
+
+    private Runnable advertiseRunnable = new Runnable() {
+        @Override
+        public void run() {
+            bleManager.advertise(mServiceUUID, mData);
+            BLEForegroundService.handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bleManager.stopAdvertise();
+                    handler.postDelayed(advertiseRunnable,Config.getInstance(BLEForegroundService.this).getAdvertiseInterval());
+                }
+            }, Config.getInstance(BLEForegroundService.this).getAdvertiseDuration());
+        }
+    };
+
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         bleManager.stopScan();
         bleManager.stopAdvertise();
+        this.handler.removeCallbacksAndMessages(null);
+
     }
 
     @Override
@@ -64,10 +89,11 @@ public class BLEForegroundService extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
-        this.handler.post(this.runnableCode);
-        //stopSelf();
+        this.handler.post(this.scanRunnable);
+        this.handler.post(this.advertiseRunnable);
         return START_NOT_STICKY;
     }
+
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -80,6 +106,8 @@ public class BLEForegroundService extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
     }
+
+
 
     @Nullable
     @Override
