@@ -45,8 +45,8 @@ function ResultsScreen() {
             <View spread style={styles.topContainer}>
                 <Text style={{fontSize: 30, fontWeight: 'bold'}}>Detected Contacts</Text>
                 <View style={styles.topContainerButtons}>
-                    <Button text90 link green10 iconSource={shareIcon} onPress={_cleanAllDevicesFromDB} style={{paddingHorizontal: 10}}/>
-                    <Button text90 link red10 iconSource={deleteIcon}  style={{paddingHorizontal: 10}}/>
+                    <Button text90 link green10 iconSource={shareIcon} style={{paddingHorizontal: 10}}/>
+                    <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllDevicesFromDB} style={{paddingHorizontal: 10}}/>
                 </View>
             </View>
             <FlatList
