@@ -19,6 +19,7 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.bt.Scan;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
@@ -89,6 +90,21 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         WritableArray retArray = new WritableNativeArray();
         for(Device device : devices){
             retArray.pushMap(device.toWritableMap());
+        }
+        callback.invoke(retArray);
+    }
+
+    @ReactMethod
+    public void cleanScansDB() {
+        DBClient.getInstance(reactContext).clearAllScans();
+    }
+
+    @ReactMethod
+    public void getAllScans(Callback callback) {
+        List<Scan> scans = bleManager.getAllScans();
+        WritableArray retArray = new WritableNativeArray();
+        for(Scan scan : scans){
+            retArray.pushMap(scan.toWritableMap());
         }
         callback.invoke(retArray);
     }

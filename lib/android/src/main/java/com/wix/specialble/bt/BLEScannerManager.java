@@ -3,18 +3,14 @@ package com.wix.specialble.bt;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.AsyncTask;
 import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
+
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReadableNativeArray;
-import com.facebook.react.bridge.ReadableType;
 import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
@@ -98,14 +94,7 @@ public class BLEScannerManager {
                 tx= result.getTxPower();
             }
             super.onScanResult(callbackType, result);
-            Device newDevice = new Device( System.currentTimeMillis(),
-                    pk,
-                    result.getDevice().getAddress(),
-                    BLEManager.BLEProtocol.GAP.toString(),
-                    result.getRssi(),
-                    tx);
-
-            updateNewDevice(newDevice);
+            handleScanResults(result, pk, tx);
         }
 
         @Override
@@ -123,19 +112,57 @@ public class BLEScannerManager {
         }
     }
 
-    private void updateNewDevice(final Device newDevice) {
+    private void handleScanResults(final ScanResult result, final String pk, final int tx) {
+        // handle devices
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                Device oldDevice = dbClient.getDeviceByKey(newDevice.getPublicKey());
-                if(oldDevice==null){
+                Device oldDevice = dbClient.getDeviceByKey(pk); // get device from database
+                Device newDevice;
+
+                if (oldDevice != null) {
+                    newDevice = getNewDevice(result, tx, pk, oldDevice.getFirstTimestamp(), System.currentTimeMillis());
+                    if (hasUpdateRequirements(oldDevice, result)) {
+                        dbClient.updateDevice(newDevice);
+                    }
+                }
+                 else {
+                    newDevice = getNewDevice(result, tx, pk, System.currentTimeMillis(), System.currentTimeMillis());
                     dbClient.addDevice(newDevice);
                 }
-                else if (oldDevice.getRssi()>newDevice.getRssi()+3 || oldDevice.getRssi()<newDevice.getRssi()-3){
-                    dbClient.updateDevice(newDevice);
-                }
+
                 EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
             }
         });
+
+        // handle scans
+        Scan newScan = new Scan( System.currentTimeMillis(),
+                pk,
+                result.getDevice().getAddress(),
+                BLEManager.BLEProtocol.GAP.toString(),
+                result.getRssi(),
+                tx);
+
+        updateNewScan(newScan);
+    }
+
+    private void updateNewScan(final Scan newScan) {
+        AsyncTask.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                dbClient.addScan(newScan);
+                EventToJSDispatcher.getInstance(context).sendNewScan(newScan);
+            }
+        });
+    }
+
+    private boolean hasUpdateRequirements(Device oldDevice, ScanResult result) {
+        return (oldDevice.getRssi()>result.getRssi()+3 || oldDevice.getRssi()<result.getRssi()-3);
+    }
+
+    private Device getNewDevice(ScanResult result, int tx, String publicKey, long firstSeenTime, long lastSeenTime) {
+        return new Device(firstSeenTime, lastSeenTime, publicKey, result.getDevice().getAddress(),
+                BLEManager.BLEProtocol.GAP.toString(), result.getRssi(), tx);
     }
 }

@@ -76,4 +76,7 @@ public class BLEManager {
     public void clearAllDevices(){
         DBClient.getInstance(context).clearAllDevices();
     }
+
+    public List<Scan> getAllScans(){ return DBClient.getInstance(context).getAllScans();
+    }
 }

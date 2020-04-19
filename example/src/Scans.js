@@ -12,30 +12,30 @@ const shareIcon = require('../res/share.png');
 
 function ResultsScreen() {
 
-    const [devices, setDevices] = useState([]);
+    const [scans, setScans] = useState([]);
 
     useEffect(() => {
         const eventEmitter = new NativeEventEmitter(SpecialBle);
-        eventEmitter.addListener('foundDevice', (event) => {
+        eventEmitter.addListener('foundScan', (event) => {
                 console.log(event);
-                _getAllDevicesFromDB();
+                _getAllScansFromDB();
             },
         );
-        _getAllDevicesFromDB();
+        _getAllScansFromDB();
     }, []);
 
 
-    // get all devices from DB
-    async function _getAllDevicesFromDB() {
-        SpecialBle.getAllDevices((devices) => {
-            setDevices(devices)
+    // get all scans from DB
+    async function _getAllScansFromDB() {
+        SpecialBle.getAllScans((scans) => {
+            setScans(scans)
         })
     }
 
-    // clean all devices from DB
-    function _cleanAllDevicesFromDB() {
-        SpecialBle.cleanDevicesDB();
-        _getAllDevicesFromDB();
+    // clean all scans from DB
+    function _cleanAllScansFromDB() {
+        SpecialBle.cleanScansDB();
+        _getAllScansFromDB();
     }
 
 
@@ -43,14 +43,14 @@ function ResultsScreen() {
         <View style={styles.container}>
 
             <View spread style={styles.topContainer}>
-                <Text style={{fontSize: 30, fontWeight: 'bold'}}>Detected Contacts</Text>
+                <Text style={{fontSize: 30, fontWeight: 'bold'}}>Detected Scans</Text>
                 <View style={styles.topContainerButtons}>
                     <Button text90 link green10 iconSource={shareIcon} style={{paddingHorizontal: 10}}/>
-                    <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllDevicesFromDB} style={{paddingHorizontal: 10}}/>
+                    <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB} style={{paddingHorizontal: 10}}/>
                 </View>
             </View>
             <FlatList
-                data={devices}
+                data={scans}
                 keyExtractor={item => item.public_key}
                 renderItem={({item, index}) => _renderListItem(item, index)}
             />
@@ -65,32 +65,19 @@ function ResultsScreen() {
     }
 
     function _renderListItem(item, id) {
-        let ts_first = timeStampToUTCTime(item.device_first_timestamp);
-        let ts_last = timeStampToUTCTime(item.device_last_timestamp);
-        
+        let ts = timeStampToUTCTime(item.scan_timestamp);
         return (
-            <Card row style={styles.card}>
+            <Card row height={50} style={styles.card}>
                 <View flex row center-vertical>
                     <ListItem.Part middle column>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
                             <Text dark10 text70>EphId: { ((item.public_key).length > 10) ? (((item.public_key).substring(0,10-3)) + '...') : item.public_key }</Text>
-                            <Text dark10 text70>{item.device_protocol}</Text>
+                            <Text dark10 text70>{item.scan_protocol}</Text>
+                            <Text dark10 text70>{ts}</Text>
                         </ListItem.Part>
-                        
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
-                            <Text dark10 text70>First Seen</Text>
-                            <Text dark10 text80>{ts_first}</Text>
-                        </ListItem.Part>
-                        
-                        <ListItem.Part containerStyle={{marginBottom: 2}}>
-                            <Text dark10 text70>Last Seen</Text>
-                            <Text dark10 text80>{ts_last}</Text>
-                        </ListItem.Part>
-
-
-                        <ListItem.Part containerStyle={{marginBottom: 2}}>
-                            <Text text90 color='green'>RSSI: {item.device_rssi}</Text>
-                            <Text text90 color='red'>TX: {item.device_tx}</Text>
+                            <Text text90 color='green'>RSSI: {item.scan_rssi}</Text>
+                            <Text text90 color='red'>TX: {item.scan_tx}</Text>
                             <Text text90 color='red'>ESTD: ? m </Text>
                         </ListItem.Part>
                     </ListItem.Part>
@@ -126,8 +113,7 @@ const styles = StyleSheet.create({
     },
     card: {
         padding: 5,
-        marginVertical: 5,
-        flexWrap: "wrap"
+        marginVertical: 5
     }
 });
 
