@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Device" representedClassName="Device" syncable="YES" codeGenerationType="class">
+        <attribute name="device_address" optional="YES" attributeType="String"/>
+        <attribute name="device_protocol" optional="YES" attributeType="String"/>
+        <attribute name="rssi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="tx" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="PublicKey" representedClassName="PublicKey" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="publicKey" optional="YES" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="Device" positionX="-54" positionY="-9" width="128" height="118"/>
+        <element name="PublicKey" positionX="-36" positionY="9" width="128" height="73"/>
+    </elements>
+</model>

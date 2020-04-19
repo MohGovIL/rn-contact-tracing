@@ -8,12 +8,12 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface RCT_EXTERN_MODULE(BluetoothHandler, NSObject)
+@interface RCT_EXTERN_MODULE(DBClient, NSObject)
 
-RCT_EXTERN_METHOD(configureDatabase)
+RCT_EXTERN_METHOD(cleanDevicesDB)
 
-RCT_EXTERN_METHOD(configureLocalNotifications)
+RCT_EXTERN_METHOD(setPublicKeys:)
 
-RCT_EXTERN_METHOD(configureBluetrace)
+RCT_EXTERN_METHOD(getAllDevices)
 
 @end
