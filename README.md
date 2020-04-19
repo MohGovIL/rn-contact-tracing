@@ -1,3 +1,4 @@
+![CI](https://github.com/wix-incubator/rn-contact-tracing/workflows/CI/badge.svg)
 # RN-Contact-Tracing 
 
 ## WIP Library - Don't Use in Production
