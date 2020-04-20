@@ -87,6 +87,10 @@ or
 * [`stopBLEScan`](#stopBLEScan)
 * [`startBLEAdvertise`](#startBLEScan)
 * [`stopBLEAdvertise`](#stopBLEScan)
+* [`exportAllScansCsv`](#exportAllScansCsv)
+* [`exportAllDevicesCsv`](#exportAllDevicesCsv)
+* [`cleanDevicesDB`](#cleanDevicesDB)
+* [`cleanScansDB`](#cleanScansDB)
 
 
 ---
@@ -138,7 +142,7 @@ Gets the scanning & advertising configuration options that are currently defined
 #### `startBLEService(config)`
 
 ```javascript
-   SpecialBle.startBLEService(config);
+SpecialBle.startBLEService(config);
 ```
 
 Starts BLE background task scanning for a specific  - config is optional
@@ -148,7 +152,7 @@ Starts BLE background task scanning for a specific  - config is optional
 #### `stopBLEService()`
 
 ```javascript
-   SpecialBle.stopBLEService();
+SpecialBle.stopBLEService();
 ```
 
 Stops the background service and all the tasks the service executing
@@ -158,55 +162,127 @@ Stops the background service and all the tasks the service executing
 #### `startBLEScan(config)`
 
 ```javascript
-   SpecialBle.startBLEScan(config);
+SpecialBle.startBLEScan(config);
 ```
 
-Starts BLE scanning - config is optional
+Starts BLE scanning in foreground - config is optional
 
 ---
 
 #### `stopBLEScan(config)`
 
 ```javascript
-   SpecialBle.stopBLEScan();
+SpecialBle.stopBLEScan();
 ```
 
 Starts BLE scanning 
 
 ---
 
+#### `advertise(config)`
+
+```javascript
+SpecialBle.advertise(config);
+```
+
+Starts BLE advertising in foreground - config is optional
+
+---
+
+#### `stopAdvertise()`
+
+```javascript
+SpecialBle.stopAdvertise();
+```
+
+Stops BLE advertising 
+
+---
 
 
+#### `getScansByKey(pubKey, callback)`
+
+```javascript
+ SpecialBle.getScansByKey(token, (scans) => {
+    ...
+ })
+```
+Get list of scans events for a specific token, each object contains:
+* `scan_id` - unique id
+* `scan_timestamp` - epoch time of the scan event in 
+* `public_key` - token key
+* `scan_address` - scaned device address
+* `scan_rssi` - rssi strength
+* `scan_tx` - tx strength
+* `scan_protocol` - the protocol used to scan the data (currently GAP/GATT)
+
+---
+
+#### `getAllDevices()`
+
+```javascript
+ SpecialBle.getAllDevices((devices) => {
+       setDevices(devices)
+   })
+```
+Get list of unique devices that were scanned, each object contains:
 
 
+* `device_first_timestamp` - epoch time of the first scan event
+* `device_last_timestamp` - epoch time of the last scan event
+* `public_key` - token key
+* `device_address` - scaned device address
+* `device_rssi` - rssi strongest value
+* `device_tx` - tx strongest value
+* `device_protocol` - the protocol used to scan the data (currently GAP/GATT)
 
-## Methods
+---
 
-* [`stopBLEScan`](#stopBLEScan)
-* [`advertise`](#advertise)
-* [`stopAdvertise`](#stopAdvertise)
+#### `exportAllScansCsv()`
 
-* [`getAllDevices`](#getAllDevices)
-* [`cleanDevicesDB`](#cleanDevicesDB)
-* [`setPublicKeys`](#setPublicKeys)
+```javascript
+ SpecialBle.exportAllScansCsv();
+```
+Export the full Scans events DB to csv file
+
+---
+
+
+#### `exportAllDevicesCsv()`
+
+```javascript
+SpecialBle.exportAllDevicesCsv();
+```
+Export the full Devices DB to csv file
+
+---
+
+
+#### `cleanDevicesDB()`
+
+```javascript
+SpecialBle.cleanDevicesDB();
+```
+Clear all scanned devices
+
+---
+
+#### `cleanScansDB()`
+
+```javascript
+SpecialBle.cleanScansDB();
+```
+Clear all scans
+
+---
+
+
 
 
 #### Events from Native to JS
 - `scanningStatus` - event can be true/false
 - `advertisingStatus` - event can be  true/false
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
-
-
-#### `startBLEScan(serviceUUID)`
-Starts BLE scanning for a specific serviceUUID
-- `serviceUUID` - the serviceUUID to scan for
-
-#### `stopBLEScan()`
-Stop BLE scanning
-
-#### `advertise(serviceUUID)`
-Advertise BLE device with a specific serviceUUID
-- `serviceUUID` - serviceUUID to advertise with
 
 
 
