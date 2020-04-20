@@ -12,8 +12,8 @@ class DBDeviceManager {
     
     static let shared = DBDeviceManager()
 
-    func getAllDevices() -> [NSManagedObject] {
-        return DBManager.shared.getAll("Device")
+    func getAllDevices() -> [Device] {
+        return DBManager.shared.getAll("Device") as! [Device]
     }
     
     func deleteAllDevices() {

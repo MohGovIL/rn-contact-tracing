@@ -22,7 +22,7 @@ public class DBClient: NSObject {
     }
     
     @objc(getAllDevices)
-    public static func getAllDevices() -> [NSManagedObject] {
+    public static func getAllDevices() -> [Device] {
         return DBDeviceManager.shared.getAllDevices()
     }
 }

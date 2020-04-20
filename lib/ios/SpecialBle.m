@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(stopBLEService) {
 }
 
 RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
-    NSArray<NSManagedObject *> *devices = [DBClient getAllDevices];
+    NSArray<Device *> *devices = [DBClient getAllDevices];
     callback(devices);
 }
 
