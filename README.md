@@ -79,8 +79,8 @@ or
 
 ### Summary
 
-* [`setConfig`](#setConfig)
-* [`getConfig`](#getConfig)
+* [`setConfig`](#setconfig)
+* [`getConfig`](#getconfig)
 * [`startBLEService`](#startBLEService)
 * [`stopBLEService`](#stopBLEService)
 * [`startBLEScan`](#startBLEScan)
