@@ -42,19 +42,21 @@ class DBManager {
         return container
     }()
     
-    func save(entity:String, name: String, value: String) {
+    func save(entity:String, attributes: [String:String]) {
       
-      let managedContext = self.persistentContainer.viewContext
+        let managedContext = self.persistentContainer.viewContext
 
-      let entity = NSEntityDescription.entity(forEntityName: entity, in: managedContext)!
-      let data = NSManagedObject(entity: entity, insertInto: managedContext)
-      data.setValue(value, forKeyPath: name)
-      
-      do {
-        try managedContext.save()
-      } catch let error as NSError {
-        print("Could not save. \(error), \(error.userInfo)")
-      }
+        let entity = NSEntityDescription.entity(forEntityName: entity, in: managedContext)!
+        let data = NSManagedObject(entity: entity, insertInto: managedContext)
+        
+        for key in attributes.keys {
+            data.setValue(attributes[key], forKeyPath: key)
+        }
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
     }
     
     func getAll(_ entity:String) -> [NSManagedObject] {
