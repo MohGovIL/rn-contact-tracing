@@ -11,7 +11,7 @@
 #import "SpecialBle.h"
 #import <React/RCTLog.h>
 #import "SpecialBleManager.h"
-
+#import "rn_contact_tracing-Swift.h"
 
 @implementation SpecialBle
 
@@ -46,7 +46,18 @@ RCT_EXPORT_METHOD(stopBLEService) {
   RCTLogInfo(@"stopBLEService TBD");
 }
 
-RCT_EXPORT_METHOD(getAllDevices:(id)callback) {
-  RCTLogInfo(@"getAllDevices TBD");
+RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
+    NSArray<NSManagedObject *> *devices = [DBClient getAllDevices];
+    callback(devices);
 }
+
+RCT_EXPORT_METHOD(cleanDevicesDB) {
+    [DBClient cleanDevicesDB];
+}
+
+RCT_EXPORT_METHOD(setPublicKeys:(NSArray<NSString *> *)devices) {
+    [DBClient setPublicKeys:devices];
+}
+
+
 @end
