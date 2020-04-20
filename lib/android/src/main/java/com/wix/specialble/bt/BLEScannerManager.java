@@ -125,32 +125,20 @@ public class BLEScannerManager {
                     if (hasUpdateRequirements(oldDevice, result)) {
                         dbClient.updateDevice(newDevice);
                     }
-                }
-                 else {
+                } else {
                     newDevice = getNewDevice(result, tx, pk, System.currentTimeMillis(), System.currentTimeMillis());
                     dbClient.addDevice(newDevice);
                 }
 
                 EventToJSDispatcher.getInstance(context).sendNewDevice(newDevice);
-            }
-        });
 
-        // handle scans
-        Scan newScan = new Scan( System.currentTimeMillis(),
-                pk,
-                result.getDevice().getAddress(),
-                BLEManager.BLEProtocol.GAP.toString(),
-                result.getRssi(),
-                tx);
-
-        updateNewScan(newScan);
-    }
-
-    private void updateNewScan(final Scan newScan) {
-        AsyncTask.execute(new Runnable() {
-
-            @Override
-            public void run() {
+                // handle scans
+                Scan newScan = new Scan(System.currentTimeMillis(),
+                        pk,
+                        result.getDevice().getAddress(),
+                        BLEManager.BLEProtocol.GAP.toString(),
+                        result.getRssi(),
+                        tx);
                 dbClient.addScan(newScan);
                 EventToJSDispatcher.getInstance(context).sendNewScan(newScan);
             }
