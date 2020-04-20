@@ -1,9 +1,8 @@
 //
-//  BluetoothHandlerBridge.m
-//  BluetoothDemo
+//  DBClientBridge.m
+//  rn-contact-tracing
 //
-//  Created by Tzufit Lifshitz on 4/14/20.
-//  Copyright © 2020 Wojciech Kulik. All rights reserved.
+//  Created by Tzufit Lifshitz on 4/20/20.
 //
 
 #import <React/RCTBridgeModule.h>

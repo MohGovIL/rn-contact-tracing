@@ -12,17 +12,17 @@ import CoreData
 class DBClient: NSObject {
     
     @objc(cleanDevicesDB)
-    func cleanDevicesDB() {
+    static func cleanDevicesDB() {
         DBDeviceManager.shared.deleteAllDevices()
     }
     
     @objc(setPublicKeys:)
-    func setPublicKeys(keys: [String]) {
+    static func setPublicKeys(keys: [String]) {
         DBPublicKeyManager.shared.savePublicKeys(keys: keys)
     }
     
     @objc(getAllDevices)
-    func getAllDevices() -> [NSManagedObject] {
+    static func getAllDevices() -> [NSManagedObject] {
         return DBDeviceManager.shared.getAllDevices()
     }
 }
