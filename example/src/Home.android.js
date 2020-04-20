@@ -16,9 +16,7 @@ import {Button, Badge, Colors, Divider, View, TextField} from 'react-native-ui-l
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
 
-const PUBLIC_KEY = 'lev_and';
 const TAG = "EXAMPLE";
-
 
 const ScanMatchMode = [
     {value: 1, label: 'MATCH_MODE_AGGRESSIVE'},
@@ -43,6 +41,7 @@ function HomeScreen() {
 
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
+    const [publicKey, setPublicKey] = useState('');
     const [config, setConfig] = useState({
         serviceUUID: '',
         scanDuration: 0,
@@ -74,7 +73,7 @@ function HomeScreen() {
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
         SpecialBle.SetConfig(config)
-        SpecialBle.advertise(SERVICE_UUID, PUBLIC_KEY);
+        SpecialBle.advertise(SERVICE_UUID, publicKey);
     }
 
     // Stop advertising
@@ -85,7 +84,7 @@ function HomeScreen() {
     // in Android - start foreground service with scanning & advertising tasks
     function _startBLEService() {
         SpecialBle.SetConfig(config)
-        SpecialBle.startBLEService(SERVICE_UUID, PUBLIC_KEY);
+        SpecialBle.startBLEService(SERVICE_UUID, publicKey);
     }
 
     // stop background tasks
@@ -153,17 +152,18 @@ function HomeScreen() {
                     {_renderButton('Stop BLE service', _stopBLEService)}
                 </View>
 
+                {_renderTextField("Public Key", val => setPublicKey(val))}
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.scanDuration.toString(), val => setConfig({
                         ...config,
                         scanDuration: parseInt(val)
-                    }))}
+                    }), "numeric")}
                     {_renderTextField("Interval in ms", config.scanInterval.toString(), val => setConfig({
                         ...config,
                         scanInterval: parseInt(val)
-                    }))}
+                    }), "numeric")}
                 </View>
 
                 <Text text80BL style={{marginHorizontal: 10}}>Match Mode</Text>
@@ -191,11 +191,11 @@ function HomeScreen() {
                     {_renderTextField("Duration in ms", config.advertiseDuration.toString(), val => setConfig({
                         ...config,
                         advertiseDuration: parseInt(val)
-                    }))}
+                    }), "numeric")}
                     {_renderTextField("Interval in ms", config.advertiseInterval.toString(), val => setConfig({
                         ...config,
                         advertiseInterval: parseInt(val)
-                    }))}
+                    }), "numeric")}
                 </View>
 
                 <Text text80BL style={{marginHorizontal: 10}}>Advertise Mode</Text>
@@ -252,14 +252,14 @@ function HomeScreen() {
     }
 
 
-    function _renderTextField(placeHolder, value, onChangeText) {
+    function _renderTextField(placeHolder, value, onChangeText, keyboardType= "default") {
         return (
             <TextField
                 style={{marginHorizontal: 10, width: 140}}
                 floatingPlaceholder
                 placeholder={placeHolder}
                 floatOnFocus
-                keyboardType="numeric"
+                keyboardType={keyboardType}
                 onChangeText={onChangeText}
                 value={value}
             />
