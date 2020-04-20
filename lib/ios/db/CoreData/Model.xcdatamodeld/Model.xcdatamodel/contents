@@ -3,6 +3,7 @@
     <entity name="Device" representedClassName="Device" syncable="YES" codeGenerationType="class">
         <attribute name="device_address" optional="YES" attributeType="String"/>
         <attribute name="device_protocol" optional="YES" attributeType="String"/>
+        <attribute name="publicKey" optional="YES" attributeType="String"/>
         <attribute name="rssi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="tx" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -11,8 +12,17 @@
         <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="publicKey" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="Scan" representedClassName="Scan" syncable="YES" codeGenerationType="class">
+        <attribute name="publicKey" optional="YES" attributeType="String"/>
+        <attribute name="rssi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scan_address" optional="YES" attributeType="String"/>
+        <attribute name="scan_protocol" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tx" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
     <elements>
-        <element name="Device" positionX="-54" positionY="-9" width="128" height="118"/>
+        <element name="Device" positionX="-54" positionY="-9" width="128" height="133"/>
         <element name="PublicKey" positionX="-36" positionY="9" width="128" height="73"/>
+        <element name="Scan" positionX="-18" positionY="54" width="128" height="133"/>
     </elements>
 </model>

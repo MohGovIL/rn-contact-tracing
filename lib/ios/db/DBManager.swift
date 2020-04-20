@@ -59,6 +59,21 @@ class DBManager {
         }
     }
     
+    func getEntityWithPredicate(entity:String, predicateKey:String, predicateValue:String) -> NSManagedObject? {
+        
+        var data: [NSManagedObject] = []
+        let managedContext = self.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
+        fetchRequest.predicate = NSPredicate(format: "%@ == %@", predicateKey, predicateValue)
+        
+        do {
+          data = try managedContext.fetch(fetchRequest)
+        } catch let error as NSError {
+          print("Could not fetch. \(error), \(error.userInfo)")
+        }
+        return data.first
+    }
+    
     func getAll(_ entity:String) -> [NSManagedObject] {
 
         var data: [NSManagedObject] = []

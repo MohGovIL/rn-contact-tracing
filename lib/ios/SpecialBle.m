@@ -46,18 +46,18 @@ RCT_EXPORT_METHOD(stopBLEService) {
   RCTLogInfo(@"stopBLEService TBD");
 }
 
-RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
-    NSArray<Device *> *devices = [DBClient getAllDevices];
-    callback(devices);
-}
-
-RCT_EXPORT_METHOD(cleanDevicesDB) {
-    [DBClient cleanDevicesDB];
-}
-
-RCT_EXPORT_METHOD(setPublicKeys:(NSArray<NSString *> *)devices) {
-    [DBClient setPublicKeys:devices];
-}
+//RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
+//    NSArray<Device *> *devices = [DBClient getAllDevices];
+//    callback(devices);
+//}
+//
+//RCT_EXPORT_METHOD(cleanDevicesDB) {
+//    [DBClient cleanDevicesDB];
+//}
+//
+//RCT_EXPORT_METHOD(setPublicKeys:(NSArray<NSString *> *)devices) {
+//    [DBClient setPublicKeys:devices];
+//}
 
 
 @end

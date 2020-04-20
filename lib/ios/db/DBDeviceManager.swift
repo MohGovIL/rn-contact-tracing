@@ -11,6 +11,10 @@ import CoreData
 class DBDeviceManager {
     
     static let shared = DBDeviceManager()
+    
+    func getDeviceByKey(publicKey:String) -> Device {
+        return DBManager.shared.getEntityWithPredicate(entity: "Device", predicateKey: "publicKey", predicateValue: publicKey) as! Device
+    }
 
     func getAllDevices() -> [Device] {
         return DBManager.shared.getAll("Device") as! [Device]
