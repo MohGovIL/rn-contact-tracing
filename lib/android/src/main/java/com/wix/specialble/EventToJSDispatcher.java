@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.bt.Scan;
 
 public class EventToJSDispatcher {
     ReactApplicationContext context;
@@ -34,6 +35,11 @@ public class EventToJSDispatcher {
     public void sendNewDevice(Device newDevice) {
         WritableMap params = newDevice.toWritableMap();
         dispatch("foundDevice",params);
+    }
+
+    public void sendNewScan(Scan newScan) {
+        WritableMap params = newScan.toWritableMap();
+        dispatch("foundScan",params);
     }
 
 

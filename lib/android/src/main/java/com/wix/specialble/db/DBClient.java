@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.room.Room;
 
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.bt.Scan;
 import com.wix.specialble.kays.PublicKey;
 
 import java.util.List;
@@ -32,12 +33,17 @@ public class DBClient {
         return sDBClientInstance;
     }
 
-
-
     public SpecialBLEDatabase getSpecialBLEDB() {
         return bleDevicesDB;
     }
 
+    public void insertAllKeys(List<PublicKey> pkList) {
+        publicKeysDB.publicKeyDao().insertAll(pkList);
+    }
+
+    /***********
+     * Devices *
+     ***********/
     public Device getDeviceByKey(String pk) {
         return bleDevicesDB.deviceDao().getDeviceByKey(pk);
     }
@@ -51,15 +57,33 @@ public class DBClient {
     }
 
     public List<Device> getAllDevices() {
-       return bleDevicesDB.deviceDao().getAllBLEDevices();
+        return bleDevicesDB.deviceDao().getAllBLEDevices();
     }
 
     public void clearAllDevices() {
         bleDevicesDB.deviceDao().clearAll();
     }
 
-    public void insertAllKeys(List<PublicKey> pkList) {
-        publicKeysDB.publicKeyDao().insertAll(pkList);
+    /***********
+     *  Scans  *
+     ***********/
+    public Scan getScanByKey(String pk) {
+        return bleDevicesDB.scanDao().getScanByKey(pk);
     }
 
+    public void updateScan(Scan scan){
+        bleDevicesDB.scanDao().update(scan);
+    }
+
+    public void addScan(Scan newScan){
+        bleDevicesDB.scanDao().insert(newScan);
+    }
+
+    public List<Scan> getAllScans() {
+       return bleDevicesDB.scanDao().getAllBLEScans();
+    }
+
+    public void clearAllScans() {
+        bleDevicesDB.scanDao().clearAll();
+    }
 }

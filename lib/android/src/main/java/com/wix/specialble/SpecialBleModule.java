@@ -2,10 +2,12 @@ package com.wix.specialble;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -19,10 +21,13 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.bt.Scan;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
+import com.wix.specialble.util.CSVUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +35,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
     private final BLEManager bleManager;
+    private static final String TAG = "SpecialBleModule";
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SpecialBleModule(ReactApplicationContext reactContext) {
@@ -94,6 +100,21 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void cleanScansDB() {
+        DBClient.getInstance(reactContext).clearAllScans();
+    }
+
+    @ReactMethod
+    public void getAllScans(Callback callback) {
+        List<Scan> scans = bleManager.getAllScans();
+        WritableArray retArray = new WritableNativeArray();
+        for(Scan scan : scans){
+            retArray.pushMap(scan.toWritableMap());
+        }
+        callback.invoke(retArray);
+    }
+
+    @ReactMethod
     public void setPublicKeys(ReadableArray pubKeys) {
         ArrayList<PublicKey> pkList = new ArrayList<>();
         for(int i=0; i<pubKeys.size(); i++){
@@ -134,4 +155,36 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));
     }
 
+    @ReactMethod
+    public void exportAllDevicesCsv() {
+        try {
+            CSVUtil.saveAllDevicesAsCSV(reactContext, bleManager.getAllDevices());
+            shareFile(CSVUtil.getDevicesCsvFile(reactContext));
+        } catch (Exception e) {
+            Log.e(TAG, "exportAllDevicesCsv: "+e.getMessage(),e); //handle exception
+        }
+    }
+
+    @ReactMethod
+    public void exportAllScansCsv() {
+        try {
+            CSVUtil.saveAllScansAsCSV(reactContext, bleManager.getAllScans());
+            shareFile(CSVUtil.getScansCsvFile(reactContext));
+        } catch (Exception e) {
+            Log.e(TAG, "exportAllScansCsv: "+e.getMessage(),e); //handle exception
+        }
+    }
+
+    private void shareFile(File file) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("*/*");
+        Uri fileUri = FileProvider.getUriForFile(reactContext, "com.wix.specialble" + ".provider",file);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Intent chooser = Intent.createChooser(shareIntent, "");
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        reactContext.startActivity(chooser);
+    }
 }
