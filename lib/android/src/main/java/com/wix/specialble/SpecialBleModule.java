@@ -2,10 +2,12 @@ package com.wix.specialble;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -23,7 +25,9 @@ import com.wix.specialble.bt.Scan;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
+import com.wix.specialble.util.CSVUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +35,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
     private final BLEManager bleManager;
+    private static final String TAG = "SpecialBleModule";
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SpecialBleModule(ReactApplicationContext reactContext) {
@@ -150,4 +155,36 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));
     }
 
+    @ReactMethod
+    public void exportAllDevicesCsv() {
+        try {
+            CSVUtil.saveAllDevicesAsCSV(reactContext, bleManager.getAllDevices());
+            shareFile(CSVUtil.getDevicesCsvFile(reactContext));
+        } catch (Exception e) {
+            Log.e(TAG, "exportAllDevicesCsv: "+e.getMessage(),e); //handle exception
+        }
+    }
+
+    @ReactMethod
+    public void exportAllScansCsv() {
+        try {
+            CSVUtil.saveAllScansAsCSV(reactContext, bleManager.getAllScans());
+            shareFile(CSVUtil.getScansCsvFile(reactContext));
+        } catch (Exception e) {
+            Log.e(TAG, "exportAllScansCsv: "+e.getMessage(),e); //handle exception
+        }
+    }
+
+    private void shareFile(File file) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("*/*");
+        Uri fileUri = FileProvider.getUriForFile(reactContext, "com.wix.specialble" + ".provider",file);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Intent chooser = Intent.createChooser(shareIntent, "");
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        reactContext.startActivity(chooser);
+    }
 }

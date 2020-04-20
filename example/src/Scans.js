@@ -38,6 +38,11 @@ function ResultsScreen() {
         _getAllScansFromDB();
     }
 
+    // exports and shares all scans to csv
+    function _exportAllScansToCsv() {
+        SpecialBle.exportAllScansCsv();
+    }
+
 
     return (
         <View style={styles.container}>
@@ -45,7 +50,7 @@ function ResultsScreen() {
             <View spread style={styles.topContainer}>
                 <Text style={{fontSize: 30, fontWeight: 'bold'}}>Detected Scans</Text>
                 <View style={styles.topContainerButtons}>
-                    <Button text90 link green10 iconSource={shareIcon} style={{paddingHorizontal: 10}}/>
+                    <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllScansToCsv} style={{paddingHorizontal: 10}}/>
                     <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB} style={{paddingHorizontal: 10}}/>
                 </View>
             </View>
