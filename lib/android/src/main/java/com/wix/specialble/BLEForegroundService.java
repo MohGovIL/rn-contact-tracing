@@ -23,10 +23,8 @@ public class BLEForegroundService extends Service {
     /**
      * Utility for starting this Service the same way from multiple places.
      */
-    public static void startThisService(Context context, String serviceUUID, String publicKey) {
+    public static void startThisService(Context context) {
         Intent sIntent = new Intent(context, BLEForegroundService.class);
-        sIntent.putExtra("serviceUUID", serviceUUID);
-        sIntent.putExtra("publicKey", publicKey);
         context.startService(sIntent);
     }
 
@@ -40,14 +38,11 @@ public class BLEForegroundService extends Service {
     }
 
     private static Handler handler = new Handler();
-    private String mServiceUUID = "";
-    private String mData = "";
-
 
     private Runnable scanRunnable = new Runnable() {
         @Override
         public void run() {
-            bleManager.startScan(mServiceUUID);
+            bleManager.startScan();
             BLEForegroundService.handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -62,7 +57,7 @@ public class BLEForegroundService extends Service {
     private Runnable advertiseRunnable = new Runnable() {
         @Override
         public void run() {
-            bleManager.advertise(mServiceUUID, mData);
+            bleManager.advertise();
             BLEForegroundService.handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -86,8 +81,6 @@ public class BLEForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mServiceUUID = intent.getStringExtra("serviceUUID");
-        mData = intent.getStringExtra("publicKey");
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, BLEForegroundService.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,

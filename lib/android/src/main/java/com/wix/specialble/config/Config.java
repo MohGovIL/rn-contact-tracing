@@ -132,4 +132,8 @@ public class Config  {
     public int getScanMatchMode() {
         return sharedPrefs.getInt(PREF_SCAN_MATCH_MODE, DEFAULT_SCAN_MATCH_MODE);
     }
+
+    public String getPublicKey() {
+        return "dummyPublicKey"; //FIXME: ahmed, this was added just to compile, the real key is not yet added to project Config
+    }
 }

@@ -51,8 +51,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void advertise(String serviceUUID, String publicKey) {
-        bleManager.advertise(serviceUUID, publicKey);
+    public void advertise(String serviceUUID, String publicKey) { //TODO: remove these arguments (they are extracted from Config in BLEManager
+        bleManager.advertise();
     }
 
     @ReactMethod
@@ -61,8 +61,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startBLEScan(String serviceUUID) {
-        bleManager.startScan(serviceUUID);
+    public void startBLEScan(String serviceUUID) { //TODO: remove these arguments (they are extracted from Config in BLEManager
+        bleManager.startScan();
     }
 
     @ReactMethod
@@ -72,8 +72,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    private void startBLEService(String serviceUUID, String publicKey) {
-        BLEForegroundService.startThisService(this.reactContext, serviceUUID, publicKey);
+    private void startBLEService(String serviceUUID, String publicKey) { //TODO: remove these arguments (they are extracted from Config in BLEManager
+        BLEForegroundService.startThisService(this.reactContext);
     }
 
     @ReactMethod
