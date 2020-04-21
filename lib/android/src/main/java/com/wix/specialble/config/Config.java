@@ -38,9 +38,11 @@ public class Config  {
 
     // General Config - Default
     private static final String DEFAULT_SERVICEUUID = "00000000-0000-1000-8000-00805F9B34FB";
+    private static final String DEFAULT_TOKEN = "default_public_key";
 
     // General Config - Keys
     private static final String PREF_SERVICEUUID = "serviceUUID";
+    private static final String PREF_TOKEN = "token";
 
 
 
@@ -124,6 +126,13 @@ public class Config  {
         return sharedPrefs.getString(PREF_SERVICEUUID, DEFAULT_SERVICEUUID);
     }
 
+    public void setToken(String token) {
+        sharedPrefs.edit().putString(PREF_TOKEN, token).apply();
+    }
+
+    public String getToken() {
+        return sharedPrefs.getString(PREF_TOKEN, DEFAULT_TOKEN);
+    }
 
     public void setScanMatchMode(int scanMatchMode) {
         sharedPrefs.edit().putInt(PREF_SCAN_MATCH_MODE, scanMatchMode).apply();
