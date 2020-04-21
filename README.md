@@ -3,30 +3,31 @@
 
 ## WIP Library - Don't Use in Production
 
+
 ## About
-This is a react-native library for tracing close contact between 2 mobile devices by exchanging tokens over BLE (Bluetooth Low Energy).
+This is a react-native library for tracing close contact between 2 mobile devices by exchanging tokens over BLE (Bluetooth Low Energy).  
+
 The library eventually will do the following:
 
-1. Advertise messages with specific _service_uuid_ and predefined _public_key_ 
-2. Scan for for BLE signals with a specific _service_uuid_  store the scanned data into local device storage
-   - _timestamp_, _other_public_key_ ,_rssi_ (signal strength)
-3. Provide simple API for JS to init these tasks in background and retrieve the scanned _public_key_ 
+1. Advertise messages with specific _service_uuid_ and generated _tokken_
+2. Scan for for BLE signals with a specific _service_uuid_ and store the relevant data into local device storage
+3. Provide simple API for JS to init these tasks in background and retrieve the scanned _tokkens_
 
-This is temporary implementation until Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/)
+This is temporary implementation until Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/) solution.
 
 ##### Why did we build this lib?
-Due to COVID-19 pandemic, several health authorities released apps that will help to identify and notify people that are at risk of exposure.  
-Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), so they willing to add BLE based functionality.  
-There are lots of great libs that implement ble native-module for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted something very basic:
-* Run BLE functionality & execute some basic business logic in background (generate keys, decide what save to DB)
-* Reduce the amount of dependencies    
+Due to COVID-19 pandemic, several groups and health authorities released apps that will help to identify and notify people that are at risk of exposure.
 
-In addition, there are several great apps written for the same purpose in native ([COVID19CZ](https://github.com/covid19cz), [OpenTrace](https://github.com/opentrace-community)),but they includes the full business logic (UI..) that we don't want to use. 
-  
-  
+Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), and they willing to add BLE based functionality.  
+
+There are lots of great libs that expose ble functionality for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted reduce the amount of dependancies as much as possible and exectue very specfic BLE functionality in background.
+
+In addition, we looked at several great apps written for the same purpose in native, but each one of them is not written in a way that we could use as a stand-alone library. 
+[OpenTrace](https://github.com/opentrace-community)) - includes the full business logic (UI..) that we don't want to use. 
+[DP^3T Project](https://github.com/DP-3T) - include cryptography logic that we prefer to replace
+
 ##### Privacy (what do we advertise and save to DB)
 TBD
-
  
 ##### Limitations
 TBD
@@ -73,16 +74,211 @@ or
 * Android API 21+
 
 
+
 ## Methods
-* [`startBLEScan`](#startBLEScan)
-* [`stopBLEScan`](#stopBLEScan)
-* [`advertise`](#advertise)
-* [`stopAdvertise`](#stopAdvertise)
-* [`startBLEService`](#startBLEService)
-* [`stopBLEService`](#stopBLEService)
-* [`getAllDevices`](#getAllDevices)
-* [`cleanDevicesDB`](#cleanDevicesDB)
-* [`setPublicKeys`](#setPublicKeys)
+
+### Summary
+
+* [`setConfig`](#setconfigconfig)
+* [`getConfig`](#getconfigcallback)
+* [`startBLEService`](#startbleserviceconfig)
+* [`stopBLEService`](#stopbleservice)
+* [`startBLEScan`](#startblescanconfig)
+* [`stopBLEScan`](#stopblescan)
+* [`startBLEAdvertise`](#advertiseconfig)
+* [`stopAdvertise`](#stopadvertise)
+* [`getScansByKey`](#getscansbykeypubkey)
+* [`getAllDevices`](#getalldevices)
+* [`exportAllScansCsv`](#exportallscanscsv)
+* [`exportAllDevicesCsv`](#exportalldevicescsv)
+* [`cleanDevicesDB`](#cleandevicesdb)
+* [`cleanScansDB`](#cleanscansdb)
+
+
+---
+
+
+### Details
+
+#### `setConfig(config)`
+
+```javascript
+   SpecialBle.setConfig(config);
+```
+
+Sets configuration options that will be used in scanning & advertising tasks.
+
+**Parameters:**
+
+| Name   | Type   | Required | Description |
+| ------ | ------ | -------- | ----------- |
+| config | object | Yes      | See below.  |
+
+Supported options:
+
+* `serviceUUID` - the ServiceUUID which identify the BLE broadcast you are going to advertise and scan for.
+* `scanDuration` -  scanning duration in milisec
+* `scanInterval` - the time in milisec between every scan
+* `advertiseDuration` - advertising duration in milisec (up to 180000ms)
+* `advertiseInterval` - the time in milisec between every advertising
+
+For Android
+* `advertiseTXPowerLevel` - advertise TX power level [docs](https://developer.android.com/reference/android/bluetooth/le/AdvertiseSettings.Builder#setTxPowerLevel(int))
+* `scanMatchMode` - match mode for Bluetooth LE scan filters hardware match [docs](https://developer.android.com/reference/android/bluetooth/le/ScanSettings.Builder#setMatchMode(int))
+
+---
+
+
+#### `getConfig(callback)`
+
+```javascript
+   SpecialBle.getConfig((config) => {
+    ....
+   })
+```
+
+Gets the scanning & advertising configuration options that are currently defined in the library
+
+---
+
+#### `startBLEService(config)`
+
+```javascript
+SpecialBle.startBLEService(config);
+```
+
+Starts BLE background task scanning for a specific  - config is optional
+
+---
+
+#### `stopBLEService()`
+
+```javascript
+SpecialBle.stopBLEService();
+```
+
+Stops the background service and all the tasks the service executing
+
+---
+
+#### `startBLEScan(config)`
+
+```javascript
+SpecialBle.startBLEScan(config);
+```
+
+Starts BLE scanning in foreground - config is optional
+
+---
+
+#### `stopBLEScan()`
+
+```javascript
+SpecialBle.stopBLEScan();
+```
+
+Starts BLE scanning 
+
+---
+
+#### `advertise(config)`
+
+```javascript
+SpecialBle.advertise(config);
+```
+
+Starts BLE advertising in foreground - config is optional
+
+---
+
+#### `stopAdvertise()`
+
+```javascript
+SpecialBle.stopAdvertise();
+```
+
+Stops BLE advertising 
+
+---
+
+
+#### `getScansByKey(pubKey, callback)`
+
+```javascript
+ SpecialBle.getScansByKey(token, (scans) => {
+    ...
+ })
+```
+Get list of scans events for a specific token, each object contains:
+* `scan_id` - unique id
+* `scan_timestamp` - epoch time of the scan event in 
+* `public_key` - token key
+* `scan_address` - scaned device address
+* `scan_rssi` - rssi strength
+* `scan_tx` - tx strength
+* `scan_protocol` - the protocol used to scan the data (currently GAP/GATT)
+
+---
+
+#### `getAllDevices()`
+
+```javascript
+ SpecialBle.getAllDevices((devices) => {
+       setDevices(devices)
+   })
+```
+Get list of unique devices that were scanned, each object contains:
+
+
+* `device_first_timestamp` - epoch time of the first scan event
+* `device_last_timestamp` - epoch time of the last scan event
+* `public_key` - token key
+* `device_address` - scaned device address
+* `device_rssi` - rssi strongest value
+* `device_tx` - tx strongest value
+* `device_protocol` - the protocol used to scan the data (currently GAP/GATT)
+
+---
+
+#### `exportAllScansCsv()`
+
+```javascript
+ SpecialBle.exportAllScansCsv();
+```
+Export the full Scans events DB to csv file
+
+---
+
+
+#### `exportAllDevicesCsv()`
+
+```javascript
+SpecialBle.exportAllDevicesCsv();
+```
+Export the full Devices DB to csv file
+
+---
+
+
+#### `cleanDevicesDB()`
+
+```javascript
+SpecialBle.cleanDevicesDB();
+```
+Clear all scanned devices
+
+---
+
+#### `cleanScansDB()`
+
+```javascript
+SpecialBle.cleanScansDB();
+```
+Clear all scans
+
+---
+
+
 
 
 #### Events from Native to JS
@@ -91,24 +287,7 @@ or
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
 
 
-#### `startBLEScan(serviceUUID)`
-Starts BLE scanning for a specific serviceUUID
-- `serviceUUID` - the serviceUUID to scan for
 
-#### `stopBLEScan()`
-Stop BLE scanning
-
-#### `advertise(serviceUUID)`
-Advertise BLE device with a specific serviceUUID
-- `serviceUUID` - serviceUUID to advertise with
-
-#### `startBLEService(serviceUUID, pubKey, interval)`
-start background service with a repeating scan & advertise with
-- `serviceUUID` - the serviceUUID to advertise and to scan for
-- `interval` - time interval in miliseconds, that we use to repeatadly execute advertise task   
-
-#### `stopBLEService()`
-Stops the background service and all the tasks the service executing
 
 ### References
 * https://github.com/opentrace-community
