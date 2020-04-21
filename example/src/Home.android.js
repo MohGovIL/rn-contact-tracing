@@ -37,17 +37,16 @@ const AdvertiseTXPower = [
 
 
 function HomeScreen() {
-
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
-    const [publicKey, setPublicKey] = useState('');
     const [config, setConfig] = useState({
         serviceUUID: '',
         scanDuration: 0,
         scanInterval: 0,
         advertiseInterval: 0,
         advertiseDuration: 0,
-        advertiseMode: 0
+        advertiseMode: 0,
+        testKey: 'default_public_key'
     });
 
     useEffect(() => {
@@ -72,7 +71,7 @@ function HomeScreen() {
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
         SpecialBle.setConfig(config);
-        SpecialBle.advertise(SERVICE_UUID, publicKey);
+        SpecialBle.advertise(SERVICE_UUID, config.testKey);
     }
 
     // Stop advertising
@@ -82,8 +81,8 @@ function HomeScreen() {
 
     // in Android - start foreground service with scanning & advertising tasks
     function _startBLEService() {
-        SpecialBle.SetConfig(config);
-        SpecialBle.startBLEService(SERVICE_UUID, publicKey);
+        SpecialBle.setConfig(config);
+        SpecialBle.startBLEService(SERVICE_UUID, config.testKey);
     }
 
     // stop background tasks
@@ -150,7 +149,10 @@ function HomeScreen() {
                     {_renderButton('Stop BLE service', _stopBLEService)}
                 </View>
 
-                {_renderTextField("Public Key", val => setPublicKey(val))}
+                {_renderTextField("Public Key", config.testKey, val => setConfig({
+                    ...config,
+                    testKey: val
+                }))}
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
