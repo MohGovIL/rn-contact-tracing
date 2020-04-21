@@ -10,7 +10,7 @@ import {View, Card, Button, Text, ListItem, Colors} from 'react-native-ui-lib';
 const deleteIcon = require('../res/delete.png');
 const shareIcon = require('../res/share.png');
 
-function ResultsScreen() {
+function ResultsScreen({ navigation }) {
 
     const [devices, setDevices] = useState([]);
 
@@ -38,23 +38,22 @@ function ResultsScreen() {
         _getAllDevicesFromDB();
     }
 
+    // exports and shares all devices to csv
+    function _exportAllSDevicesToCsv() {
+        SpecialBle.exportAllDevicesCsv();
+    }
 
     return (
         <View style={styles.container}>
-
             <View spread style={styles.topContainer}>
-                <Text style={{fontSize: 30, fontWeight: 'bold'}}>Detected Contacts</Text>
-                <View style={styles.topContainerButtons}>
-                    <Button text90 link green10 iconSource={shareIcon} style={{paddingHorizontal: 10}}/>
+                    <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllSDevicesToCsv} style={{paddingHorizontal: 10}}/>
                     <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllDevicesFromDB} style={{paddingHorizontal: 10}}/>
-                </View>
             </View>
             <FlatList
                 data={devices}
                 keyExtractor={item => item.public_key}
                 renderItem={({item, index}) => _renderListItem(item, index)}
             />
-
         </View>
     );
 
@@ -65,15 +64,27 @@ function ResultsScreen() {
     }
 
     function _renderListItem(item, id) {
-        let ts = timeStampToUTCTime(item.device_timestamp);
+        let ts_first = timeStampToUTCTime(item.device_first_timestamp);
+        let ts_last = timeStampToUTCTime(item.device_last_timestamp);
+
         return (
-            <Card row height={50} style={styles.card}>
+            <Card row style={styles.card}
+                onPress={() => navigation.navigate('Scans', {pubKey: item.public_key})}>
                 <View flex row center-vertical>
                     <ListItem.Part middle column>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
                             <Text dark10 text70>EphId: { ((item.public_key).length > 10) ? (((item.public_key).substring(0,10-3)) + '...') : item.public_key }</Text>
                             <Text dark10 text70>{item.device_protocol}</Text>
-                            <Text dark10 text70>{ts}</Text>
+                        </ListItem.Part>
+
+                        <ListItem.Part containerStyle={{marginBottom: 2}}>
+                            <Text dark10 text70>First Seen</Text>
+                            <Text dark10 text80>{ts_first}</Text>
+                        </ListItem.Part>
+
+                        <ListItem.Part containerStyle={{marginBottom: 2}}>
+                            <Text dark10 text70>Last Seen</Text>
+                            <Text dark10 text80>{ts_last}</Text>
                         </ListItem.Part>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
                             <Text text90 color='green'>RSSI: {item.device_rssi}</Text>
@@ -86,7 +97,7 @@ function ResultsScreen() {
         );
 
     }
-};
+}
 
 
 const styles = StyleSheet.create({
@@ -100,11 +111,6 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         flexDirection: 'row',
     },
-    topContainerButtons: {
-        alignItems: 'flex-start',
-        flexDirection: 'row',
-    },
-
     timeText: {
         padding: 5,
     },
@@ -113,7 +119,8 @@ const styles = StyleSheet.create({
     },
     card: {
         padding: 5,
-        marginVertical: 5
+        marginVertical: 5,
+        flexWrap: "wrap"
     }
 });
 

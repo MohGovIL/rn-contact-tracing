@@ -36,7 +36,6 @@ function HomeScreen() {
   }, []);
 
 
-
   // Start scanning for a specific serviceUUID
   function _startScan() {
     SpecialBle.startBLEScan(SERVICE_UUID);
@@ -180,7 +179,7 @@ function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 100,
+    paddingTop: 20,
     marginHorizontal: 5,
   },
   statusContainer: {

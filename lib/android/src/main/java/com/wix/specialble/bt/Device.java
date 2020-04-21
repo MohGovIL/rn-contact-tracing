@@ -19,8 +19,11 @@ public class Device {
     @PrimaryKey
     private String publicKey = "";
 
-    @ColumnInfo(name = "timestamp")
-    private long timestamp = 0;
+    @ColumnInfo(name = "first_timestamp")
+    private long firstTimestamp = 0;
+
+    @ColumnInfo(name = "last_timestamp")
+    private long lastTimestamp = 0;
 
     @ColumnInfo(name = "device_address")
     private String deviceAddress = "";
@@ -37,8 +40,9 @@ public class Device {
     public Device() {
     }
 
-    public Device(long timestamp, String key, String address, String protocol, int rssi, int tx ) {
-        this.timestamp = timestamp;
+    public Device(long firstTimestamp, long lastTimestamp, String key, String address, String protocol, int rssi, int tx ) {
+        this.firstTimestamp = firstTimestamp;
+        this.lastTimestamp = lastTimestamp;
         publicKey = key==null ? "NaN" : key;
         deviceAddress = address==null ? "NaN" : address;
         deviceProtocol = protocol==null ? "NaN" : protocol;
@@ -81,21 +85,14 @@ public class Device {
 
     public WritableMap toWritableMap() {
         WritableMap deviceWritableMap = Arguments.createMap();
-        deviceWritableMap.putDouble("device_timestamp", timestamp);
+        deviceWritableMap.putDouble("device_first_timestamp", firstTimestamp);
+        deviceWritableMap.putDouble("device_last_timestamp", lastTimestamp);
         deviceWritableMap.putString("public_key", publicKey);
         deviceWritableMap.putString("device_address", deviceAddress);
         deviceWritableMap.putInt("device_rssi", rssi);
         deviceWritableMap.putInt("device_tx", tx);
         deviceWritableMap.putString("device_protocol", deviceProtocol);
         return deviceWritableMap;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public int getTx() {
@@ -106,8 +103,24 @@ public class Device {
         this.tx = tx;
     }
 
+    public long getFirstTimestamp() {
+        return firstTimestamp;
+    }
 
-/*    public void fromJSONString(String jsonString) {
+    public void setFirstTimestamp(long firstTimestamp) {
+        this.firstTimestamp = firstTimestamp;
+    }
+
+    public long getLastTimestamp() {
+        return lastTimestamp;
+    }
+
+    public void setLastTimestamp(long lastTimestamp) {
+        this.lastTimestamp = lastTimestamp;
+    }
+
+
+    /*    public void fromJSONString(String jsonString) {
         try {
             JSONObject jsonObj = new JSONObject(jsonString);
             publicKey = jsonObj.getString("public_key");

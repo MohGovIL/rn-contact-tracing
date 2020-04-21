@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
 import {Button, Badge, Colors, Divider, View, TextField} from 'react-native-ui-lib';
-
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
 
 const TAG = "EXAMPLE";
@@ -61,7 +60,7 @@ function HomeScreen() {
 
     // Start scanning for a specific serviceUUID
     function _startScan() {
-        SpecialBle.SetConfig(config)
+        SpecialBle.setConfig(config)
         SpecialBle.startBLEScan(SERVICE_UUID);
     }
 
@@ -72,7 +71,7 @@ function HomeScreen() {
 
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
-        SpecialBle.SetConfig(config)
+        SpecialBle.setConfig(config);
         SpecialBle.advertise(SERVICE_UUID, publicKey);
     }
 
@@ -83,7 +82,7 @@ function HomeScreen() {
 
     // in Android - start foreground service with scanning & advertising tasks
     function _startBLEService() {
-        SpecialBle.SetConfig(config)
+        SpecialBle.SetConfig(config);
         SpecialBle.startBLEService(SERVICE_UUID, publicKey);
     }
 
@@ -138,7 +137,6 @@ function HomeScreen() {
 
     return (
         <View style={styles.container}>
-        <Text style={{fontSize: 30, fontWeight: 'bold'}} >Configuration</Text>
             <ScrollView>
                 <View style={styles.subContainer}>
                     {_statusBadge('Scanning', scanningStatus.toString() === 'true')}
