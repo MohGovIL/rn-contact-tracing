@@ -80,7 +80,7 @@ or
 ### Summary
 
 * [`setConfig`](#setconfigconfig)
-* [`getConfig`](#getconfig)
+* [`getConfig`](#getconfigcallback)
 * [`startBLEService`](#startbleserviceconfig)
 * [`stopBLEService`](#stopbleservice)
 * [`startBLEScan`](#startblescanconfig)
