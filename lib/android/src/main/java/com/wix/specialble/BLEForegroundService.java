@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
@@ -17,9 +18,18 @@ import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
 
 public class BLEForegroundService extends Service {
-
-
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
+
+    /**
+     * Utility for starting this Service the same way from multiple places.
+     */
+    public static void startThisService(Context context, String serviceUUID, String publicKey) {
+        Intent sIntent = new Intent(context, BLEForegroundService.class);
+        sIntent.putExtra("serviceUUID", serviceUUID);
+        sIntent.putExtra("publicKey", publicKey);
+        context.startService(sIntent);
+    }
+
     BLEManager bleManager;
     {
         try {

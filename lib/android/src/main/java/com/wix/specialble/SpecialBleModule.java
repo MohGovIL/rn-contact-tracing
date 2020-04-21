@@ -73,10 +73,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     private void startBLEService(String serviceUUID, String publicKey) {
-        Intent sIntent = new Intent(this.reactContext, BLEForegroundService.class);
-        sIntent.putExtra("serviceUUID", serviceUUID);
-        sIntent.putExtra("publicKey", publicKey);
-        this.reactContext.startService(sIntent);
+        BLEForegroundService.startThisService(this.reactContext, serviceUUID, publicKey);
     }
 
     @ReactMethod
