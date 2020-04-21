@@ -115,6 +115,17 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getScansByKey(String pubKey, Callback callback) {
+        List<Scan> scans = bleManager.getScansByKey(pubKey);
+        WritableArray retArray = new WritableNativeArray();
+        for(Scan scan : scans){
+            retArray.pushMap(scan.toWritableMap());
+        }
+        callback.invoke(retArray);
+    }
+
+
+    @ReactMethod
     public void setPublicKeys(ReadableArray pubKeys) {
         ArrayList<PublicKey> pkList = new ArrayList<>();
         for(int i=0; i<pubKeys.size(); i++){
@@ -144,12 +155,13 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void SetConfig(ReadableMap configMap) {
+    public void setConfig(ReadableMap configMap) {
         Config config = Config.getInstance(reactContext);
         config.setServiceUUID(configMap.getString("serviceUUID"));
         config.setScanDuration((long) configMap.getDouble("scanDuration"));
         config.setScanInterval((long) configMap.getDouble("scanInterval"));
-        config.setScanMode(configMap.getInt("scanMode"));
+        config.setScanMatchMode(configMap.getInt("scanMatchMode"));
+        config.setAdvertiseDuraton((long) configMap.getDouble("advertiseDuration"));
         config.setAdvertiseInterval((long) configMap.getDouble("advertiseInterval"));
         config.setAdvertiseMode(configMap.getInt("advertiseMode"));
         config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));

@@ -79,4 +79,7 @@ public class BLEManager {
 
     public List<Scan> getAllScans(){ return DBClient.getInstance(context).getAllScans();
     }
+
+    public List<Scan> getScansByKey(String pubKey){ return DBClient.getInstance(context).getScansByKey(pubKey);
+    }
 }

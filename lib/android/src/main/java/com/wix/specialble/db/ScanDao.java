@@ -17,11 +17,8 @@ public interface ScanDao {
     @Query("SELECT * FROM scans")
     List<Scan> getAllBLEScans();
 
-    @Query("SELECT * FROM scans WHERE publicKey IN (:publicKey)")
-    List<Scan> getScanByKeys(String[] publicKey);
-
     @Query("SELECT * FROM scans WHERE publicKey = :publicKey")
-    Scan getScanByKey(String publicKey);
+    List<Scan> getScansByKey(String publicKey);
 
     @Insert
     void insertAll(Scan... scans);

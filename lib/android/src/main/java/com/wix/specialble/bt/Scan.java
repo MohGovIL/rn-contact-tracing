@@ -77,6 +77,7 @@ public class Scan {
 
     public WritableMap toWritableMap() {
         WritableMap scanWritableMap = Arguments.createMap();
+        scanWritableMap.putInt("scan_id", id);
         scanWritableMap.putDouble("scan_timestamp", timestamp);
         scanWritableMap.putString("public_key", publicKey);
         scanWritableMap.putString("scan_address", scanAddress);
@@ -110,26 +111,4 @@ public class Scan {
         this.id = id;
     }
 
-    /*    public void fromJSONString(String jsonString) {
-        try {
-            JSONObject jsonObj = new JSONObject(jsonString);
-            publicKey = jsonObj.getString("public_key");
-            deviceAddress = jsonObj.getString("device_address");
-            rssi = jsonObj.getInt("device_rssi");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String toJSONString() {
-        JSONObject item = new JSONObject();
-        try {
-            item.put("public_key", publicKey);
-            item.put("device_address", deviceAddress);
-            item.put("device_rssi", rssi);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return item.toString();
-    }*/
 }

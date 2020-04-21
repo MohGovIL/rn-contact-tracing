@@ -10,24 +10,20 @@ import {View, Card, Button, Text, ListItem, Colors} from 'react-native-ui-lib';
 const deleteIcon = require('../res/delete.png');
 const shareIcon = require('../res/share.png');
 
-function ResultsScreen() {
-
+function ResultsScreen({route, navigation}) {
+    const {pubKey} = route.params;
     const [scans, setScans] = useState([]);
 
     useEffect(() => {
-        const eventEmitter = new NativeEventEmitter(SpecialBle);
-        eventEmitter.addListener('foundScan', (event) => {
-                console.log(event);
-                _getAllScansFromDB();
-            },
-        );
-        _getAllScansFromDB();
+        _getContactsScans();
+        const interval = setInterval(() => {
+            _getContactsScans
+        }, 2000);
+        return () => clearInterval(interval);
     }, []);
 
-
-    // get all scans from DB
-    async function _getAllScansFromDB() {
-        SpecialBle.getAllScans((scans) => {
+    async function _getContactsScans() {
+        SpecialBle.getScansByKey(pubKey, (scans) => {
             setScans(scans)
         })
     }
@@ -43,30 +39,25 @@ function ResultsScreen() {
         SpecialBle.exportAllScansCsv();
     }
 
-
     return (
         <View style={styles.container}>
-
             <View spread style={styles.topContainer}>
-                <Text style={{fontSize: 30, fontWeight: 'bold'}}>Detected Scans</Text>
-                <View style={styles.topContainerButtons}>
-                    <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllScansToCsv} style={{paddingHorizontal: 10}}/>
-                    <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB} style={{paddingHorizontal: 10}}/>
-                </View>
+                <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllScansToCsv}
+                        style={{paddingHorizontal: 10}}/>
+                <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB}
+                        style={{paddingHorizontal: 10}}/>
             </View>
             <FlatList
                 data={scans}
-                keyExtractor={item => item.public_key}
+                keyExtractor={item => item.scan_id.toString()}
                 renderItem={({item, index}) => _renderListItem(item, index)}
             />
-
         </View>
     );
 
-    function timeStampToUTCTime(timestamp){
+    function timeStampToUTCTime(timestamp) {
         let date = new Date(timestamp)
-        let res =  date.toLocaleDateString()+'-'+date.getUTCHours()+':'+date.getUTCMinutes()+':'+date.getUTCSeconds()+'.'+date.getUTCMilliseconds();
-        return res;
+        return date.toLocaleDateString() + '-' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds() + '.' + date.getUTCMilliseconds();
     }
 
     function _renderListItem(item, id) {
@@ -76,7 +67,8 @@ function ResultsScreen() {
                 <View flex row center-vertical>
                     <ListItem.Part middle column>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
-                            <Text dark10 text70>EphId: { ((item.public_key).length > 10) ? (((item.public_key).substring(0,10-3)) + '...') : item.public_key }</Text>
+                            <Text dark10
+                                  text70>EphId: {((item.public_key).length > 10) ? (((item.public_key).substring(0, 10 - 3)) + '...') : item.public_key}</Text>
                             <Text dark10 text70>{item.scan_protocol}</Text>
                             <Text dark10 text70>{ts}</Text>
                         </ListItem.Part>
@@ -89,9 +81,8 @@ function ResultsScreen() {
                 </View>
             </Card>
         );
-
     }
-};
+}
 
 
 const styles = StyleSheet.create({
@@ -102,14 +93,10 @@ const styles = StyleSheet.create({
     topContainer: {
         marginTop: 20,
         marginBottom: 10,
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
         flexDirection: 'row',
+        alignItems: 'flex-end',
     },
-    topContainerButtons: {
-        alignItems: 'flex-start',
-        flexDirection: 'row',
-    },
-
     timeText: {
         padding: 5,
     },

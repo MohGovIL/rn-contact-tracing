@@ -52,10 +52,7 @@ public class BLEScannerManager {
 
             Config config = Config.getInstance(context);
             serviceUUID = TextUtils.isEmpty(serviceUUID) ? config.getServiceUUID() : serviceUUID;
-            int scanMode = config.getScanMode();
             int scanMatchMode = config.getScanMatchMode();
-            long scanDuration = config.getScanDuration();
-
 
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(serviceUUID))).build();
             ArrayList filters = new ArrayList<ScanFilter>();

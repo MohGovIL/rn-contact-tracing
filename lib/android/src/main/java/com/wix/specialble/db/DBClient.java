@@ -67,8 +67,8 @@ public class DBClient {
     /***********
      *  Scans  *
      ***********/
-    public Scan getScanByKey(String pk) {
-        return bleDevicesDB.scanDao().getScanByKey(pk);
+    public List<Scan> getScansByKey(String pk) {
+        return bleDevicesDB.scanDao().getScansByKey(pk);
     }
 
     public void updateScan(Scan scan){
