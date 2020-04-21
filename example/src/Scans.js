@@ -31,7 +31,7 @@ function ResultsScreen({route, navigation}) {
     // clean all scans from DB
     function _cleanAllScansFromDB() {
         SpecialBle.cleanScansDB();
-        _getAllScansFromDB();
+        _getContactsScans();
     }
 
     // exports and shares all scans to csv
