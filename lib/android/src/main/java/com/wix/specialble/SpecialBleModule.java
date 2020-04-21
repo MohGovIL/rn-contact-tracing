@@ -51,8 +51,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void advertise(String serviceUUID, String publicKey) {
-        bleManager.advertise(serviceUUID, publicKey);
+    public void advertise() {
+        Config config  = Config.getInstance(reactContext);
+        bleManager.advertise(config.getServiceUUID(), config.getToken());
     }
 
     @ReactMethod
@@ -61,8 +62,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startBLEScan(String serviceUUID) {
-        bleManager.startScan(serviceUUID);
+    public void startBLEScan() {
+        Config config  = Config.getInstance(reactContext);
+        bleManager.startScan(config.getServiceUUID());
     }
 
     @ReactMethod
@@ -72,10 +74,11 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    private void startBLEService(String serviceUUID, String publicKey) {
+    private void startBLEService() {
         Intent sIntent = new Intent(this.reactContext, BLEForegroundService.class);
-        sIntent.putExtra("serviceUUID", serviceUUID);
-        sIntent.putExtra("publicKey", publicKey);
+        Config config  = Config.getInstance(reactContext);
+        sIntent.putExtra("serviceUUID", config.getServiceUUID());
+        sIntent.putExtra("publicKey",config.getToken());
         this.reactContext.startService(sIntent);
     }
 
@@ -141,7 +144,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void getConfig(Callback callback) {
         Config config = Config.getInstance(reactContext);
         WritableMap configMap = new WritableNativeMap();
-        configMap.putString("testKey", config.getTestKey());
+        configMap.putString("token", config.getToken());
         configMap.putString("serviceUUID", config.getServiceUUID());
         configMap.putDouble("scanDuration", config.getScanDuration());
         configMap.putDouble("scanInterval", config.getScanInterval());
@@ -158,7 +161,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setConfig(ReadableMap configMap) {
         Config config = Config.getInstance(reactContext);
-        config.setTestKey(configMap.getString("testKey"));
+        config.setToken(configMap.getString("token"));
         config.setServiceUUID(configMap.getString("serviceUUID"));
         config.setScanDuration((long) configMap.getDouble("scanDuration"));
         config.setScanInterval((long) configMap.getDouble("scanInterval"));

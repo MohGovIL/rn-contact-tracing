@@ -46,7 +46,7 @@ function HomeScreen() {
         advertiseInterval: 0,
         advertiseDuration: 0,
         advertiseMode: 0,
-        testKey: 'default_public_key'
+        token: 'default_public_key'
     });
 
     useEffect(() => {
@@ -60,7 +60,7 @@ function HomeScreen() {
     // Start scanning for a specific serviceUUID
     function _startScan() {
         SpecialBle.setConfig(config)
-        SpecialBle.startBLEScan(SERVICE_UUID);
+        SpecialBle.startBLEScan();
     }
 
     // Stop scanning
@@ -71,7 +71,7 @@ function HomeScreen() {
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
         SpecialBle.setConfig(config);
-        SpecialBle.advertise(SERVICE_UUID, config.testKey);
+        SpecialBle.advertise();
     }
 
     // Stop advertising
@@ -82,7 +82,7 @@ function HomeScreen() {
     // in Android - start foreground service with scanning & advertising tasks
     function _startBLEService() {
         SpecialBle.setConfig(config);
-        SpecialBle.startBLEService(SERVICE_UUID, config.testKey);
+        SpecialBle.startBLEService();
     }
 
     // stop background tasks
@@ -149,9 +149,9 @@ function HomeScreen() {
                     {_renderButton('Stop BLE service', _stopBLEService)}
                 </View>
 
-                {_renderTextField("Public Key", config.testKey, val => setConfig({
+                {_renderTextField("Public Key", config.token, val => setConfig({
                     ...config,
-                    testKey: val
+                    token: val
                 }))}
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
