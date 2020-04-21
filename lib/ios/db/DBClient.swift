@@ -11,6 +11,7 @@ import CoreData
 @objc(DBClient)
 public class DBClient: NSObject {
     
+    @objc(insertAllKeys:)
     public static func insertAllKeys(publicKeys: [String]) {
         DBPublicKeyManager.shared.savePublicKeys(keys: publicKeys)
     }
@@ -18,48 +19,57 @@ public class DBClient: NSObject {
     /***********
      * Devices *
      ***********/
+    @objc(getDeviceByKey:)
     public static func getDeviceByKey(publicKey: String) -> Device {
         return DBDeviceManager.shared.getDeviceByKey(publicKey: publicKey);
     }
 
+    @objc(updateDevice:)
     public static func updateDevice(device: Device){
-//        bleDevicesDB.deviceDao().update(device);
+        DBDeviceManager.shared.updateDevice()
     }
 
-    public static func addDevice(newDevice: Device){
-//        bleDevicesDB.deviceDao().insert(newDevice);
+    @objc(addDevice:)
+    public static func addDevice(deviceInfo: [String:Any]){
+        DBDeviceManager.shared.saveNewDevice(deviceInfo: deviceInfo)
     }
 
+    @objc(getAllDevices)
     public static func getAllDevices() -> [Device] {
         return DBDeviceManager.shared.getAllDevices()
     }
 
-    @objc(getAllDevices)
+    @objc(clearAllDevices)
     public static func clearAllDevices() {
-//        bleDevicesDB.deviceDao().clearAll();
+        DBDeviceManager.shared.deleteAllDevices()
     }
 
     /***********
      *  Scans  *
      ***********/
+    @objc(getScanByKey:)
     public static func getScanByKey(publicKey: String) -> Scan {
         return DBScanManager.shared.getScanByKey(publicKey: publicKey)
     }
 
+    @objc(updateScan:)
     public static func updateScan(scan: Scan){
-//        bleDevicesDB.scanDao().update(scan);
+        DBScanManager.shared.updateScan()
     }
 
-    public static func addScan(newScan: Scan){
-//        bleDevicesDB.scanDao().insert(newScan);
+    @objc(addScan:)
+    public static func addScan(scanInfo: [String:Any]){
+        DBScanManager.shared.saveNewScan(scanInfo: scanInfo)
     }
 
+    @objc(getAllScans)
     public static func getAllScans() -> [Scan] {
        return DBScanManager.shared.getAllScans()
     }
 
+    @objc(clearAllScans)
     public static func clearAllScans() {
-//        bleDevicesDB.scanDao().clearAll();
+        DBScanManager.shared.deleteAllScans()
     }
     
 }

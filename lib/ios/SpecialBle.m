@@ -46,18 +46,54 @@ RCT_EXPORT_METHOD(stopBLEService) {
   RCTLogInfo(@"stopBLEService TBD");
 }
 
-//RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
-//    NSArray<Device *> *devices = [DBClient getAllDevices];
-//    callback(devices);
-//}
-//
-//RCT_EXPORT_METHOD(cleanDevicesDB) {
-//    [DBClient cleanDevicesDB];
-//}
-//
-//RCT_EXPORT_METHOD(setPublicKeys:(NSArray<NSString *> *)devices) {
-//    [DBClient setPublicKeys:devices];
-//}
+RCT_EXPORT_METHOD(insertAllKeys:(NSArray*) publicKeys) {
+    
+}
 
+/***********
+ * Devices *
+ ***********/
+RCT_EXPORT_METHOD(getDeviceByKey:(NSString*) publicKey device:(void(^)(Device*))callback) {
+    callback([DBClient getDeviceByKey:publicKey]);
+}
+
+RCT_EXPORT_METHOD(device:(Device*) device) {
+    [DBClient updateDevice:device];
+}
+
+RCT_EXPORT_METHOD(addDevice:(NSDictionary*) deviceInfo) {
+    [DBClient addDevice:deviceInfo];
+}
+
+RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
+    callback([DBClient getAllDevices]);
+}
+
+RCT_EXPORT_METHOD(clearAllDevices) {
+    [DBClient clearAllDevices];
+}
+
+/***********
+ *  Scans  *
+ ***********/
+RCT_EXPORT_METHOD(getScanByKey:(NSString*) publicKey scan:(void(^)(Scan*))callback) {
+    callback([DBClient getScanByKey:publicKey]);
+}
+
+RCT_EXPORT_METHOD(updateScan:(Scan*) scan) {
+    [DBClient updateScan:scan];
+}
+
+RCT_EXPORT_METHOD(scanInfo:(NSDictionary*) scanInfo) {
+    [DBClient addScan:scanInfo];
+}
+
+RCT_EXPORT_METHOD(getAllScans:(void(^)(NSArray*))callback) {
+    callback([DBClient getAllScans]);
+}
+
+RCT_EXPORT_METHOD(clearAllScans) {
+    [DBClient clearAllScans];
+}
 
 @end

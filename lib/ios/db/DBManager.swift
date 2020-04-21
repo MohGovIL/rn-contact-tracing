@@ -42,7 +42,7 @@ class DBManager {
         return container
     }()
     
-    func save(entity:String, attributes: [String:String]) {
+    func save(entity:String, attributes: [String:Any]) {
       
         let managedContext = self.persistentContainer.viewContext
 
