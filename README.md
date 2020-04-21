@@ -80,17 +80,19 @@ or
 ### Summary
 
 * [`setConfig`](#setconfigconfig)
-* [`getConfig`](#configgetconfig)
-* [`startBLEService`](#startBLEServiceconfig)
-* [`stopBLEService`](#stopBLEService)
-* [`startBLEScan`](#startBLEScan)
-* [`stopBLEScan`](#stopBLEScan)
-* [`startBLEAdvertise`](#startBLEScan)
-* [`stopBLEAdvertise`](#stopBLEScan)
-* [`exportAllScansCsv`](#exportAllScansCsv)
-* [`exportAllDevicesCsv`](#exportAllDevicesCsv)
-* [`cleanDevicesDB`](#cleanDevicesDB)
-* [`cleanScansDB`](#cleanScansDB)
+* [`getConfig`](#getconfig)
+* [`startBLEService`](#startbleserviceconfig)
+* [`stopBLEService`](#stopbleservice)
+* [`startBLEScan`](#startblescanconfig)
+* [`stopBLEScan`](#stopblescan)
+* [`startBLEAdvertise`](#advertiseconfig)
+* [`stopAdvertise`](#stopadvertise)
+* [`getScansByKey`](#getscansbykeypubkey)
+* [`getAllDevices`](#getalldevices)
+* [`exportAllScansCsv`](#exportallscanscsv)
+* [`exportAllDevicesCsv`](#exportalldevicescsv)
+* [`cleanDevicesDB`](#cleandevicesdb)
+* [`cleanScansDB`](#cleanscansdb)
 
 
 ---
@@ -127,7 +129,7 @@ For Android
 ---
 
 
-#### `config getConfig()`
+#### `getConfig(callback)`
 
 ```javascript
    SpecialBle.getConfig((config) => {
@@ -169,7 +171,7 @@ Starts BLE scanning in foreground - config is optional
 
 ---
 
-#### `stopBLEScan(config)`
+#### `stopBLEScan()`
 
 ```javascript
 SpecialBle.stopBLEScan();
