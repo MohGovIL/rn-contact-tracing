@@ -9,9 +9,9 @@ This is a react-native library for tracing close contact between 2 mobile device
 
 The library eventually will do the following:
 
-1. Advertise messages with specific _service_uuid_ and generated _tokken_
+1. Advertise messages with specific _service_uuid_ and generated _token_
 2. Scan for for BLE signals with a specific _service_uuid_ and store the relevant data into local device storage
-3. Provide simple API for JS to init these tasks in background and retrieve the scanned _tokkens_
+3. Provide simple API for JS to init these tasks in background and retrieve the scanned _tokens_
 
 This is temporary implementation until Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/) solution.
 
@@ -202,7 +202,7 @@ Stops BLE advertising
 ---
 
 
-#### `getScansByKey(pubKey, callback)`
+#### `getScansByKey(token, callback)`
 
 ```javascript
  SpecialBle.getScansByKey(token, (scans) => {
