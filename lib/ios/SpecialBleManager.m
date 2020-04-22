@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 #import "SpecialBleManager.h"
+#import "rn_contact_tracing-Swift.h"
+
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
@@ -137,11 +139,15 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     if (advertisementData && [advertisementData[CBAdvertisementDataServiceUUIDsKey] count] > 0) {
         address = ((CBUUID*)advertisementData[CBAdvertisementDataServiceUUIDsKey][0]).UUIDString;
     }
-    [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:@{
+    
+    NSDictionary* device = @{
         @"device_name": name,
         @"device_address": address,
         @"device_rssi": [RSSI stringValue]
-    }];
+    };
+    [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
+    
+    [DBClient addDevice:device];
 }
 
 #pragma mark - CBPeripheralDelegate

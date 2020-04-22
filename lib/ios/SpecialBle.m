@@ -46,53 +46,69 @@ RCT_EXPORT_METHOD(stopBLEService) {
   RCTLogInfo(@"stopBLEService TBD");
 }
 
-RCT_EXPORT_METHOD(insertAllKeys:(NSArray*) publicKeys) {
-    
+RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
+    RCTLogInfo(@"setPublicKeys TBD");
+}
+
+RCT_EXPORT_METHOD(getConfig) {
+    RCTLogInfo(@"getConfig TBD");
+}
+
+RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
+    RCTLogInfo(@"setConfig TBD");
+}
+
+RCT_EXPORT_METHOD(exportAllDevicesCsv) {
+    RCTLogInfo(@"exportAllDevicesCsv TBD");
+}
+
+RCT_EXPORT_METHOD(exportAllScansCsv) {
+    RCTLogInfo(@"exportAllScansCsv TBD");
 }
 
 /***********
  * Devices *
  ***********/
-RCT_EXPORT_METHOD(getDeviceByKey:(NSString*) publicKey device:(void(^)(Device*))callback) {
-    callback([DBClient getDeviceByKey:publicKey]);
-}
+//RCT_EXPORT_METHOD(getDeviceByKey:(NSString*) publicKey device:(void(^)(Device*))callback) {
+//    callback([DBClient getDeviceByKey:publicKey]);
+//}
 
-RCT_EXPORT_METHOD(device:(Device*) device) {
-    [DBClient updateDevice:device];
-}
+//RCT_EXPORT_METHOD(device:(Device*) device) {
+//    [DBClient updateDevice:device];
+//}
 
-RCT_EXPORT_METHOD(addDevice:(NSDictionary*) deviceInfo) {
-    [DBClient addDevice:deviceInfo];
-}
+//RCT_EXPORT_METHOD(addDevice:(NSDictionary*) deviceInfo) {
+//    [DBClient addDevice:deviceInfo];
+//}
 
-RCT_EXPORT_METHOD(getAllDevices:(void(^)(NSArray*))callback) {
+RCT_EXPORT_METHOD(getAllDevices:(RCTResponseSenderBlock)callback) {
     callback([DBClient getAllDevices]);
 }
 
-RCT_EXPORT_METHOD(clearAllDevices) {
+RCT_EXPORT_METHOD(cleanDevicesDB) {
     [DBClient clearAllDevices];
 }
 
 /***********
  *  Scans  *
  ***********/
-RCT_EXPORT_METHOD(getScanByKey:(NSString*) publicKey scan:(void(^)(Scan*))callback) {
+RCT_EXPORT_METHOD(getScansByKey:(NSString*)publicKey scan:(RCTResponseSenderBlock)callback) {
     callback([DBClient getScanByKey:publicKey]);
 }
 
-RCT_EXPORT_METHOD(updateScan:(Scan*) scan) {
-    [DBClient updateScan:scan];
-}
+//RCT_EXPORT_METHOD(updateScan:(Scan*) scan) {
+//    [DBClient updateScan:scan];
+//}
 
-RCT_EXPORT_METHOD(scanInfo:(NSDictionary*) scanInfo) {
-    [DBClient addScan:scanInfo];
-}
+//RCT_EXPORT_METHOD(scanInfo:(NSDictionary*) scanInfo) {
+//    [DBClient addScan:scanInfo];
+//}
 
-RCT_EXPORT_METHOD(getAllScans:(void(^)(NSArray*))callback) {
+RCT_EXPORT_METHOD(getAllScans:(RCTResponseSenderBlock)callback) {
     callback([DBClient getAllScans]);
 }
 
-RCT_EXPORT_METHOD(clearAllScans) {
+RCT_EXPORT_METHOD(cleanScansDB) {
     [DBClient clearAllScans];
 }
 
