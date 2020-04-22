@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(stopBLEService) {
 }
 
 RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
-    RCTLogInfo(@"setPublicKeys TBD");
+    [DBClient savePublicKeys:keys];
 }
 
 RCT_EXPORT_METHOD(getConfig) {
