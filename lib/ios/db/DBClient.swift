@@ -11,8 +11,8 @@ import CoreData
 @objc(DBClient)
 public class DBClient: NSObject {
     
-    @objc(insertAllKeys:)
-    public static func insertAllKeys(publicKeys: [String]) {
+    @objc(savePublicKeys:)
+    public static func savePublicKeys(publicKeys: [String]) {
         DBPublicKeyManager.shared.savePublicKeys(keys: publicKeys)
     }
 

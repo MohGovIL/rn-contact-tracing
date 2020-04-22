@@ -122,6 +122,15 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSLog(@"Central manager state: %d", central.state);
     [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
     
+    NSDictionary* device = @{
+        @"publicKey": @"publicKey",
+        @"device_address": @"device_address",
+        @"rssi": [NSNumber numberWithInt:123]
+    };
+    [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
+    
+    [DBClient addDevice:device];
+    
 }
 
 - (void)centralManager:(CBCentralManager *)central
