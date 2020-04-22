@@ -51,7 +51,7 @@ public class BLEManager {
         Log.d("ahmed", "BLEManager Init was called..");
         Config config = Config.getInstance(context); //config.getServiceUUID(), config.getPublicKey()
         mServiceUUID = config.getServiceUUID();
-        mPublicKey = config.getPublicKey(); //TODO: ahmed, this is how it'd be called in Kobi's upcoming commit
+        mPublicKey = config.getToken();
 
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();

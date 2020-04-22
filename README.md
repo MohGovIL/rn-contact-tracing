@@ -15,39 +15,22 @@ The library eventually will do the following:
 
 This is temporary implementation until Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/) solution.
 
-##### Why did we build this lib?
-Due to COVID-19 pandemic, several groups and health authorities released apps that will help to identify and notify people that are at risk of exposure.
-
-Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), and they willing to add BLE based functionality.  
-
-There are lots of great libs that expose ble functionality for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted reduce the amount of dependancies as much as possible and exectue very specfic BLE functionality in background.
-
-In addition, we looked at several great apps written for the same purpose in native, but each one of them is not written in a way that we could use as a stand-alone library. 
-[OpenTrace](https://github.com/opentrace-community)) - includes the full business logic (UI..) that we don't want to use. 
-[DP^3T Project](https://github.com/DP-3T) - include cryptography logic that we prefer to replace
-
-##### Privacy (what do we advertise and save to DB)
-TBD
- 
-##### Limitations
-TBD
 
 ## Working plan
 
- Functionality | Andorid | iOS | WIP
-:------------ | :-------------| :-------------| :-------------|
-Scan in foreground | :white_check_mark: |  :white_check_mark: | |
-Advertise in foreground | :white_check_mark: |  :white_check_mark: | |
-Scan in background | :white_check_mark: | TODO | |
-Advertise in background | :white_check_mark: | TODO | |
-Save scanned data into local DB | :white_check_mark: | TODO | |
+ Functionality | Andorid | iOS | 
+:------------ | :-------------| :-------------| 
+Scan in foreground | :white_check_mark: |  :white_check_mark: |
+Advertise in foreground | :white_check_mark: |  :white_check_mark: |
+Scan in background | :white_check_mark: | TODO |
+Advertise in background | :white_check_mark: | TODO |
+Save scanned data into local DB | :white_check_mark: | WIP |
 Return scanned data to JS | :white_check_mark: | TODO | 
-Pass scannng & advertising configuration from JS (intervals..) | TODO | TODO | | 
-Receive _public_keys_ from JS  |TODO|TODO| |
-Generate _public_keys_ from the native code  |TODO|TODO| |
-Deal with permissions |TODO|TODO| |
-Tests  |TODO|TODO| |
-Features for rssi calibration  |TODO|TODO|Taboola|
+Pass scannng & advertising configuration from JS (intervals..) | :white_check_mark: | TODO |
+Integration with tokens provider  |TODO|TODO|
+Deal with permissions and reboot/app update |WIP|TODO|
+Tests  |TODO|TODO|]
+Features for rssi calibration (GPS, Proximity)  |WIP|TODO|
 
 
 ## Getting started
@@ -278,15 +261,29 @@ Clear all scans
 
 ---
 
-
-
-
 #### Events from Native to JS
 - `scanningStatus` - event can be true/false
 - `advertisingStatus` - event can be  true/false
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
+- `error` - {event.error_message}
 
 
+##### Why did we build this lib?
+Due to COVID-19 pandemic, several groups and health authorities released apps that will help to identify and notify people that are at risk of exposure.
+
+Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), and they willing to add BLE based functionality.  
+
+There are lots of great libs that expose ble functionality for RN, i.e [react-native-ble-plx](https://github.com/Polidea/react-native-ble-plx) & [react-native-ble-manager](https://github.com/innoveit/react-native-ble-manager) but we wanted reduce the amount of dependancies as much as possible and exectue very specfic BLE functionality in background.
+
+In addition, we looked at several great apps written for the same purpose in native, but each one of them is not written in a way that we could use as a stand-alone library. 
+[OpenTrace](https://github.com/opentrace-community)) - includes the full business logic (UI..) that we don't want to use. 
+[DP^3T Project](https://github.com/DP-3T) - include cryptography logic that we prefer to replace
+
+##### Privacy (what do we advertise and save to DB)
+TBD
+ 
+##### Limitations
+TBD
 
 
 ### References

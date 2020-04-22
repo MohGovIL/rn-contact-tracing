@@ -51,7 +51,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void advertise(String serviceUUID, String publicKey) { //TODO: remove these arguments (they are extracted from Config in BLEManager
+    public void advertise() {
         bleManager.advertise();
     }
 
@@ -61,7 +61,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startBLEScan(String serviceUUID) { //TODO: remove these arguments (they are extracted from Config in BLEManager
+    public void startBLEScan() {
         bleManager.startScan();
     }
 
@@ -72,7 +72,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    private void startBLEService(String serviceUUID, String publicKey) { //TODO: remove these arguments (they are extracted from Config in BLEManager
+    private void startBLEService() {
         BLEForegroundService.startThisService(this.reactContext);
     }
 
@@ -138,6 +138,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void getConfig(Callback callback) {
         Config config = Config.getInstance(reactContext);
         WritableMap configMap = new WritableNativeMap();
+        configMap.putString("token", config.getToken());
         configMap.putString("serviceUUID", config.getServiceUUID());
         configMap.putDouble("scanDuration", config.getScanDuration());
         configMap.putDouble("scanInterval", config.getScanInterval());
@@ -154,6 +155,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setConfig(ReadableMap configMap) {
         Config config = Config.getInstance(reactContext);
+        config.setToken(configMap.getString("token"));
         config.setServiceUUID(configMap.getString("serviceUUID"));
         config.setScanDuration((long) configMap.getDouble("scanDuration"));
         config.setScanInterval((long) configMap.getDouble("scanInterval"));
