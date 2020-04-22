@@ -27,10 +27,10 @@ Advertise in background | :white_check_mark: | TODO |
 Save scanned data into local DB | :white_check_mark: | WIP |
 Return scanned data to JS | :white_check_mark: | TODO | 
 Pass scannng & advertising configuration from JS (intervals..) | :white_check_mark: | TODO |
-Generate _public_keys_ from the native code  |TODO|TODO|
+Integration with tokens provider  |TODO|TODO|
 Deal with permissions and reboot/app update |WIP|TODO|
 Tests  |TODO|TODO|]
-Features for rssi calibration  |TODO|TODO|Taboola|
+Features for rssi calibration (GPS, Proximity)  |WIP|TODO|
 
 
 ## Getting started
