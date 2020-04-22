@@ -28,8 +28,7 @@
     "androidStudio": "open -a /Applications/Android\\ Studio.app ./example/android",
     "start": "watchman watch-del-all && react-native start",
     "test": ":",
-    "lint": "eslint .",
-
+    "lint": "eslint ."
   },
   "license": "MIT",
   "licenseFilename": "LICENSE",
