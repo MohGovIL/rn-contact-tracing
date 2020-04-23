@@ -35,7 +35,7 @@ public class DBClient: NSObject {
     }
 
     @objc(getAllDevices)
-    public static func getAllDevices() -> [Device] {
+    public static func getAllDevices() -> Array<Any> {
         return DBDeviceManager.shared.getAllDevices()
     }
 
@@ -63,7 +63,7 @@ public class DBClient: NSObject {
     }
 
     @objc(getAllScans)
-    public static func getAllScans() -> [Scan] {
+    public static func getAllScans() -> Array<Any> {
        return DBScanManager.shared.getAllScans()
     }
 

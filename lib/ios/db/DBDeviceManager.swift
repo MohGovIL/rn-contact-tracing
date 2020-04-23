@@ -16,8 +16,8 @@ class DBDeviceManager {
         return DBManager.shared.getEntityWithPredicate(entity: "Device", predicateKey: "publicKey", predicateValue: publicKey) as! Device
     }
 
-    func getAllDevices() -> [Device] {
-        return DBManager.shared.getAll("Device") as! [Device]
+    func getAllDevices() -> Array<Any> {
+        return DBManager.shared.getAll("Device")
     }
     
     func saveNewDevice(deviceInfo: [String:Any]) {
