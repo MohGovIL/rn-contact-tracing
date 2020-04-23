@@ -73,44 +73,21 @@ class DBManager {
         }
     }
     
-    func getEntityWithPredicate(entity:String, predicateKey:String, predicateValue:String) -> NSManagedObject? {
+    func getEntityWithPredicate(entity:String, predicateKey:String, predicateValue:String) -> NSArray {
         
-        var data: [NSManagedObject] = []
-        let managedContext = self.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
         fetchRequest.predicate = NSPredicate(format: "%@ == %@", predicateKey, predicateValue)
         
-        do {
-          data = try managedContext.fetch(fetchRequest)
-        } catch let error as NSError {
-          print("Could not fetch. \(error), \(error.userInfo)")
-        }
+        let array = convertCoreDataArrayToData(fetchRequest: fetchRequest)
         
-        return data.first
+        return array
     }
     
     func getAll(_ entity:String) -> NSArray {
 
-        var coreData: [CoreDataCodable] = []
-        var array = NSArray()
-        let managedContext = self.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
         
-        guard let codingUserInfoKeyManagedObjectContext = CodingUserInfoKey.managedObjectContext else {
-            fatalError("Failed to retrieve context")
-        }
-        
-        let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted
-        
-        do {
-            coreData = try managedContext.fetch(fetchRequest) as! [CoreDataCodable]
-            jsonEncoder.userInfo[codingUserInfoKeyManagedObjectContext] = managedContext
-            let data = try jsonEncoder.encode([coreData])
-            array = try JSONSerialization.jsonObject(with: data, options: []) as! NSArray
-        } catch let error as NSError {
-          print("Could not fetch. \(error), \(error.userInfo)")
-        }
+        let array = convertCoreDataArrayToData(fetchRequest: fetchRequest)
 
         return array
     }
@@ -125,4 +102,28 @@ class DBManager {
             print("Detele all data in \(entity) error :", error)
         }
     }
+    
+    func convertCoreDataArrayToData(fetchRequest:NSFetchRequest<NSManagedObject>) -> NSArray {
+        var array = NSArray()
+        var coreData: [CoreDataCodable] = []
+        let managedContext = self.persistentContainer.viewContext
+        
+        guard let codingUserInfoKeyManagedObjectContext = CodingUserInfoKey.managedObjectContext else {
+            fatalError("Failed to retrieve context")
+        }
+        
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .prettyPrinted
+        
+        do {
+            coreData = try managedContext.fetch(fetchRequest) as! [CoreDataCodable]
+            jsonEncoder.userInfo[codingUserInfoKeyManagedObjectContext] = managedContext
+            let data = try jsonEncoder.encode(coreData)
+            array = try JSONSerialization.jsonObject(with: data, options: []) as! NSArray
+        } catch let error as NSError {
+          print("Could not fetch. \(error), \(error.userInfo)")
+        }
+        return array
+    }
+
 }

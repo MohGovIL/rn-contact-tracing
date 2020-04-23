@@ -20,7 +20,7 @@ public class DBClient: NSObject {
      * Devices *
      ***********/
     @objc(getDeviceByKey:)
-    public static func getDeviceByKey(publicKey: String) -> Device {
+    public static func getDeviceByKey(publicKey: String) -> NSArray {
         return DBDeviceManager.shared.getDeviceByKey(publicKey: publicKey);
     }
 
@@ -49,7 +49,7 @@ public class DBClient: NSObject {
      *  Scans  *
      ***********/
     @objc(getScanByKey:)
-    public static func getScanByKey(publicKey: String) -> Scan {
+    public static func getScanByKey(publicKey: String) -> NSArray {
         return DBScanManager.shared.getScanByKey(publicKey: publicKey)
     }
 
