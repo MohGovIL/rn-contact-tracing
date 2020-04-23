@@ -68,7 +68,7 @@ function HomeScreen() {
 
   // get all devices from DB
   async function _getAllDevicesFromDB() {
-    SpecialBle.getAllDevices((devices) => {
+    SpecialBle.getAllDevices((err, devices) => {
         setDevices(devices)
     })
   }
@@ -163,6 +163,7 @@ function HomeScreen() {
                     {item.public_key} :
                     {item.device_address} :
                     {item.device_rssi} </Text>}
+
             />
         </View>
     );
