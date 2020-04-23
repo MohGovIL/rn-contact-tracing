@@ -79,6 +79,11 @@ function HomeScreen() {
     _getAllDevicesFromDB();
   }
 
+  // clean all devices from DB
+  function _scanDemoDevice() {
+    SpecialBle.addDemoDevice();
+  }
+
   // add list of public_keys
   function _setPublicKeys() {
     let publicKeys = ['12345','12346','12347','12348','12349']
@@ -121,6 +126,7 @@ function HomeScreen() {
                 {_renderButton('Stop BLE service', _stopBLEService)}
                 {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}
                 {_renderButton('Remove Devices from DB', _cleanAllDevicesFromDB)}
+                {_renderButton('Demo Scan Device', _scanDemoDevice)}
             </View>
             <View style={styles.subContainer}>
                 {_renderButton('Set public Keys', _setPublicKeys)}

@@ -89,6 +89,17 @@ RCT_EXPORT_METHOD(cleanDevicesDB) {
     [DBClient clearAllDevices];
 }
 
+RCT_EXPORT_METHOD(addDemoDevice) {
+    NSDictionary* demoDevice = @{
+        @"device_address": [SpecialBle randomStringWithLength:8],
+        @"rssi": [NSNumber numberWithInt:555],
+        @"firstTimestamp": [NSNumber numberWithInt:0],
+        @"lastTimestamp": [NSNumber numberWithInt:0],
+        @"tx": [NSNumber numberWithInt:0]
+    };
+    [DBClient addDevice:demoDevice];
+}
+
 /***********
  *  Scans  *
  ***********/
@@ -110,6 +121,19 @@ RCT_EXPORT_METHOD(getAllScans:(RCTResponseSenderBlock)callback) {
 
 RCT_EXPORT_METHOD(cleanScansDB) {
     [DBClient clearAllScans];
+}
+
+NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
++(NSString *) randomStringWithLength: (int) len {
+
+    NSMutableString *randomString = [NSMutableString stringWithCapacity: len];
+
+    for (int i=0; i<len; i++) {
+         [randomString appendFormat: @"%C", [letters characterAtIndex: arc4random_uniform([letters length])]];
+    }
+
+    return randomString;
 }
 
 @end
