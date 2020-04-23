@@ -1,5 +1,7 @@
 package com.wix.specialble;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,6 +15,7 @@ import com.wix.specialble.listeners.IEventListener;
 public class EventToJSDispatcher implements IEventListener {
     ReactApplicationContext context;
     static EventToJSDispatcher sEventDispatcher;
+    private static final String TAG = EventToJSDispatcher.class.getSimpleName();
 
     private EventToJSDispatcher(ReactApplicationContext context) {
         this.context = context;
@@ -33,9 +36,14 @@ public class EventToJSDispatcher implements IEventListener {
     public void onEvent(String event, Object data) {
         if (data instanceof Boolean) {
             dispatch(event, toBoolean((Boolean) data));
-        } else if (data instanceof WritableMap) {
+        }
+        else if (data instanceof WritableMap) {
             dispatch(event, data);
         }
+        else {
+            Log.e(TAG, "onEvent | Data object for event ["+event+"] must be boolean or WriteableMap !");
+        }
+
     }
 
     // returns true or false if false or null

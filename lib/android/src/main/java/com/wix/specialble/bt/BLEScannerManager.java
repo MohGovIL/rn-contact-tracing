@@ -144,7 +144,7 @@ public class BLEScannerManager {
                     dbClient.addDevice(newDevice);
                 }
 //                BLEManager.getInstance(context).onEvent(FOUND_DEVICE,newDevice);
-                mEventListenerCallback.onEvent(FOUND_DEVICE,newDevice);
+                mEventListenerCallback.onEvent(FOUND_DEVICE, newDevice.toWritableMap());
 
                 // handle scans
                 Scan newScan = new Scan(System.currentTimeMillis(),
@@ -154,8 +154,7 @@ public class BLEScannerManager {
                         result.getRssi(),
                         tx);
                 dbClient.addScan(newScan);
-//                BLEManager.getInstance(context).onEvent(SCANNING_STATUS, true);
-                mEventListenerCallback.onEvent(SCANNING_STATUS, true);
+                mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
         });
     }
