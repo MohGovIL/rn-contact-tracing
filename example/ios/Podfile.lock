@@ -227,6 +227,8 @@ PODS:
     - React
   - rn-contact-tracing (0.0.2):
     - React
+  - RNCMaskedView (0.1.10):
+    - React
   - RNDateTimePicker (2.3.2):
     - React
   - RNGestureHandler (1.6.1):
@@ -270,6 +272,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../../node_modules/react-native/ReactCommon`)
   - ReactNativeUiLib (from `../../node_modules/react-native-ui-lib/lib`)
   - rn-contact-tracing (from `../../`)
+  - "RNCMaskedView (from `../../node_modules/@react-native-community/masked-view`)"
   - "RNDateTimePicker (from `../../node_modules/@react-native-community/datetimepicker`)"
   - RNGestureHandler (from `../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../node_modules/react-native-reanimated`)
@@ -339,6 +342,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native-ui-lib/lib"
   rn-contact-tracing:
     :path: "../../"
+  RNCMaskedView:
+    :path: "../../node_modules/@react-native-community/masked-view"
   RNDateTimePicker:
     :path: "../../node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
@@ -381,6 +386,7 @@ SPEC CHECKSUMS:
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   ReactNativeUiLib: 9883f80a22b855d4a866ceee433d1e24b1014a2a
   rn-contact-tracing: 50b558654bba760a36278442fcb2a5f1375d3d5d
+  RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNDateTimePicker: 0f657a34a0f6465ab7d0255c24954693bc7a8cf6
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNReanimated: 955cf4068714003d2f1a6e2bae3fb1118f359aff

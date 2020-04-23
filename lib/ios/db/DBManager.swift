@@ -85,36 +85,44 @@ class DBManager {
         } catch let error as NSError {
           print("Could not fetch. \(error), \(error.userInfo)")
         }
+        
         return data.first
     }
     
-    func getAll(_ entity:String) -> [NSManagedObject] {
+    func getAll(_ entity:String) -> Array<Any> {
 
-        var data: [NSManagedObject] = []
+        var coreData: [CoreDataCodable] = []
+        var array = Array<Any>()
         let managedContext = self.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
         
+        guard let codingUserInfoKeyManagedObjectContext = CodingUserInfoKey.managedObjectContext else {
+            fatalError("Failed to retrieve context")
+        }
+        
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .prettyPrinted
+        
         do {
-          data = try managedContext.fetch(fetchRequest)
+            coreData = try managedContext.fetch(fetchRequest) as! [CoreDataCodable]
+            jsonEncoder.userInfo[codingUserInfoKeyManagedObjectContext] = managedContext
+            let data = try jsonEncoder.encode([coreData])
+            array = try JSONSerialization.jsonObject(with: data, options: []) as! Array<Any>
         } catch let error as NSError {
           print("Could not fetch. \(error), \(error.userInfo)")
         }
-        return data
+
+        return array
     }
     
     func deleteAllData(_ entity:String) {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
-        fetchRequest.returnsObjectsAsFaults = false
         let managedContext = self.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do {
-            let results = try managedContext.fetch(fetchRequest)
-            for object in results {
-                guard let objectData = object as? NSManagedObject else {continue}
-                managedContext.delete(objectData)
-            }
-        } catch let error {
+            try managedContext.execute(batchDeleteRequest)
+        } catch let error as NSError {
             print("Detele all data in \(entity) error :", error)
         }
     }
-    
 }

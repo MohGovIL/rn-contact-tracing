@@ -11,7 +11,53 @@ import Foundation
 import CoreData
 
 @objc(Device)
-public class Device: NSManagedObject {
+public class Device: CoreDataCodable {
 
+    enum CodingKeys: Any, CodingKey {
+        case publicKey
+        case device_address
+        case device_protocol
+        case rssi
+        case firstTimestamp
+        case lastTimestamp
+        case tx
+    }
+    
+    // MARK: - Decodable
+    required convenience public init(from decoder: Decoder) throws {
+        guard let codingUserInfoKeyManagedObjectContext = CodingUserInfoKey.managedObjectContext,
+            let managedObjectContext = decoder.userInfo[codingUserInfoKeyManagedObjectContext] as? NSManagedObjectContext,
+            let entity = NSEntityDescription.entity(forEntityName: "Device", in: managedObjectContext) else {
+            fatalError("Failed to decode Device")
+        }
 
+        self.init(entity: entity, insertInto: managedObjectContext)
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.publicKey = try container.decodeIfPresent(String.self, forKey: .publicKey)
+        self.device_address = try container.decodeIfPresent(String.self, forKey: .device_address)
+        self.device_protocol = try container.decodeIfPresent(String.self, forKey: .device_protocol)
+        self.rssi = try container.decodeIfPresent(Int16.self, forKey: .rssi)!
+        self.firstTimestamp = try container.decodeIfPresent(Int16.self, forKey: .firstTimestamp)!
+        self.lastTimestamp = try container.decodeIfPresent(Int16.self, forKey: .lastTimestamp)!
+        self.tx = try container.decodeIfPresent(Int16.self, forKey: .tx)!
+    }
+
+    // MARK: - Encodable
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(publicKey, forKey: .publicKey)
+        try container.encode(device_address, forKey: .device_address)
+        try container.encode(device_protocol, forKey: .device_protocol)
+        try container.encode(rssi, forKey: .rssi)
+        try container.encode(firstTimestamp, forKey: .firstTimestamp)
+        try container.encode(lastTimestamp, forKey: .lastTimestamp)
+        try container.encode(tx, forKey: .tx)
+    }
+
+}
+
+public extension CodingUserInfoKey {
+    // Helper property to retrieve the context
+    static let managedObjectContext = CodingUserInfoKey(rawValue: "managedObjectContext")
 }
