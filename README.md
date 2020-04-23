@@ -52,6 +52,54 @@ or
 
 `npm install rn-contact-tracing --save`
 
+
+<details>
+<summary><strong> Android - Steps to manually link the library</strong></summary>
+   
+#### `android/settings.gradle`
+```groovy
+include ':rn-contact-tracing'
+project(':rn-contact-tracing').projectDir = new File(rootProject.projectDir, '../node_modules/rn-contact-tracing/lib/android')
+```
+
+#### `android/app/build.gradle`
+```groovy
+dependencies {
+   ...
+   implementation project(":rn-contact-tracing")
+}
+```
+
+#### `android/app/src/main/.../MainApplication.java`
+On top, where imports are:
+
+```java
+import com.wix.specialble.SpecialBlePackage;
+```
+
+Add the `RNLocationPackage` class to your list of exported packages.
+
+```java
+@Override
+protected List<ReactPackage> getPackages() {
+    return Arrays.asList(
+            List<ReactPackage> packages = new PackageList(this).getPackages();
+            ...
+            packages.add(new SpecialBlePackage());
+            ...
+    );
+}
+```
+</details>
+
+
+
+
+
+
+
+
+
 ### Supported Platforms
 * iOS 10+
 * Android API 21+
