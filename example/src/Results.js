@@ -27,8 +27,8 @@ function ResultsScreen({ navigation }) {
 
     // get all devices from DB
     async function _getAllDevicesFromDB() {
-        SpecialBle.getAllDevices((devices) => {
-            setDevices(devices)
+        SpecialBle.getAllDevices((err, devices) => {
+            setDevices(devices || [])
         })
     }
 
@@ -42,6 +42,8 @@ function ResultsScreen({ navigation }) {
     function _exportAllSDevicesToCsv() {
         SpecialBle.exportAllDevicesCsv();
     }
+    const keyExtractor = item => '' + item.id;
+
 
     return (
         <View style={styles.container}>
@@ -73,7 +75,7 @@ function ResultsScreen({ navigation }) {
                 <View flex row center-vertical>
                     <ListItem.Part middle column>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
-                            <Text dark10 text70>EphId: { ((item.public_key).length > 10) ? (((item.public_key).substring(0,10-3)) + '...') : item.public_key }</Text>
+                            {item.public_key && <Text dark10 text70>EphId: { ((item.public_key).length > 10) ? (((item.public_key).substring(0,10-3)) + '...') : item.public_key }</Text>}
                             <Text dark10 text70>{item.device_protocol}</Text>
                         </ListItem.Part>
 

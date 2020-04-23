@@ -14,12 +14,12 @@ import CoreData
 public class Device: CoreDataCodable {
 
     enum CodingKeys: Any, CodingKey {
-        case publicKey
+        case public_key
         case device_address
         case device_protocol
         case rssi
-        case firstTimestamp
-        case lastTimestamp
+        case device_first_timestamp
+        case device_last_timestamp
         case tx
     }
     
@@ -46,13 +46,12 @@ public class Device: CoreDataCodable {
     // MARK: - Encodable
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(publicKey, forKey: .publicKey)
+        try container.encode(publicKey, forKey: .public_key)
         try container.encode(device_address, forKey: .device_address)
         try container.encode(device_protocol, forKey: .device_protocol)
         try container.encode(rssi, forKey: .rssi)
-        try container.encode(firstTimestamp, forKey: .firstTimestamp)
-        try container.encode(lastTimestamp, forKey: .lastTimestamp)
+        try container.encode(firstTimestamp, forKey: .device_first_timestamp)
+        try container.encode(lastTimestamp, forKey: .device_last_timestamp)
         try container.encode(tx, forKey: .tx)
     }
-
 }
