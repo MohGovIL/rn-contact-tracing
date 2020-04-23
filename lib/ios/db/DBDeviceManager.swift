@@ -16,7 +16,7 @@ class DBDeviceManager {
         return DBManager.shared.getEntityWithPredicate(entity: "Device", predicateKey: "publicKey", predicateValue: publicKey) as! Device
     }
 
-    func getAllDevices() -> Array<Any> {
+    func getAllDevices() -> NSArray {
         return DBManager.shared.getAll("Device")
     }
     

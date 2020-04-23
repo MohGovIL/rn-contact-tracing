@@ -89,10 +89,10 @@ class DBManager {
         return data.first
     }
     
-    func getAll(_ entity:String) -> Array<Any> {
+    func getAll(_ entity:String) -> NSArray {
 
         var coreData: [CoreDataCodable] = []
-        var array = Array<Any>()
+        var array = NSArray()
         let managedContext = self.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
         
@@ -107,7 +107,7 @@ class DBManager {
             coreData = try managedContext.fetch(fetchRequest) as! [CoreDataCodable]
             jsonEncoder.userInfo[codingUserInfoKeyManagedObjectContext] = managedContext
             let data = try jsonEncoder.encode([coreData])
-            array = try JSONSerialization.jsonObject(with: data, options: []) as! Array<Any>
+            array = try JSONSerialization.jsonObject(with: data, options: []) as! NSArray
         } catch let error as NSError {
           print("Could not fetch. \(error), \(error.userInfo)")
         }

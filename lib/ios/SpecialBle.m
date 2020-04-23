@@ -82,7 +82,8 @@ RCT_EXPORT_METHOD(exportAllScansCsv) {
 //}
 
 RCT_EXPORT_METHOD(getAllDevices:(RCTResponseSenderBlock)callback) {
-    callback([DBClient getAllDevices]);
+    NSArray *array = [DBClient getAllDevices];
+    callback(array);
 }
 
 RCT_EXPORT_METHOD(cleanDevicesDB) {

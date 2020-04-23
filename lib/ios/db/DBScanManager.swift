@@ -15,7 +15,7 @@ class DBScanManager {
         return DBManager.shared.getEntityWithPredicate(entity: "Scan", predicateKey: "publicKey", predicateValue: publicKey) as! Scan
     }
     
-    func getAllScans() -> Array<Any> {
+    func getAllScans() -> NSArray {
         return DBManager.shared.getAll("Scan")
     }
 
