@@ -36,12 +36,15 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private final BLEManager bleManager;
     private static final String TAG = "SpecialBleModule";
+    private EventToJSDispatcher mEventToJSDispatcher;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SpecialBleModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
         bleManager = BLEManager.getInstance(reactContext);
+        bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
     }
 
     @Override

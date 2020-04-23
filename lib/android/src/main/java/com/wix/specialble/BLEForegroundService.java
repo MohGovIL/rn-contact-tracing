@@ -20,14 +20,6 @@ import com.wix.specialble.config.Config;
 public class BLEForegroundService extends Service {
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
 
-    /**
-     * Utility for starting this Service the same way from multiple places.
-     */
-    public static void startThisService(Context context) {
-        Intent sIntent = new Intent(context, BLEForegroundService.class);
-        context.startService(sIntent);
-    }
-
     BLEManager bleManager;
     {
         try {
@@ -36,8 +28,19 @@ public class BLEForegroundService extends Service {
             e.printStackTrace();
         }
     }
-
     private static Handler handler = new Handler();
+
+    /**
+     * Utility for starting this Service the same way from multiple places.
+     */
+    public static void startThisService(Context context) {
+        Intent sIntent = new Intent(context, BLEForegroundService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(sIntent);
+        } else {
+            context.startService(sIntent);
+        }
+    }
 
     private Runnable scanRunnable = new Runnable() {
         @Override
@@ -73,8 +76,10 @@ public class BLEForegroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        bleManager.stopScan();
-        bleManager.stopAdvertise();
+        if (bleManager != null) {
+            bleManager.stopScan();
+            bleManager.stopAdvertise();
+        }
         this.handler.removeCallbacksAndMessages(null);
 
     }
@@ -92,6 +97,10 @@ public class BLEForegroundService extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
+        // initialize if needed
+        if (bleManager == null) {
+            bleManager = BLEManager.getInstance(getApplicationContext());
+        }
         this.handler.post(this.scanRunnable);
         this.handler.post(this.advertiseRunnable);
         return START_NOT_STICKY;

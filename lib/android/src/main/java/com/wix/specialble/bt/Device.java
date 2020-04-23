@@ -8,10 +8,6 @@ import androidx.room.PrimaryKey;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 @Entity
 public class Device {
 
@@ -118,28 +114,4 @@ public class Device {
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
     }
-
-
-    /*    public void fromJSONString(String jsonString) {
-        try {
-            JSONObject jsonObj = new JSONObject(jsonString);
-            publicKey = jsonObj.getString("public_key");
-            deviceAddress = jsonObj.getString("device_address");
-            rssi = jsonObj.getInt("device_rssi");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String toJSONString() {
-        JSONObject item = new JSONObject();
-        try {
-            item.put("public_key", publicKey);
-            item.put("device_address", deviceAddress);
-            item.put("device_rssi", rssi);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return item.toString();
-    }*/
 }
