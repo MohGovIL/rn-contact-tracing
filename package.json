@@ -27,7 +27,7 @@
     "xcode": "open example/ios/example.xcworkspace",
     "androidStudio": "open -a /Applications/Android\\ Studio.app ./example/android",
     "start": "watchman watch-del-all && react-native start",
-    "test": "jest",
+    "test": ":",
     "lint": "eslint .",
     "postinstall": "rm -rf ../node_modules",
     "pod": "node scripts/pod.js"
