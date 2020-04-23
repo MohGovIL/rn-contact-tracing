@@ -11,6 +11,7 @@
 #import "SpecialBle.h"
 #import <React/RCTLog.h>
 #import "SpecialBleManager.h"
+#import "Config.h""
 #import "rn_contact_tracing-Swift.h"
 
 @implementation SpecialBle
@@ -50,12 +51,12 @@ RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
     [DBClient savePublicKeys:keys];
 }
 
-RCT_EXPORT_METHOD(getConfig) {
-    RCTLogInfo(@"getConfig TBD");
+RCT_EXPORT_METHOD(getConfig:(RCTResponseSenderBlock)callback) {
+    callback(@[[Config GetConfig]]);
 }
 
 RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
-    RCTLogInfo(@"setConfig TBD");
+    [Config SetConfig:config];
 }
 
 RCT_EXPORT_METHOD(exportAllDevicesCsv) {
@@ -91,11 +92,13 @@ RCT_EXPORT_METHOD(cleanDevicesDB) {
 }
 
 RCT_EXPORT_METHOD(addDemoDevice) {
+    NSDate *date = [NSDate date]; // current date
+    int unixtime = [date timeIntervalSince1970];
     NSDictionary* demoDevice = @{
         @"device_address": [SpecialBle randomStringWithLength:8],
         @"rssi": [NSNumber numberWithInt:555],
-        @"firstTimestamp": [NSNumber numberWithInt:0],
-        @"lastTimestamp": [NSNumber numberWithInt:0],
+        @"firstTimestamp": [NSNumber numberWithInt:unixtime],
+        @"lastTimestamp": [NSNumber numberWithInt:unixtime],
         @"tx": [NSNumber numberWithInt:0]
     };
     [DBClient addDevice:demoDevice];

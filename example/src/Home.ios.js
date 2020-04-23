@@ -90,6 +90,24 @@ function HomeScreen() {
     SpecialBle.setPublicKeys(publicKeys);
   }
 
+  // get config
+  function _getConfig() {
+    SpecialBle.getConfig((config) => {
+      alert(JSON.stringify(config));
+    })
+  }
+
+  // get config
+  function _setConfig() {
+    SpecialBle.setConfig({
+      serviceUUID: '',
+      scanDuration: 0,
+      scanInterval: 0,
+      advertiseInterval: 0,
+      advertiseDuration: 0
+    })
+  }
+
 // request location permission (only for Android)
   async function _requestLocationPermission() {
       try {
@@ -130,6 +148,11 @@ function HomeScreen() {
             </View>
             <View style={styles.subContainer}>
                 {_renderButton('Set public Keys', _setPublicKeys)}
+            </View>
+
+            <View style={styles.subContainer}>
+              {_renderButton('Get Config', _getConfig)}
+              {_renderButton('Set Config', _setConfig)}
             </View>
 
             <FlatList
