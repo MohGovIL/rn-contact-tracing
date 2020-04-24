@@ -23,8 +23,6 @@ public class BLEManager implements IEventListener {
     private BLEScannerManager bleScanner;
     private BLEAdvertisingManager bleAdvertiser;
     private static BLEManager sBLEManagerInstance;
-    private String mServiceUUID;
-    private String mPublicKey;
     private EventToJSDispatcher mEventToJSDispatcher;
     private Config mConfig;
 
@@ -53,21 +51,17 @@ public class BLEManager implements IEventListener {
 
     public void init() {
         mConfig = Config.getInstance(context);
-        mServiceUUID = mConfig.getServiceUUID();
-        mPublicKey = mConfig.getToken();
 
-        final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
             bluetoothAdapter.enable();
-            bleScanner = new BLEScannerManager(context, bluetoothAdapter, this);
-            bleAdvertiser = new BLEAdvertisingManager(context, bluetoothAdapter, this);
+            bleScanner = new BLEScannerManager(context, this);
+            bleAdvertiser = new BLEAdvertisingManager(context, this);
         }
-
     }
 
     public void startScan() {
-        bleScanner.startScan(mServiceUUID); //TODO: ahmed, I'm worried, that now that we're getting this UUID from config in INIT, boot_complete restarts might not go through this init flow
+        bleScanner.startScan(mConfig.getServiceUUID());
     }
 
     public void stopScan() {
@@ -75,7 +69,7 @@ public class BLEManager implements IEventListener {
     }
 
     public void advertise() {
-        bleAdvertiser.startAdvertise(mServiceUUID, mPublicKey);
+        bleAdvertiser.startAdvertise(mConfig.getServiceUUID(), mConfig.getToken());
     }
 
     public void stopAdvertise() {

@@ -36,19 +36,19 @@ public class BLEScannerManager {
     private String TAG = "BLEScannerManager";
     private IEventListener mEventListenerCallback;
 
-    BLEScannerManager(Context context, BluetoothAdapter bluetoothAdapter, IEventListener eventListenerCallback) {
+    BLEScannerManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;
-        this.bluetoothAdapter = bluetoothAdapter; //this is the default bluetooth adapter
+        this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bleScanCallback = new SpecialBLEScanCallback();
         dbClient = DBClient.getInstance(context);
         mEventListenerCallback = eventListenerCallback;
     }
 
-    public static BLEScannerManager getInstance(Context context, BluetoothAdapter bluetoothAdapter, IEventListener eventListenerCallback) {
+    public static BLEScannerManager getInstance(Context context, IEventListener eventListenerCallback) {
         if (sScannerManager != null) {
             return sScannerManager;
         }
-        return new BLEScannerManager(context, bluetoothAdapter, eventListenerCallback);
+        return new BLEScannerManager(context, eventListenerCallback);
     }
 
 
@@ -57,7 +57,6 @@ public class BLEScannerManager {
         if (bluetoothAdapter.isEnabled()) {
 
             Config config = Config.getInstance(mContext);
-            serviceUUID = TextUtils.isEmpty(serviceUUID) ? config.getServiceUUID() : serviceUUID;
             int scanMatchMode = config.getScanMatchMode();
 
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(serviceUUID))).build();
@@ -72,13 +71,13 @@ public class BLEScannerManager {
                 settings = new ScanSettings.Builder().build();
             }
 
-            bluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().startScan(filters, settings, bleScanCallback);
+            bluetoothAdapter.getBluetoothLeScanner().startScan(filters, settings, bleScanCallback);
             mEventListenerCallback.onEvent(SCANNING_STATUS, true);
         }
     }
 
     public void stopScan() {
-        bluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().stopScan(bleScanCallback);
+        bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback);
         mEventListenerCallback.onEvent(SCANNING_STATUS, false);
     }
 
@@ -97,58 +96,50 @@ public class BLEScannerManager {
             }
 
             ParcelUuid pUuid = scanRecord.getServiceUuids().get(0);
-            byte[] bytePK = result.getScanRecord().getServiceData(pUuid);
+            byte[] byteScannedToken = result.getScanRecord().getServiceData(pUuid);
 
-            String pk = bytePK != null ? new String(bytePK, Charset.forName("UTF-8")) : "NaN";
+            String ScannedToken = byteScannedToken != null ? new String(byteScannedToken, Charset.forName("UTF-8")) : "NaN";
 
             int tx = 0;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 tx = result.getTxPower();
             }
             super.onScanResult(callbackType, result);
-            handleScanResults(result, pk, tx);
+            handleScanResults(result, ScannedToken, tx);
         }
 
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
             if (errorCode != SCAN_FAILED_ALREADY_STARTED) {
-                //scanningStatus
-//                BLEManager.getInstance(context).onEvent(SCANNING_STATUS,false);
                 mEventListenerCallback.onEvent(SCANNING_STATUS,false);
             }
             Log.d(TAG, "onScanStartFailed - ErrorCode: " + errorCode);
         }
-
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            super.onBatchScanResults(results);
-        }
     }
 
-    private void handleScanResults(final ScanResult result, final String pk, final int tx) {
+    private void handleScanResults(final ScanResult result, final String scannedToken, final int tx) {
         // handle devices
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                Device oldDevice = dbClient.getDeviceByKey(pk); // get device from database
+                Device oldDevice = dbClient.getDeviceByKey(scannedToken); // get device from database
                 Device newDevice;
 
                 if (oldDevice != null) {
-                    newDevice = getNewDevice(result, tx, pk, oldDevice.getFirstTimestamp(), System.currentTimeMillis());
+                    newDevice = getNewDevice(result, tx, scannedToken, oldDevice.getFirstTimestamp(), System.currentTimeMillis());
                     if (hasUpdateRequirements(oldDevice, result)) {
                         dbClient.updateDevice(newDevice);
                     }
                 } else {
-                    newDevice = getNewDevice(result, tx, pk, System.currentTimeMillis(), System.currentTimeMillis());
+                    newDevice = getNewDevice(result, tx, scannedToken, System.currentTimeMillis(), System.currentTimeMillis());
                     dbClient.addDevice(newDevice);
                 }
-//                BLEManager.getInstance(context).onEvent(FOUND_DEVICE,newDevice);
                 mEventListenerCallback.onEvent(FOUND_DEVICE, newDevice.toWritableMap());
 
                 // handle scans
                 Scan newScan = new Scan(System.currentTimeMillis(),
-                        pk,
+                        scannedToken,
                         result.getDevice().getAddress(),
                         BLEManager.BLEProtocol.GAP.toString(),
                         result.getRssi(),
@@ -163,8 +154,8 @@ public class BLEScannerManager {
         return (oldDevice.getRssi()>result.getRssi()+3 || oldDevice.getRssi()<result.getRssi()-3);
     }
 
-    private Device getNewDevice(ScanResult result, int tx, String publicKey, long firstSeenTime, long lastSeenTime) {
-        return new Device(firstSeenTime, lastSeenTime, publicKey, result.getDevice().getAddress(),
+    private Device getNewDevice(ScanResult result, int tx, String scannedToken, long firstSeenTime, long lastSeenTime) {
+        return new Device(firstSeenTime, lastSeenTime, scannedToken, result.getDevice().getAddress(),
                 BLEManager.BLEProtocol.GAP.toString(), result.getRssi(), tx);
     }
 }

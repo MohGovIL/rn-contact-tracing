@@ -19,7 +19,6 @@ public class BLEAdvertisingManager {
 
     public static final String ADVERTISING_STATUS = "advertisingStatus";
     Context mContext;
-    BluetoothAdapter bluetoothAdapter;
     BluetoothLeAdvertiser advertiser;
     private String TAG = "BLEAdvertisingManager";
     private IEventListener mEventListenerCallback;
@@ -36,23 +35,19 @@ public class BLEAdvertisingManager {
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
             mEventListenerCallback.onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);
-//            BLEManager.getInstance(context).onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);
             Log.d(TAG, "onAdvertiseStartFailed - ErrorCode: " + errorCode);
         }
     };
 
-    BLEAdvertisingManager(Context context, BluetoothAdapter bluetoothAdapter, IEventListener eventListenerCallback) {
+    BLEAdvertisingManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;
         advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
         mEventListenerCallback = eventListenerCallback;
-
     }
 
     public void stopAdvertise() {
         advertiser.stopAdvertising(advertiseCallback);
         mEventListenerCallback.onEvent(ADVERTISING_STATUS, false);
-//        BLEManager.getInstance(context).onEvent(ADVERTISING_STATUS, false);
-//        EventToJSDispatcher.getInstance(context).sendAdvertisingStatus(false);
     }
 
     public void startAdvertise(String serviceUUID, String publicKey) {

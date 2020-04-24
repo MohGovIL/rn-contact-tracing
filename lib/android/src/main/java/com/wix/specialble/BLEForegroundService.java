@@ -87,12 +87,13 @@ public class BLEForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
+        Config config = Config.getInstance(this);
         Intent notificationIntent = new Intent(this, BLEForegroundService.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("BLE Scanning")
-                .setContentText("Scanning for BLE devices")
+                .setContentTitle(config.getNotificationTitle())
+                .setContentText(config.getNotificationContent())
                 .setSmallIcon(R.drawable.virus)
                 .setContentIntent(pendingIntent)
                 .build();
@@ -103,7 +104,7 @@ public class BLEForegroundService extends Service {
         }
         this.handler.post(this.scanRunnable);
         this.handler.post(this.advertiseRunnable);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
 

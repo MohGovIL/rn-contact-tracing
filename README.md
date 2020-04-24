@@ -108,6 +108,8 @@ Supported options:
 For Android
 * `advertiseTXPowerLevel` - advertise TX power level [docs](https://developer.android.com/reference/android/bluetooth/le/AdvertiseSettings.Builder#setTxPowerLevel(int))
 * `scanMatchMode` - match mode for Bluetooth LE scan filters hardware match [docs](https://developer.android.com/reference/android/bluetooth/le/ScanSettings.Builder#setMatchMode(int))
+* `notificationTitle` - the title of the foreground service notification
+* `notificationContent` - the content of the foreground service notification
 
 ---
 

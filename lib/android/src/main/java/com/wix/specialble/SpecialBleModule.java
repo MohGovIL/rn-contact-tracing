@@ -151,6 +151,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putDouble("advertiseInterval", config.getAdvertiseInterval());
         configMap.putInt("advertiseMode", config.getAdvertiseMode());
         configMap.putInt("advertiseTXPowerLevel", config.getAdvertiseTXPowerLevel());
+        configMap.putString("notificationTitle", config.getNotificationTitle());
+        configMap.putString("notificationContent", config.getNotificationContent());
+
         callback.invoke(configMap);
     }
 
@@ -167,6 +170,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setAdvertiseInterval((long) configMap.getDouble("advertiseInterval"));
         config.setAdvertiseMode(configMap.getInt("advertiseMode"));
         config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));
+        config.setNotificationTitle(configMap.getString("notificationTitle"));
+        config.setNotificationContent(configMap.getString("notificationContent"));
     }
 
     @ReactMethod

@@ -41,7 +41,7 @@ public class EventToJSDispatcher implements IEventListener {
             dispatch(event, data);
         }
         else {
-            Log.e(TAG, "onEvent | Data object for event ["+event+"] must be boolean or WriteableMap !");
+            Log.i(TAG, "onEvent | Data object for event ["+event+"] must be boolean or WriteableMap !");
         }
 
     }
