@@ -6,9 +6,7 @@ name: build-ios
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ fastlane ]
 
 jobs:
   install-and-test:
