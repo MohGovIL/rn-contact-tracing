@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 #import "SpecialBleManager.h"
+#import "rn_contact_tracing-Swift.h"
+
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
@@ -137,11 +139,25 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     if (advertisementData && [advertisementData[CBAdvertisementDataServiceUUIDsKey] count] > 0) {
         address = ((CBUUID*)advertisementData[CBAdvertisementDataServiceUUIDsKey][0]).UUIDString;
     }
-    [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:@{
-        @"device_name": name,
+    
+    NSDictionary* device = @{
         @"device_address": address,
-        @"device_rssi": [RSSI stringValue]
-    }];
+        @"rssi": RSSI,
+        @"firstTimestamp": [NSNumber numberWithInt:0],
+        @"lastTimestamp": [NSNumber numberWithInt:0],
+        @"tx": [NSNumber numberWithInt:0]
+    };
+//    @NSManaged public var publicKey: String?
+//    @NSManaged public var device_address: String?
+//    @NSManaged public var device_protocol: String?
+//    @NSManaged public var rssi: Int16
+//    @NSManaged public var firstTimestamp: Int16
+//    @NSManaged public var lastTimestamp: Int16
+//    @NSManaged public var tx: Int16
+    
+    [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
+    
+    [DBClient addDevice:device];
 }
 
 #pragma mark - CBPeripheralDelegate

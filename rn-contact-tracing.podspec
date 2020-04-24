@@ -19,6 +19,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/wix-incubator/rn-contact-tracing.git", :tag => "#{s.version}" }
 
   s.source_files = "lib/ios/**/*.{h,m,swift}"
+  s.resources = 'rn-contact-tracing/*.xcdatamodel'
+  s.resource_bundles = { 'FrameworkModel' => ['lib/ios/db/CoreData/**/*.xcdatamodeld'] }
   s.requires_arc = true
 
   s.dependency "React"
