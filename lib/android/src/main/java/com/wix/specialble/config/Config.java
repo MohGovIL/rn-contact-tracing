@@ -39,10 +39,14 @@ public class Config  {
     // General Config - Default
     private static final String DEFAULT_SERVICEUUID = "00000000-0000-1000-8000-00805F9B34FB";
     private static final String DEFAULT_TOKEN = "default_public_key";
+    private static final String DEFAULT_NOTIFICATION_TITLE = "BLE Contact Tracing";
+    private static final String DEFAULT_NOTIFICATION_CONTENT = "Be Safe";
 
     // General Config - Keys
     private static final String PREF_SERVICEUUID = "serviceUUID";
     private static final String PREF_TOKEN = "token";
+    private static final String PREF_NOTIFICATION_TITLE = "notification_title";
+    private static final String PREF_NOTIFICATION_CONTENT = "notification_content";
 
 
 
@@ -141,4 +145,22 @@ public class Config  {
     public int getScanMatchMode() {
         return sharedPrefs.getInt(PREF_SCAN_MATCH_MODE, DEFAULT_SCAN_MATCH_MODE);
     }
+
+
+    public void setNotificationTitle(String title) {
+        sharedPrefs.edit().putString(PREF_NOTIFICATION_TITLE, title).apply();
+    }
+
+    public String getNotificationTitle() {
+        return sharedPrefs.getString(PREF_NOTIFICATION_TITLE, DEFAULT_NOTIFICATION_TITLE);
+    }
+
+    public void setNotificationContent(String content) {
+        sharedPrefs.edit().putString(PREF_NOTIFICATION_CONTENT, content).apply();
+    }
+
+    public String getNotificationContent() {
+        return sharedPrefs.getString(PREF_NOTIFICATION_CONTENT, DEFAULT_NOTIFICATION_CONTENT);
+    }
+
 }

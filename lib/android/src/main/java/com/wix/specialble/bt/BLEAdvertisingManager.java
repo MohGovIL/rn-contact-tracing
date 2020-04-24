@@ -5,62 +5,53 @@ import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
-import android.os.Build;
+import android.content.Context;
 import android.os.ParcelUuid;
 import android.util.Log;
 
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
+import com.wix.specialble.listeners.IEventListener;
 
 import java.nio.charset.Charset;
 import java.util.UUID;
 
 public class BLEAdvertisingManager {
 
-    private static BLEAdvertisingManager sAdvertisingManager;
-    ReactApplicationContext context;
-    BluetoothAdapter bluetoothAdapter;
+    public static final String ADVERTISING_STATUS = "advertisingStatus";
+    Context mContext;
     BluetoothLeAdvertiser advertiser;
     private String TAG = "BLEAdvertisingManager";
+    private IEventListener mEventListenerCallback;
 
 
     AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             super.onStartSuccess(settingsInEffect);
-            EventToJSDispatcher.getInstance(context).sendAdvertisingStatus(true);
+            mEventListenerCallback.onEvent(BLEAdvertisingManager.ADVERTISING_STATUS, true);
         }
 
         @Override
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
-            EventToJSDispatcher.getInstance(context).sendAdvertisingStatus((errorCode == ADVERTISE_FAILED_ALREADY_STARTED));
+            mEventListenerCallback.onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);
             Log.d(TAG, "onAdvertiseStartFailed - ErrorCode: " + errorCode);
         }
     };
 
-    private BLEAdvertisingManager(ReactApplicationContext context, BluetoothAdapter bluetoothAdapter) {
-        this.context = context;
-        advertiser = bluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
-
+    BLEAdvertisingManager(Context context, IEventListener eventListenerCallback) {
+        mContext = context;
+        advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+        mEventListenerCallback = eventListenerCallback;
     }
-
-    public static BLEAdvertisingManager getInstance(ReactApplicationContext context, BluetoothAdapter bluetoothAdapter) {
-        if (sAdvertisingManager != null) {
-            return sAdvertisingManager;
-        }
-        return new BLEAdvertisingManager(context, bluetoothAdapter);
-    }
-
 
     public void stopAdvertise() {
         advertiser.stopAdvertising(advertiseCallback);
-        EventToJSDispatcher.getInstance(context).sendAdvertisingStatus(false);
+        mEventListenerCallback.onEvent(ADVERTISING_STATUS, false);
     }
 
     public void startAdvertise(String serviceUUID, String publicKey) {
-        Config config = Config.getInstance(context);
+        Config config = Config.getInstance(mContext);
 
         ParcelUuid pUuid = new ParcelUuid(UUID.fromString(serviceUUID));
 
@@ -69,17 +60,12 @@ public class BLEAdvertisingManager {
         dataBuilder.setIncludeDeviceName(false);
         dataBuilder.setIncludeTxPowerLevel(true);
         dataBuilder.addServiceData(pUuid, publicKey.getBytes(Charset.forName("UTF-8")));
-        dataBuilder.build();
 
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
         settingsBuilder.setAdvertiseMode(config.getAdvertiseMode());
         settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
         settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
         settingsBuilder.setConnectable(false);
-        settingsBuilder.build();
-
         advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
-
-
     }
 }

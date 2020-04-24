@@ -1,5 +1,7 @@
 package com.wix.specialble;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -8,20 +10,45 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
+import com.wix.specialble.listeners.IEventListener;
 
-public class EventToJSDispatcher {
+public class EventToJSDispatcher implements IEventListener {
     ReactApplicationContext context;
     static EventToJSDispatcher sEventDispatcher;
+    private static final String TAG = EventToJSDispatcher.class.getSimpleName();
 
     private EventToJSDispatcher(ReactApplicationContext context) {
         this.context = context;
     }
 
-    public static EventToJSDispatcher getInstance(ReactApplicationContext context){
-        if (sEventDispatcher == null){
+    public static EventToJSDispatcher getInstance(ReactApplicationContext context) {
+        if (sEventDispatcher == null) {
             sEventDispatcher = new EventToJSDispatcher(context);
         }
         return sEventDispatcher;
+    }
+
+    private void dispatch(@NonNull String eventName, @Nullable Object data) {
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);
+    }
+
+    @Override
+    public void onEvent(String event, Object data) {
+        if (data instanceof Boolean) {
+            dispatch(event, toBoolean((Boolean) data));
+        }
+        else if (data instanceof WritableMap) {
+            dispatch(event, data);
+        }
+        else {
+            Log.i(TAG, "onEvent | Data object for event ["+event+"] must be boolean or WriteableMap !");
+        }
+
+    }
+
+    // returns true or false if false or null
+    private boolean toBoolean(Boolean bool) {
+        return bool != null && bool;
     }
 
     public void sendAdvertisingStatus(boolean status) {
@@ -40,10 +67,5 @@ public class EventToJSDispatcher {
     public void sendNewScan(Scan newScan) {
         WritableMap params = newScan.toWritableMap();
         dispatch("foundScan",params);
-    }
-
-
-    private void dispatch(@NonNull String eventName, @Nullable Object data){
-        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName,data);
     }
 }

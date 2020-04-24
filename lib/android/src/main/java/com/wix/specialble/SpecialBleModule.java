@@ -4,10 +4,14 @@ package com.wix.specialble;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.Observer;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -36,13 +40,34 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private final BLEManager bleManager;
     private static final String TAG = "SpecialBleModule";
+    private EventToJSDispatcher mEventToJSDispatcher;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SpecialBleModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
         bleManager = BLEManager.getInstance(reactContext);
+        registerEventLiveData();
+
     }
+
+    private void registerEventLiveData() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                bleManager.getEventLiveData().observeForever(new Observer<Pair<String, Object>>() {
+                    @Override
+                    public void onChanged(Pair<String, Object> event) {
+                        mEventToJSDispatcher.onEvent(event.first, event.second);
+                    }
+                });
+            }
+        });
+    }
+
 
     @Override
     public String getName() {
@@ -52,8 +77,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void advertise() {
-        Config config  = Config.getInstance(reactContext);
-        bleManager.advertise(config.getServiceUUID(), config.getToken());
+        bleManager.advertise();
     }
 
     @ReactMethod
@@ -63,8 +87,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startBLEScan() {
-        Config config  = Config.getInstance(reactContext);
-        bleManager.startScan(config.getServiceUUID());
+        bleManager.startScan();
     }
 
     @ReactMethod
@@ -75,11 +98,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     private void startBLEService() {
-        Intent sIntent = new Intent(this.reactContext, BLEForegroundService.class);
-        Config config  = Config.getInstance(reactContext);
-        sIntent.putExtra("serviceUUID", config.getServiceUUID());
-        sIntent.putExtra("publicKey",config.getToken());
-        this.reactContext.startService(sIntent);
+        BLEForegroundService.startThisService(this.reactContext);
     }
 
     @ReactMethod
@@ -154,6 +173,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putDouble("advertiseInterval", config.getAdvertiseInterval());
         configMap.putInt("advertiseMode", config.getAdvertiseMode());
         configMap.putInt("advertiseTXPowerLevel", config.getAdvertiseTXPowerLevel());
+        configMap.putString("notificationTitle", config.getNotificationTitle());
+        configMap.putString("notificationContent", config.getNotificationContent());
+
         callback.invoke(configMap);
     }
 
@@ -170,6 +192,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setAdvertiseInterval((long) configMap.getDouble("advertiseInterval"));
         config.setAdvertiseMode(configMap.getInt("advertiseMode"));
         config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));
+        config.setNotificationTitle(configMap.getString("notificationTitle"));
+        config.setNotificationContent(configMap.getString("notificationContent"));
     }
 
     @ReactMethod
@@ -204,4 +228,6 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         reactContext.startActivity(chooser);
     }
+
+
 }

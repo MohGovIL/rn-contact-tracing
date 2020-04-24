@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
@@ -17,9 +18,8 @@ import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
 
 public class BLEForegroundService extends Service {
-
-
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
+
     BLEManager bleManager;
     {
         try {
@@ -28,16 +28,24 @@ public class BLEForegroundService extends Service {
             e.printStackTrace();
         }
     }
-
     private static Handler handler = new Handler();
-    private String mServiceUUID = "";
-    private String mData = "";
 
+    /**
+     * Utility for starting this Service the same way from multiple places.
+     */
+    public static void startThisService(Context context) {
+        Intent sIntent = new Intent(context, BLEForegroundService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(sIntent);
+        } else {
+            context.startService(sIntent);
+        }
+    }
 
     private Runnable scanRunnable = new Runnable() {
         @Override
         public void run() {
-            bleManager.startScan(mServiceUUID);
+            bleManager.startScan();
             BLEForegroundService.handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -52,7 +60,7 @@ public class BLEForegroundService extends Service {
     private Runnable advertiseRunnable = new Runnable() {
         @Override
         public void run() {
-            bleManager.advertise(mServiceUUID, mData);
+            bleManager.advertise();
             BLEForegroundService.handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -68,30 +76,35 @@ public class BLEForegroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        bleManager.stopScan();
-        bleManager.stopAdvertise();
+        if (bleManager != null) {
+            bleManager.stopScan();
+            bleManager.stopAdvertise();
+        }
         this.handler.removeCallbacksAndMessages(null);
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mServiceUUID = intent.getStringExtra("serviceUUID");
-        mData = intent.getStringExtra("publicKey");
         createNotificationChannel();
+        Config config = Config.getInstance(this);
         Intent notificationIntent = new Intent(this, BLEForegroundService.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("BLE Scanning")
-                .setContentText("Scanning for BLE devices")
+                .setContentTitle(config.getNotificationTitle())
+                .setContentText(config.getNotificationContent())
                 .setSmallIcon(R.drawable.virus)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
+        // initialize if needed
+        if (bleManager == null) {
+            bleManager = BLEManager.getInstance(getApplicationContext());
+        }
         this.handler.post(this.scanRunnable);
         this.handler.post(this.advertiseRunnable);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
 

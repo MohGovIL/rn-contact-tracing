@@ -2,33 +2,40 @@ package com.wix.specialble.bt;
 
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import com.facebook.react.bridge.ReactApplicationContext;
+import android.content.Context;
+import android.util.Pair;
+
+import androidx.lifecycle.MutableLiveData;
+
+import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
+import com.wix.specialble.listeners.IEventListener;
 
 import java.util.List;
 
 
-public class BLEManager {
+public class BLEManager implements IEventListener {
 
     private static final String TAG = "BLEManager";
 
     private BluetoothAdapter bluetoothAdapter;
-    ReactApplicationContext context;
+    Context context;
     private BLEScannerManager bleScanner;
     private BLEAdvertisingManager bleAdvertiser;
     private static BLEManager sBLEManagerInstance;
+    private Config mConfig;
+    private MutableLiveData<Pair<String, Object>> mEventLiveData =  new MutableLiveData<>();
 
     public enum BLEProtocol {
         GAP, GATT
     }
 
-    private BLEManager(ReactApplicationContext context) {
+    private BLEManager(Context context) {
         this.context = context;
         init();
     }
 
-    public static BLEManager getInstance(ReactApplicationContext context) {
+    public static BLEManager getInstance(Context context) {
         if (sBLEManagerInstance == null) {
             sBLEManagerInstance = new BLEManager(context);
         }
@@ -43,25 +50,26 @@ public class BLEManager {
     }
 
     public void init() {
-        final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
+        mConfig = Config.getInstance(context);
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
             bluetoothAdapter.enable();
-            bleScanner = BLEScannerManager.getInstance(context, bluetoothAdapter);
-            bleAdvertiser = BLEAdvertisingManager.getInstance(context, bluetoothAdapter);
+            bleScanner = new BLEScannerManager(context, this);
+            bleAdvertiser = new BLEAdvertisingManager(context, this);
         }
     }
 
-    public void startScan(String serviceUUID) {
-        bleScanner.startScan(serviceUUID);
+    public void startScan() {
+        bleScanner.startScan(mConfig.getServiceUUID());
     }
 
     public void stopScan() {
         bleScanner.stopScan();
     }
 
-    public void advertise(String serviceUUID, String publicKey) {
-        bleAdvertiser.startAdvertise(serviceUUID, publicKey);
+    public void advertise() {
+        bleAdvertiser.startAdvertise(mConfig.getServiceUUID(), mConfig.getToken());
     }
 
     public void stopAdvertise() {
@@ -69,17 +77,28 @@ public class BLEManager {
     }
 
 
-    public List<Device> getAllDevices(){
+    public List<Device> getAllDevices() {
         return DBClient.getInstance(context).getAllDevices();
     }
 
-    public void clearAllDevices(){
+    public void clearAllDevices() {
         DBClient.getInstance(context).clearAllDevices();
     }
 
-    public List<Scan> getAllScans(){ return DBClient.getInstance(context).getAllScans();
+    public List<Scan> getAllScans() {
+        return DBClient.getInstance(context).getAllScans();
     }
 
-    public List<Scan> getScansByKey(String pubKey){ return DBClient.getInstance(context).getScansByKey(pubKey);
+    public List<Scan> getScansByKey(String pubKey) {
+        return DBClient.getInstance(context).getScansByKey(pubKey);
+    }
+
+    public MutableLiveData<Pair<String, Object>> getEventLiveData(){
+        return mEventLiveData;
+    }
+
+    @Override
+    public void onEvent(String event, Object data) {
+        mEventLiveData.postValue(new Pair(event, data));
     }
 }
