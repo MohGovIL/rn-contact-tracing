@@ -4,10 +4,14 @@ package com.wix.specialble;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.Observer;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -38,14 +42,32 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     private static final String TAG = "SpecialBleModule";
     private EventToJSDispatcher mEventToJSDispatcher;
 
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SpecialBleModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
         mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
         bleManager = BLEManager.getInstance(reactContext);
-        bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
+        registerEventLiveData();
+
     }
+
+    private void registerEventLiveData() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                bleManager.getEventLiveData().observeForever(new Observer<Pair<String, Object>>() {
+                    @Override
+                    public void onChanged(Pair<String, Object> event) {
+                        mEventToJSDispatcher.onEvent(event.first, event.second);
+                    }
+                });
+            }
+        });
+    }
+
 
     @Override
     public String getName() {
@@ -206,4 +228,6 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         reactContext.startActivity(chooser);
     }
+
+
 }
