@@ -44,3 +44,5 @@ jobs:
           SIGNING_ID: ${{ secrets.SIGNING_ID }}
           APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
+        run: |
+          fastlane compile --verbose: 
