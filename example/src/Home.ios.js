@@ -68,7 +68,7 @@ function HomeScreen() {
 
   // get all devices from DB
   async function _getAllDevicesFromDB() {
-    SpecialBle.getAllDevices((devices) => {
+    SpecialBle.getAllDevices((err, devices) => {
         setDevices(devices)
     })
   }
@@ -79,10 +79,33 @@ function HomeScreen() {
     _getAllDevicesFromDB();
   }
 
+  // clean all devices from DB
+  function _scanDemoDevice() {
+    SpecialBle.addDemoDevice();
+  }
+
   // add list of public_keys
   function _setPublicKeys() {
     let publicKeys = ['12345','12346','12347','12348','12349']
     SpecialBle.setPublicKeys(publicKeys);
+  }
+
+  // get config
+  function _getConfig() {
+    SpecialBle.getConfig((config) => {
+      alert(JSON.stringify(config));
+    })
+  }
+
+  // get config
+  function _setConfig() {
+    SpecialBle.setConfig({
+      serviceUUID: '',
+      scanDuration: 0,
+      scanInterval: 0,
+      advertiseInterval: 0,
+      advertiseDuration: 0
+    })
   }
 
 // request location permission (only for Android)
@@ -121,9 +144,15 @@ function HomeScreen() {
                 {_renderButton('Stop BLE service', _stopBLEService)}
                 {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}
                 {_renderButton('Remove Devices from DB', _cleanAllDevicesFromDB)}
+                {_renderButton('Demo Scan Device', _scanDemoDevice)}
             </View>
             <View style={styles.subContainer}>
                 {_renderButton('Set public Keys', _setPublicKeys)}
+            </View>
+
+            <View style={styles.subContainer}>
+              {_renderButton('Get Config', _getConfig)}
+              {_renderButton('Set Config', _setConfig)}
             </View>
 
             <FlatList
@@ -134,6 +163,7 @@ function HomeScreen() {
                     {item.public_key} :
                     {item.device_address} :
                     {item.device_rssi} </Text>}
+
             />
         </View>
     );

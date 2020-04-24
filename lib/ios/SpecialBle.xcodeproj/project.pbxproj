@@ -7,30 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		262F140F243F48DB000E352C /* SpecialBleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 262F140B243F48DB000E352C /* SpecialBleManager.m */; };
-		262F1410243F48DB000E352C /* SpecialBle.m in Sources */ = {isa = PBXBuildFile; fileRef = 262F140C243F48DB000E352C /* SpecialBle.m */; };
-		26AD8C3724462298005CABA9 /* BluetraceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1924462298005CABA9 /* BluetraceUtils.swift */; };
-		26AD8C3824462298005CABA9 /* Encounter+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1C24462298005CABA9 /* Encounter+Event.swift */; };
-		26AD8C3924462298005CABA9 /* ConfigureDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1D24462298005CABA9 /* ConfigureDatabaseManager.swift */; };
-		26AD8C3A24462298005CABA9 /* EncounterMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1E24462298005CABA9 /* EncounterMessageManager.swift */; };
-		26AD8C3B24462298005CABA9 /* Encounter+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C1F24462298005CABA9 /* Encounter+CoreDataProperties.swift */; };
-		26AD8C3C24462298005CABA9 /* Encounter+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2024462298005CABA9 /* Encounter+CoreDataClass.swift */; };
-		26AD8C3D24462298005CABA9 /* tracer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2124462298005CABA9 /* tracer.xcdatamodeld */; };
-		26AD8C3E24462298005CABA9 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2324462298005CABA9 /* DatabaseManager.swift */; };
-		26AD8C3F24462298005CABA9 /* Encounter+EncounterRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2424462298005CABA9 /* Encounter+EncounterRecord.swift */; };
-		26AD8C4024462298005CABA9 /* EncounterRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2624462298005CABA9 /* EncounterRecord.swift */; };
-		26AD8C4124462298005CABA9 /* BluetraceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2724462298005CABA9 /* BluetraceConfig.swift */; };
-		26AD8C4224462298005CABA9 /* PeripheralController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2824462298005CABA9 /* PeripheralController.swift */; };
-		26AD8C4324462298005CABA9 /* BluetoothHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2A24462298005CABA9 /* BluetoothHandler.swift */; };
-		26AD8C4424462298005CABA9 /* BluetoothHandlerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2B24462298005CABA9 /* BluetoothHandlerBridge.m */; };
-		26AD8C4524462298005CABA9 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2E24462298005CABA9 /* Logger.swift */; };
-		26AD8C4624462298005CABA9 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C2F24462298005CABA9 /* DeviceInfo.swift */; };
-		26AD8C4724462298005CABA9 /* Bluetrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3124462298005CABA9 /* Bluetrace.swift */; };
-		26AD8C4824462298005CABA9 /* BluetraceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3224462298005CABA9 /* BluetraceProtocol.swift */; };
-		26AD8C4924462298005CABA9 /* BluetraceV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3324462298005CABA9 /* BluetraceV2.swift */; };
-		26AD8C4A24462298005CABA9 /* BluetraceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3424462298005CABA9 /* BluetraceManager.swift */; };
-		26AD8C4B24462298005CABA9 /* CentralController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3524462298005CABA9 /* CentralController.swift */; };
-		26AD8C4C24462298005CABA9 /* BlueTraceLocalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8C3624462298005CABA9 /* BlueTraceLocalNotifications.swift */; };
+		26E9DD03244F40E600E8CD92 /* DBPublicKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCEB244F40E600E8CD92 /* DBPublicKeyManager.swift */; };
+		26E9DD04244F40E600E8CD92 /* Scan+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCED244F40E600E8CD92 /* Scan+CoreDataClass.swift */; };
+		26E9DD05244F40E600E8CD92 /* Device+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCEE244F40E600E8CD92 /* Device+CoreDataClass.swift */; };
+		26E9DD06244F40E600E8CD92 /* PublicKey+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCEF244F40E600E8CD92 /* PublicKey+CoreDataProperties.swift */; };
+		26E9DD07244F40E600E8CD92 /* Device+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF0244F40E600E8CD92 /* Device+CoreDataProperties.swift */; };
+		26E9DD08244F40E600E8CD92 /* PublicKey+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF1244F40E600E8CD92 /* PublicKey+CoreDataClass.swift */; };
+		26E9DD09244F40E600E8CD92 /* Model+CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF2244F40E600E8CD92 /* Model+CoreDataModel.swift */; };
+		26E9DD0A244F40E600E8CD92 /* Scan+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF3244F40E600E8CD92 /* Scan+CoreDataProperties.swift */; };
+		26E9DD0B244F40E600E8CD92 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF4244F40E600E8CD92 /* Model.xcdatamodeld */; };
+		26E9DD0C244F40E600E8CD92 /* DBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF6244F40E600E8CD92 /* DBManager.swift */; };
+		26E9DD0D244F40E600E8CD92 /* DBScanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF7244F40E600E8CD92 /* DBScanManager.swift */; };
+		26E9DD0E244F40E600E8CD92 /* DBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF8244F40E600E8CD92 /* DBClient.swift */; };
+		26E9DD0F244F40E600E8CD92 /* DBDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF9244F40E600E8CD92 /* DBDeviceManager.swift */; };
+		26E9DD10244F40E600E8CD92 /* SpecialBle.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCFA244F40E600E8CD92 /* SpecialBle.m */; };
+		26E9DD11244F40E600E8CD92 /* SpecialBleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */; };
+		26E9DD12244F40E600E8CD92 /* tracer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DD01244F40E600E8CD92 /* tracer.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,33 +39,24 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libSpecialBle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSpecialBle.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		262F140B243F48DB000E352C /* SpecialBleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBleManager.m; sourceTree = "<group>"; };
-		262F140C243F48DB000E352C /* SpecialBle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBle.m; sourceTree = "<group>"; };
-		262F140D243F48DB000E352C /* SpecialBle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBle.h; sourceTree = "<group>"; };
-		262F140E243F48DB000E352C /* SpecialBleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBleManager.h; sourceTree = "<group>"; };
-		26AD8C1924462298005CABA9 /* BluetraceUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceUtils.swift; sourceTree = "<group>"; };
-		26AD8C1C24462298005CABA9 /* Encounter+Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+Event.swift"; sourceTree = "<group>"; };
-		26AD8C1D24462298005CABA9 /* ConfigureDatabaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigureDatabaseManager.swift; sourceTree = "<group>"; };
-		26AD8C1E24462298005CABA9 /* EncounterMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncounterMessageManager.swift; sourceTree = "<group>"; };
-		26AD8C1F24462298005CABA9 /* Encounter+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		26AD8C2024462298005CABA9 /* Encounter+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+CoreDataClass.swift"; sourceTree = "<group>"; };
-		26AD8C2224462298005CABA9 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
-		26AD8C2324462298005CABA9 /* DatabaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
-		26AD8C2424462298005CABA9 /* Encounter+EncounterRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Encounter+EncounterRecord.swift"; sourceTree = "<group>"; };
-		26AD8C2624462298005CABA9 /* EncounterRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncounterRecord.swift; sourceTree = "<group>"; };
-		26AD8C2724462298005CABA9 /* BluetraceConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceConfig.swift; sourceTree = "<group>"; };
-		26AD8C2824462298005CABA9 /* PeripheralController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralController.swift; sourceTree = "<group>"; };
-		26AD8C2A24462298005CABA9 /* BluetoothHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothHandler.swift; sourceTree = "<group>"; };
-		26AD8C2B24462298005CABA9 /* BluetoothHandlerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothHandlerBridge.m; sourceTree = "<group>"; };
-		26AD8C2C24462298005CABA9 /* BluetoothDemo-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BluetoothDemo-Bridging-Header.h"; sourceTree = "<group>"; };
-		26AD8C2E24462298005CABA9 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		26AD8C2F24462298005CABA9 /* DeviceInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
-		26AD8C3124462298005CABA9 /* Bluetrace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bluetrace.swift; sourceTree = "<group>"; };
-		26AD8C3224462298005CABA9 /* BluetraceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceProtocol.swift; sourceTree = "<group>"; };
-		26AD8C3324462298005CABA9 /* BluetraceV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceV2.swift; sourceTree = "<group>"; };
-		26AD8C3424462298005CABA9 /* BluetraceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetraceManager.swift; sourceTree = "<group>"; };
-		26AD8C3524462298005CABA9 /* CentralController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CentralController.swift; sourceTree = "<group>"; };
-		26AD8C3624462298005CABA9 /* BlueTraceLocalNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlueTraceLocalNotifications.swift; sourceTree = "<group>"; };
+		26E9DCEB244F40E600E8CD92 /* DBPublicKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBPublicKeyManager.swift; sourceTree = "<group>"; };
+		26E9DCED244F40E600E8CD92 /* Scan+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Scan+CoreDataClass.swift"; sourceTree = "<group>"; };
+		26E9DCEE244F40E600E8CD92 /* Device+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Device+CoreDataClass.swift"; sourceTree = "<group>"; };
+		26E9DCEF244F40E600E8CD92 /* PublicKey+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PublicKey+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		26E9DCF0244F40E600E8CD92 /* Device+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Device+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		26E9DCF1244F40E600E8CD92 /* PublicKey+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PublicKey+CoreDataClass.swift"; sourceTree = "<group>"; };
+		26E9DCF2244F40E600E8CD92 /* Model+CoreDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Model+CoreDataModel.swift"; sourceTree = "<group>"; };
+		26E9DCF3244F40E600E8CD92 /* Scan+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Scan+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		26E9DCF5244F40E600E8CD92 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		26E9DCF6244F40E600E8CD92 /* DBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBManager.swift; sourceTree = "<group>"; };
+		26E9DCF7244F40E600E8CD92 /* DBScanManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBScanManager.swift; sourceTree = "<group>"; };
+		26E9DCF8244F40E600E8CD92 /* DBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBClient.swift; sourceTree = "<group>"; };
+		26E9DCF9244F40E600E8CD92 /* DBDeviceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBDeviceManager.swift; sourceTree = "<group>"; };
+		26E9DCFA244F40E600E8CD92 /* SpecialBle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBle.m; sourceTree = "<group>"; };
+		26E9DCFB244F40E600E8CD92 /* SpecialBleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBleManager.h; sourceTree = "<group>"; };
+		26E9DCFC244F40E600E8CD92 /* SpecialBle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBle.h; sourceTree = "<group>"; };
+		26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBleManager.m; sourceTree = "<group>"; };
+		26E9DD02244F40E600E8CD92 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,92 +78,67 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		26AD8C1824462298005CABA9 /* Bluetrace */ = {
+		26E9DCEA244F40E600E8CD92 /* db */ = {
 			isa = PBXGroup;
 			children = (
-				26AD8C1924462298005CABA9 /* BluetraceUtils.swift */,
-				26AD8C1A24462298005CABA9 /* Database */,
-				26AD8C2724462298005CABA9 /* BluetraceConfig.swift */,
-				26AD8C2824462298005CABA9 /* PeripheralController.swift */,
-				26AD8C2924462298005CABA9 /* Bridge */,
-				26AD8C2D24462298005CABA9 /* Utils */,
-				26AD8C3024462298005CABA9 /* Protocol */,
-				26AD8C3424462298005CABA9 /* BluetraceManager.swift */,
-				26AD8C3524462298005CABA9 /* CentralController.swift */,
-				26AD8C3624462298005CABA9 /* BlueTraceLocalNotifications.swift */,
+				26E9DCEB244F40E600E8CD92 /* DBPublicKeyManager.swift */,
+				26E9DCEC244F40E600E8CD92 /* CoreData */,
+				26E9DCF6244F40E600E8CD92 /* DBManager.swift */,
+				26E9DCF7244F40E600E8CD92 /* DBScanManager.swift */,
+				26E9DCF8244F40E600E8CD92 /* DBClient.swift */,
+				26E9DCF9244F40E600E8CD92 /* DBDeviceManager.swift */,
+			);
+			path = db;
+			sourceTree = "<group>";
+		};
+		26E9DCEC244F40E600E8CD92 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				26E9DCED244F40E600E8CD92 /* Scan+CoreDataClass.swift */,
+				26E9DCEE244F40E600E8CD92 /* Device+CoreDataClass.swift */,
+				26E9DCEF244F40E600E8CD92 /* PublicKey+CoreDataProperties.swift */,
+				26E9DCF0244F40E600E8CD92 /* Device+CoreDataProperties.swift */,
+				26E9DCF1244F40E600E8CD92 /* PublicKey+CoreDataClass.swift */,
+				26E9DCF2244F40E600E8CD92 /* Model+CoreDataModel.swift */,
+				26E9DCF3244F40E600E8CD92 /* Scan+CoreDataProperties.swift */,
+				26E9DCF4244F40E600E8CD92 /* Model.xcdatamodeld */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		26E9DCFE244F40E600E8CD92 /* Bluetrace */ = {
+			isa = PBXGroup;
+			children = (
+				26E9DCFF244F40E600E8CD92 /* Database */,
 			);
 			path = Bluetrace;
 			sourceTree = "<group>";
 		};
-		26AD8C1A24462298005CABA9 /* Database */ = {
+		26E9DCFF244F40E600E8CD92 /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				26AD8C1B24462298005CABA9 /* Models */,
-				26AD8C2524462298005CABA9 /* Structs */,
+				26E9DD00244F40E600E8CD92 /* Models */,
 			);
 			path = Database;
 			sourceTree = "<group>";
 		};
-		26AD8C1B24462298005CABA9 /* Models */ = {
+		26E9DD00244F40E600E8CD92 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				26AD8C1C24462298005CABA9 /* Encounter+Event.swift */,
-				26AD8C1D24462298005CABA9 /* ConfigureDatabaseManager.swift */,
-				26AD8C1E24462298005CABA9 /* EncounterMessageManager.swift */,
-				26AD8C1F24462298005CABA9 /* Encounter+CoreDataProperties.swift */,
-				26AD8C2024462298005CABA9 /* Encounter+CoreDataClass.swift */,
-				26AD8C2124462298005CABA9 /* tracer.xcdatamodeld */,
-				26AD8C2324462298005CABA9 /* DatabaseManager.swift */,
-				26AD8C2424462298005CABA9 /* Encounter+EncounterRecord.swift */,
+				26E9DD01244F40E600E8CD92 /* tracer.xcdatamodeld */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		26AD8C2524462298005CABA9 /* Structs */ = {
-			isa = PBXGroup;
-			children = (
-				26AD8C2624462298005CABA9 /* EncounterRecord.swift */,
-			);
-			path = Structs;
-			sourceTree = "<group>";
-		};
-		26AD8C2924462298005CABA9 /* Bridge */ = {
-			isa = PBXGroup;
-			children = (
-				26AD8C2A24462298005CABA9 /* BluetoothHandler.swift */,
-				26AD8C2B24462298005CABA9 /* BluetoothHandlerBridge.m */,
-				26AD8C2C24462298005CABA9 /* BluetoothDemo-Bridging-Header.h */,
-			);
-			path = Bridge;
-			sourceTree = "<group>";
-		};
-		26AD8C2D24462298005CABA9 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				26AD8C2E24462298005CABA9 /* Logger.swift */,
-				26AD8C2F24462298005CABA9 /* DeviceInfo.swift */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
-		26AD8C3024462298005CABA9 /* Protocol */ = {
-			isa = PBXGroup;
-			children = (
-				26AD8C3124462298005CABA9 /* Bluetrace.swift */,
-				26AD8C3224462298005CABA9 /* BluetraceProtocol.swift */,
-				26AD8C3324462298005CABA9 /* BluetraceV2.swift */,
-			);
-			path = Protocol;
 			sourceTree = "<group>";
 		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				26AD8C1824462298005CABA9 /* Bluetrace */,
-				262F140E243F48DB000E352C /* SpecialBleManager.h */,
-				262F140B243F48DB000E352C /* SpecialBleManager.m */,
-				262F140D243F48DB000E352C /* SpecialBle.h */,
-				262F140C243F48DB000E352C /* SpecialBle.m */,
+				26E9DCFE244F40E600E8CD92 /* Bluetrace */,
+				26E9DCEA244F40E600E8CD92 /* db */,
+				26E9DCFC244F40E600E8CD92 /* SpecialBle.h */,
+				26E9DCFA244F40E600E8CD92 /* SpecialBle.m */,
+				26E9DCFB244F40E600E8CD92 /* SpecialBleManager.h */,
+				26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -242,30 +200,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26AD8C4C24462298005CABA9 /* BlueTraceLocalNotifications.swift in Sources */,
-				26AD8C3F24462298005CABA9 /* Encounter+EncounterRecord.swift in Sources */,
-				26AD8C3924462298005CABA9 /* ConfigureDatabaseManager.swift in Sources */,
-				26AD8C4B24462298005CABA9 /* CentralController.swift in Sources */,
-				26AD8C4024462298005CABA9 /* EncounterRecord.swift in Sources */,
-				26AD8C3B24462298005CABA9 /* Encounter+CoreDataProperties.swift in Sources */,
-				26AD8C4424462298005CABA9 /* BluetoothHandlerBridge.m in Sources */,
-				26AD8C3E24462298005CABA9 /* DatabaseManager.swift in Sources */,
-				26AD8C3D24462298005CABA9 /* tracer.xcdatamodeld in Sources */,
-				26AD8C4624462298005CABA9 /* DeviceInfo.swift in Sources */,
-				26AD8C3824462298005CABA9 /* Encounter+Event.swift in Sources */,
-				26AD8C4524462298005CABA9 /* Logger.swift in Sources */,
-				262F1410243F48DB000E352C /* SpecialBle.m in Sources */,
-				26AD8C4824462298005CABA9 /* BluetraceProtocol.swift in Sources */,
-				26AD8C4324462298005CABA9 /* BluetoothHandler.swift in Sources */,
-				26AD8C3A24462298005CABA9 /* EncounterMessageManager.swift in Sources */,
-				26AD8C4924462298005CABA9 /* BluetraceV2.swift in Sources */,
-				26AD8C4724462298005CABA9 /* Bluetrace.swift in Sources */,
-				262F140F243F48DB000E352C /* SpecialBleManager.m in Sources */,
-				26AD8C3724462298005CABA9 /* BluetraceUtils.swift in Sources */,
-				26AD8C4224462298005CABA9 /* PeripheralController.swift in Sources */,
-				26AD8C4A24462298005CABA9 /* BluetraceManager.swift in Sources */,
-				26AD8C4124462298005CABA9 /* BluetraceConfig.swift in Sources */,
-				26AD8C3C24462298005CABA9 /* Encounter+CoreDataClass.swift in Sources */,
+				26E9DD0A244F40E600E8CD92 /* Scan+CoreDataProperties.swift in Sources */,
+				26E9DD0F244F40E600E8CD92 /* DBDeviceManager.swift in Sources */,
+				26E9DD06244F40E600E8CD92 /* PublicKey+CoreDataProperties.swift in Sources */,
+				26E9DD05244F40E600E8CD92 /* Device+CoreDataClass.swift in Sources */,
+				26E9DD08244F40E600E8CD92 /* PublicKey+CoreDataClass.swift in Sources */,
+				26E9DD11244F40E600E8CD92 /* SpecialBleManager.m in Sources */,
+				26E9DD07244F40E600E8CD92 /* Device+CoreDataProperties.swift in Sources */,
+				26E9DD0D244F40E600E8CD92 /* DBScanManager.swift in Sources */,
+				26E9DD0C244F40E600E8CD92 /* DBManager.swift in Sources */,
+				26E9DD0B244F40E600E8CD92 /* Model.xcdatamodeld in Sources */,
+				26E9DD10244F40E600E8CD92 /* SpecialBle.m in Sources */,
+				26E9DD09244F40E600E8CD92 /* Model+CoreDataModel.swift in Sources */,
+				26E9DD12244F40E600E8CD92 /* tracer.xcdatamodeld in Sources */,
+				26E9DD04244F40E600E8CD92 /* Scan+CoreDataClass.swift in Sources */,
+				26E9DD0E244F40E600E8CD92 /* DBClient.swift in Sources */,
+				26E9DD03244F40E600E8CD92 /* DBPublicKeyManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,12 +373,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		26AD8C2124462298005CABA9 /* tracer.xcdatamodeld */ = {
+		26E9DCF4244F40E600E8CD92 /* Model.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				26AD8C2224462298005CABA9 /* Model.xcdatamodel */,
+				26E9DCF5244F40E600E8CD92 /* Model.xcdatamodel */,
 			);
-			currentVersion = 26AD8C2224462298005CABA9 /* Model.xcdatamodel */;
+			currentVersion = 26E9DCF5244F40E600E8CD92 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		26E9DD01244F40E600E8CD92 /* tracer.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				26E9DD02244F40E600E8CD92 /* Model.xcdatamodel */,
+			);
+			currentVersion = 26E9DD02244F40E600E8CD92 /* Model.xcdatamodel */;
 			path = tracer.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
