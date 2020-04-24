@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
 import {
     NativeEventEmitter,
     FlatList,
@@ -14,10 +14,23 @@ function ResultsScreen({route, navigation}) {
     const {pubKey} = route.params;
     const [scans, setScans] = useState([]);
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+            <View spread style={styles.topContainer}>
+                <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllScansToCsv}
+                        style={{paddingHorizontal: 10}}/>
+                <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB}
+                        style={{paddingHorizontal: 10}}/>
+            </View>
+            ),
+        });
+    }, [navigation]);
+
     useEffect(() => {
         _getContactsScans();
         const interval = setInterval(() => {
-            _getContactsScans
+            _getContactsScans()
         }, 2000);
         return () => clearInterval(interval);
     }, []);
@@ -41,12 +54,6 @@ function ResultsScreen({route, navigation}) {
 
     return (
         <View style={styles.container}>
-            <View spread style={styles.topContainer}>
-                <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllScansToCsv}
-                        style={{paddingHorizontal: 10}}/>
-                <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB}
-                        style={{paddingHorizontal: 10}}/>
-            </View>
             <FlatList
                 data={scans}
                 keyExtractor={item => item.scan_id.toString()}

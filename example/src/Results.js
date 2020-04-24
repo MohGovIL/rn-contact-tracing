@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
 import {
     NativeEventEmitter,
     FlatList,
@@ -10,16 +10,35 @@ import {View, Card, Button, Text, ListItem, Colors} from 'react-native-ui-lib';
 const deleteIcon = require('../res/delete.png');
 const shareIcon = require('../res/share.png');
 
-function ResultsScreen({ navigation }) {
+function ResultsScreen({navigation}) {
 
     const [devices, setDevices] = useState([]);
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View spread style={styles.topContainer}>
+                    <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllSDevicesToCsv}
+                            style={{paddingHorizontal: 10}}/>
+                    <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllDevicesFromDB}
+                            style={{paddingHorizontal: 10}}/>
+                </View>
+            ),
+        });
+    }, [navigation]);
+
     useEffect(() => {
         const eventEmitter = new NativeEventEmitter(SpecialBle);
-        eventEmitter.addListener('foundDevice', (event) => {
+        eventEmitter.addListener('foundDevice', (event) => {             
                 _getAllDevicesFromDB();
             },
         );
+
+        const interval = setInterval(() => {
+            _getAllDevicesFromDB()
+        }, 2000);
+        return () => clearInterval(interval);
+
         _getAllDevicesFromDB();
     }, []);
 
@@ -41,15 +60,11 @@ function ResultsScreen({ navigation }) {
     function _exportAllSDevicesToCsv() {
         SpecialBle.exportAllDevicesCsv();
     }
-    const keyExtractor = item => '' + item.id;
 
+    const keyExtractor = item => '' + item.id;
 
     return (
         <View style={styles.container}>
-            <View spread style={styles.topContainer}>
-                    <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllSDevicesToCsv} style={{paddingHorizontal: 10}}/>
-                    <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllDevicesFromDB} style={{paddingHorizontal: 10}}/>
-            </View>
             <FlatList
                 data={devices}
                 keyExtractor={item => item.public_key}
@@ -58,9 +73,9 @@ function ResultsScreen({ navigation }) {
         </View>
     );
 
-    function timeStampToUTCTime(timestamp){
+    function timeStampToUTCTime(timestamp) {
         let date = new Date(timestamp)
-        let res =  date.toLocaleDateString()+'-'+date.getUTCHours()+':'+date.getUTCMinutes()+':'+date.getUTCSeconds()+'.'+date.getUTCMilliseconds();
+        let res = date.toLocaleDateString() + '-' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds() + '.' + date.getUTCMilliseconds();
         return res;
     }
 
@@ -70,11 +85,12 @@ function ResultsScreen({ navigation }) {
 
         return (
             <Card row style={styles.card}
-                onPress={() => navigation.navigate('Scans', {pubKey: item.public_key})}>
+                  onPress={() => navigation.navigate('Scans', {pubKey: item.public_key})}>
                 <View flex row center-vertical>
                     <ListItem.Part middle column>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
-                            {item.public_key && <Text dark10 text70>EphId: { ((item.public_key).length > 10) ? (((item.public_key).substring(0,10-3)) + '...') : item.public_key }</Text>}
+                            {item.public_key && <Text dark10
+                                                      text70>EphId: {((item.public_key).length > 10) ? (((item.public_key).substring(0, 10 - 3)) + '...') : item.public_key}</Text>}
                             <Text dark10 text70>{item.device_protocol}</Text>
                         </ListItem.Part>
 
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
     topContainer: {
         marginTop: 20,
         marginBottom: 10,
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
         flexDirection: 'row',
     },
     timeText: {

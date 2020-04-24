@@ -49,11 +49,13 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         this.reactContext = reactContext;
         mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
         bleManager = BLEManager.getInstance(reactContext);
-        registerEventLiveData();
+        mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
+        bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
+      //  registerEventLiveData();
 
     }
 
-    private void registerEventLiveData() {
+/*    private void registerEventLiveData() {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
@@ -66,7 +68,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
                 });
             }
         });
-    }
+    }*/
 
 
     @Override

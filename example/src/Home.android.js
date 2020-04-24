@@ -46,7 +46,7 @@ function HomeScreen() {
         advertiseInterval: 0,
         advertiseDuration: 0,
         advertiseMode: 0,
-        token: 'default_public_key'
+        token: 'default_token'
     });
 
     useEffect(() => {
@@ -149,7 +149,7 @@ function HomeScreen() {
                     {_renderButton('Stop BLE service', _stopBLEService)}
                 </View>
 
-                {_renderTextField("Public Key", config.token, val => setConfig({
+                {_renderTextField("Advertised Token", config.token, val => setConfig({
                     ...config,
                     token: val
                 }))}

@@ -3,10 +3,12 @@ package com.wix.specialble.bt;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.listeners.IEventListener;
@@ -24,7 +26,7 @@ public class BLEManager implements IEventListener {
     private BLEAdvertisingManager bleAdvertiser;
     private static BLEManager sBLEManagerInstance;
     private Config mConfig;
-    private MutableLiveData<Pair<String, Object>> mEventLiveData =  new MutableLiveData<>();
+    private EventToJSDispatcher mEventToJSDispatcher;
 
     public enum BLEProtocol {
         GAP, GATT
@@ -93,12 +95,25 @@ public class BLEManager implements IEventListener {
         return DBClient.getInstance(context).getScansByKey(pubKey);
     }
 
-    public MutableLiveData<Pair<String, Object>> getEventLiveData(){
+/*    public MutableLiveData<Pair<String, Object>> getEventLiveData(){
         return mEventLiveData;
+    }*/
+
+/*    @Override
+    public void onEvent(String event, Object data) {
+        mEventLiveData.postValue(new Pair(event, data));
+    }*/
+
+    public void setEventToJSDispatcher(EventToJSDispatcher eventToJSDispatcher) {
+        mEventToJSDispatcher = eventToJSDispatcher;
     }
 
     @Override
     public void onEvent(String event, Object data) {
-        mEventLiveData.postValue(new Pair(event, data));
+        if (mEventToJSDispatcher != null) {
+            mEventToJSDispatcher.onEvent(event, data);
+        } else {
+            Log.d(TAG, "BLEManager onEvent() | cannot send to JSDispatcher - it's null | event = "+event+", data = "+data);
+        }
     }
 }
