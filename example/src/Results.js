@@ -17,7 +17,6 @@ function ResultsScreen({ navigation }) {
     useEffect(() => {
         const eventEmitter = new NativeEventEmitter(SpecialBle);
         eventEmitter.addListener('foundDevice', (event) => {
-                console.log(event);
                 _getAllDevicesFromDB();
             },
         );

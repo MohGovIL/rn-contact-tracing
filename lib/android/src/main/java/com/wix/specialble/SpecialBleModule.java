@@ -118,7 +118,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         for(Device device : devices){
             retArray.pushMap(device.toWritableMap());
         }
-        callback.invoke(retArray);
+        callback.invoke(null,retArray); // need to remove this null, it only because ios added it for some reason
     }
 
     @ReactMethod
