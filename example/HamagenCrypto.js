@@ -296,8 +296,8 @@ export var KeyStateManager = function (userId) {
             ksm.dayMasterKeys = ksm.dayMasterKeys.concat(nextMasterKey);
         }
         ksm.prevMasterKey = decodedKeys[5];
-        ksm.dayForDayMasterKey = decodedKeys[6];
-        ksm.dayForPrevMasterKey = decodedKeys[7];
+        ksm.dayForDayMasterKey = parseInt(decodedKeys[6]);
+        ksm.dayForPrevMasterKey = parseInt(decodedKeys[7]);
     }
     ksm.generateEpochKeys = function () {
         var timestamp = getTimeMiliseconds();
