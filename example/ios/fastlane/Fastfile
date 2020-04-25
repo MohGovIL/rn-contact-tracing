@@ -61,7 +61,10 @@ platform :ios do
     export_xcargs: "-allowProvisioningUpdates",
     project: ENV["XCODE_PROJ"],
     output_directory: "output")
-  end
+
+  upload_to_testflight(changelog: "First Try")
+  
+  end  
 end
 
 lane :setup do
