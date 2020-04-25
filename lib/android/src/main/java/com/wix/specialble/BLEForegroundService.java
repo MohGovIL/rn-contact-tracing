@@ -88,6 +88,13 @@ public class BLEForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
         Config config = Config.getInstance(this);
+
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+        PendingIntent mainActivityIntent = null;
+        if (launchIntent != null) {
+            mainActivityIntent = PendingIntent.getActivity(this, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
         Intent notificationIntent = new Intent(this, BLEForegroundService.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
@@ -95,7 +102,7 @@ public class BLEForegroundService extends Service {
                 .setContentTitle(config.getNotificationTitle())
                 .setContentText(config.getNotificationContent())
                 .setSmallIcon(R.drawable.virus)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(mainActivityIntent)
                 .build();
         startForeground(1, notification);
         // initialize if needed
