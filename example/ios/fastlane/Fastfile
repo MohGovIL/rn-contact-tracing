@@ -42,8 +42,9 @@ platform :ios do
   lane :build do
   match(
     type: "appstore",
-    readonly: is_ci,
+    readonly: is_ci,  
     keychain_name: "action_keychain",
+    git_basic_authorization: 'QnV0dGVyc0h1YjoxOTc2MWQxMzIxOTAyMjRhNjNmYjAyZDZjYTNmMDMxZTNmMDZmZGVh',
     keychain_password: "meow"
   )
 

@@ -26,6 +26,8 @@ jobs:
         run: |
           cd example/ios          
       - name: Run fastlane build
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: |
           cd example/ios
           fastlane build 
