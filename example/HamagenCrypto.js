@@ -57,8 +57,7 @@ function xor_strings(s1, s2) {
 }
 
 function hmac16(key, data) {
-    return unhex(hmac
-    .create(key, data).hex()).substr(0, 16);
+    return unhex(hmac.create(key).update(data).hex()).substr(0, 16);
 }
 
 export function encrypt(key, data) {
@@ -95,7 +94,7 @@ function generateMasterKey() {
 }
 
 function generateIdentityKey(masterKey) {
-    return hmac16(masterKey, "IdentityKey").substr(0, 16);
+    return hmac16(masterKey, "IdentityKey");
 }
 
 function generateMasterCommitmentKey(identityKey, userId) {
@@ -223,7 +222,6 @@ export var KeyStateManager = function (userId) {
     ksm.dayForDayMasterKey = day;
     ksm.dayForPrevMasterKey = day;
     ksm.dayKeys = function (day) {
-        console.log(day);
         var lastMasterKeyDay = ksm.dayForDayMasterKey + SAVE_FORWARD_DAYS;
         var day_iterate;
         var lastDayToSave;
