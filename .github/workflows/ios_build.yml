@@ -16,9 +16,11 @@ jobs:
       - name: Install npm dependencies
         run: |
           npm install
+      - name: Install pod dependencies
+        run: |
+          cd example/ios && pod install    
       - name: Run fastlane setup (create key_chain)
         env:
-          working-directory: ./example/ios
           APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
