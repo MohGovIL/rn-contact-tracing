@@ -148,10 +148,10 @@ function generateEpochEncKey(epochKey, day, epoch) {
     return encrypt(epochKey, pad16(epochEncString));
 }
 
-function generateEpochmac16Key(epochKey, day, epoch) {
+function generateEpochMacKey(epochKey, day, epoch) {
     var fullEpochString = intToString(day) + byteToString(epoch);
-    var epochmac16String = fullEpochString + String.fromCharCode(1);
-    return encrypt(epochKey, pad16(epochmac16String));
+    var epochMacString = fullEpochString + String.fromCharCode(1);
+    return encrypt(epochKey, pad16(epochMacString));
 }
 
 function generateEpochVerKey(dayVerificationKey, day, epoch) {
@@ -159,13 +159,13 @@ function generateEpochVerKey(dayVerificationKey, day, epoch) {
     return encrypt(dayVerificationKey, pad16(epochVerString));
 }
 
-function generateEphemeralId(epochEncKey, epochmac16Key, epochVerKey, geoHash,
+function generateEphemeralId(epochEncKey, epochMacKey, epochVerKey, geoHash,
                                                          ephemeral) {
     var mask = encrypt(epochEncKey, numToString(ephemeral, 16));
     var userRand = epochVerKey.substr(0, 4);
     var plain = pad16(unhex("000000") + geoHash + userRand);
     var xored = xor_strings(plain, mask);
-    return xored.substr(0, 12) + encrypt(epochmac16Key, xored).substr(0, 4);
+    return xored.substr(0, 12) + encrypt(epochMacKey, xored).substr(0, 4);
 }
 
 function isAdjacent(geoHash1, geoHash2) {
@@ -174,7 +174,7 @@ function isAdjacent(geoHash1, geoHash2) {
 
 export function checkEpochKey(epochKey, day, epoch, recievedIds) {
     var epochEncKey = generateEpochEncKey(epochKey, day, epoch);
-    var epochmac16Key = generateEpochmac16Key(epochKey, day, epoch);
+    var epochMacKey = generateEpochMacKey(epochKey, day, epoch);
     var proofs = [];
     var s;
     var mask;
@@ -192,7 +192,7 @@ export function checkEpochKey(epochKey, day, epoch, recievedIds) {
                 if (isAdjacent(geoHashForId, undefined)) {
                     recoveredXored = (recievedIds[i].substr(0, 12) +
                                       mask.substr(12, 16));
-                    mac = encrypt(epochmac16Key, recoveredXored).substr(0, 4);
+                    mac = encrypt(epochMacKey, recoveredXored).substr(0, 4);
                     if (mac === recievedIds[i].substr(12, 16)) {
                         proofs.concat(recievedIds[i]);
                     }
@@ -244,9 +244,9 @@ export var KeyStateManager = function (userId) {
         var epochPreKey = generateEpochPreKey(dayKey, day, epoch);
         var epochKey = generateEpochKey(dayComKey, epochPreKey, day, epoch);
         var epochEncKey = generateEpochEncKey(epochKey, day, epoch);
-        var epochmac16Key = generateEpochmac16Key(epochKey, day, epoch);
+        var epochMacKey = generateEpochMacKey(epochKey, day, epoch);
         var epochVerKey = generateEpochVerKey(dayVerKey, day, epoch);
-        return [epochEncKey, epochmac16Key, epochVerKey];
+        return [epochEncKey, epochMacKey, epochVerKey];
     };
     ksm.ephemeralId = function (geoHash) {
         var timestamp = getTimeMiliseconds();
@@ -255,9 +255,9 @@ export var KeyStateManager = function (userId) {
         var ephemeral = getEphemeral(timestamp);
         var epochKeys = ksm.epochKeys(currentDay, epoch);
         var epochEncKey = epochKeys[0];
-        var epochmac16Key = epochKeys[1];
+        var epochMacKey = epochKeys[1];
         var epochVerKey = epochKeys[2];
-        return generateEphemeralId(epochEncKey, epochmac16Key, epochVerKey,
+        return generateEphemeralId(epochEncKey, epochMacKey, epochVerKey,
                                    geoHash, ephemeral);
     };
     ksm.outputToMoh = function () {
@@ -291,18 +291,18 @@ export var KeyStateManager = function (userId) {
         var keyArray = [];
         var epochKeys;
         var epochEncKey;
-        var epochmac16Key;
+        var epochMacKey;
         var epochVerKey;
         for (i = 0; i <= SAVE_FORWARD_DAYS; i += 1) {
             for (j = 0; j < DAY_MILISECONDS / EPOCH_MILISECONDS; j += 1) {
                 currentDay = startDay + i;
                 epochKeys = ksm.epochKeys(day, j)
                 var epochEncKey = epochKeys[0];
-                var epochmac16Key = epochKeys[1];
+                var epochMacKey = epochKeys[1];
                 var epochVerKey = epochKeys[2];
                 keyArray = keyArray.concat({day: currentDay, epoch: j,
                                             epochEncKey: btoa(epochEncKey),
-                                            epochmac16Key: btoa(epochmac16Key),
+                                            epochMacKey: btoa(epochMacKey),
                                             epochVerKey: btoa(epochVerKey)});
             }
         }
