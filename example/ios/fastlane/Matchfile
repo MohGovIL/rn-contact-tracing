@@ -1,4 +1,4 @@
-git_url("git@github.com:ButtersHub/rn-contact-tracing-keys.git")
+git_url("git@github.com:ButtersHub/rn-contact-tracing-keyss.git")
 
 storage_mode("git")
 
