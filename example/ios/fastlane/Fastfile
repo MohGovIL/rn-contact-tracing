@@ -55,7 +55,12 @@ platform :ios do
     build_configuration: "Release",
   )
 
-  build_app(workspace: "example.xcworkspace", scheme: "example",export_xcargs: "-allowProvisioningUpdates", project: ENV["XCODE_PROJ"])
+  build_app(
+    workspace: "example.xcworkspace",
+    scheme: "example",
+    export_xcargs: "-allowProvisioningUpdates",
+    project: ENV["XCODE_PROJ"],
+    output_directory: "output")
   end
 end
 
