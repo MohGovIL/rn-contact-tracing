@@ -100,10 +100,8 @@ public class BLEScannerManager {
 
             String ScannedToken = byteScannedToken != null ? new String(byteScannedToken, Charset.forName("UTF-8")) : "NaN";
 
-            int tx = 0;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                tx = result.getTxPower();
-            }
+            int tx = scanRecord.getTxPowerLevel();
+
             super.onScanResult(callbackType, result);
             handleScanResults(result, ScannedToken, tx);
         }
