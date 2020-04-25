@@ -13,13 +13,48 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+
+#  lane :build do
+#    increment_build_number(xcodeproj: "example.xcodeproj")
+#    build_app(workspace: "example.xcworkspace", scheme: "example",export_xcargs: "-allowProvisioningUpdates")
+#  end
+
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
 default_platform(:ios)
 
 platform :ios do
   desc "build ipa file"
   lane :build do
-    increment_build_number(xcodeproj: "example.xcodeproj")
-    build_app(workspace: "example.xcworkspace", scheme: "example",export_xcargs: "-allowProvisioningUpdates")
+  match(
+    type: "appstore",
+    readonly: is_ci,
+    keychain_name: "action_keychain",
+    keychain_password: "meow"
+  )
+
+  update_project_provisioning(
+    xcodeproj: ENV["XCODE_PROJ"],
+    profile: ENV["sigh_com.rncontacttracing_appstore_profile-path"],
+    target_filter: "example", 
+    build_configuration: "Release",
+  )
+
+  build_app(workspace: "example.xcworkspace", scheme: "example",export_xcargs: "-allowProvisioningUpdates", project: ENV["XCODE_PROJ"])
   end
 end
 
@@ -37,6 +72,9 @@ private_lane :setup_project do
     lock_when_sleeps: false
   )
 end
+
+
+
 
 
 
