@@ -5,7 +5,6 @@ import { decode as atob, encode as btoa } from 'base-64'
 var DAY_MILISECONDS = 24 * 60 * 60 * 1000;
 var EPOCH_MILISECONDS = 60 * 60 * 1000;
 var EPHEMERAL_MILISECONDS = 5 * 60 * 1000;
-var MASTER_KEY_LENGTH = 16;
 var SAVE_BACK_DAYS_AMOUNT = 14;
 var SAVE_FORWARD_DAYS = 14;
 
@@ -92,7 +91,7 @@ function randomString(length) {
 }
 
 function generateMasterKey() {
-    return randomString(MASTER_KEY_LENGTH);
+    return randomString(16);
 }
 
 function generateIdentityKey(masterKey) {
@@ -296,7 +295,7 @@ export var KeyStateManager = function (userId) {
         for (i = 0; i <= SAVE_FORWARD_DAYS; i += 1) {
             for (j = 0; j < DAY_MILISECONDS / EPOCH_MILISECONDS; j += 1) {
                 currentDay = startDay + i;
-                epochKeys = ksm.epochKeys(day, j)
+                epochKeys = ksm.epochKeys(currentDay, j)
                 var epochEncKey = epochKeys[0];
                 var epochMacKey = epochKeys[1];
                 var epochVerKey = epochKeys[2];
