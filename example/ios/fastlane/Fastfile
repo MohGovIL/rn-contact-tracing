@@ -62,7 +62,7 @@ platform :ios do
     project: ENV["XCODE_PROJ"],
     output_directory: "output")
 
-  upload_to_testflight(changelog: "First Try", skip_submission: true, username: "sveta@morag.dev")
+  upload_to_testflight()
 
   end  
 end
