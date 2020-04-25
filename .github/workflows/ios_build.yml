@@ -28,4 +28,4 @@ jobs:
       - name: Run fastlane build
         run: |
           cd example/ios
-          bundle exec fastlane build --verbose: 
+          fastlane build --verbose: 
