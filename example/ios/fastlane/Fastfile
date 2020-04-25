@@ -23,12 +23,6 @@
 # For a list of all available plugins, check out
 #
 #     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-
-#  lane :build do
-#    increment_build_number(xcodeproj: "example.xcodeproj")
-#    build_app(workspace: "example.xcworkspace", scheme: "example",export_xcargs: "-allowProvisioningUpdates")
 #  end
 
 
@@ -42,7 +36,7 @@ platform :ios do
   lane :build do
   match(
     type: "appstore",
-    readonly: is_ci,  
+    readonly: is_ci,
     keychain_name: "action_keychain",
     git_basic_authorization: "QnV0dGVyc0h1Yjo3Y2Q1MGY3OGE4MjUyYTc1NGM5MGQwYzZmZjVkYzc3YmEwMmZjMjNm",
     keychain_password: "meow"
@@ -51,7 +45,7 @@ platform :ios do
   update_project_provisioning(
     xcodeproj: ENV["XCODE_PROJ"],
     profile: ENV["sigh_com.rncontacttracing_appstore_profile-path"],
-    target_filter: "example", 
+    target_filter: "example",
     build_configuration: "Release",
   )
 
@@ -61,10 +55,11 @@ platform :ios do
     export_xcargs: "-allowProvisioningUpdates",
     project: ENV["XCODE_PROJ"],
     output_directory: "output")
+  end
+end
 
-  upload_to_testflight()
-
-  end  
+lane :upload do
+   upload_to_testflight()
 end
 
 lane :setup do
