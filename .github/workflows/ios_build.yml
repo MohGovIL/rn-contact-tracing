@@ -24,8 +24,8 @@ jobs:
           APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          cd example/ios
-          fastlane setup --verbose
+          cd example/ios          
+          bundle exec fastlane setup --verbose
       - name: Run fastlane build          
         env:
           working-directory: ./example/ios
