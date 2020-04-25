@@ -1,0 +1,87 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#  end
+
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "build ipa file"
+  lane :build do
+  match(
+    type: "appstore",
+    readonly: is_ci,
+    keychain_name: "action_keychain",
+    git_basic_authorization: "QnV0dGVyc0h1Yjo3Y2Q1MGY3OGE4MjUyYTc1NGM5MGQwYzZmZjVkYzc3YmEwMmZjMjNm",
+    keychain_password: "meow"
+  )
+
+  update_project_provisioning(
+    xcodeproj: ENV["XCODE_PROJ"],
+    profile: ENV["sigh_com.rncontacttracing_appstore_profile-path"],
+    target_filter: "example",
+    build_configuration: "Release",
+  )
+
+  build_app(
+    workspace: "example.xcworkspace",
+    scheme: "example",
+    export_xcargs: "-allowProvisioningUpdates",
+    project: ENV["XCODE_PROJ"],
+    output_directory: "output")
+  end
+end
+
+lane :upload do
+   upload_to_testflight()
+end
+
+lane :setup do
+  setup_project
+end
+
+private_lane :setup_project do
+  create_keychain(
+    name: "action_keychain",
+    password: "meow",
+    default_keychain: true,
+    unlock: true,
+    timeout: 3600,
+    lock_when_sleeps: false
+  )
+end
+
+
+
+
+
+
+
+
+
