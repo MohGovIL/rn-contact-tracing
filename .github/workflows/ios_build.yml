@@ -32,3 +32,8 @@ jobs:
         run: |
           cd example/ios
           fastlane build 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: RNCT Demo.ipa
+          path: . 
