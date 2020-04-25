@@ -210,17 +210,31 @@ export var KeyStateManager = function (userId) {
     ksm.masterCommitmentKey = generateMasterCommitmentKey(ksm.identityKey,
                                                           userId);
     ksm.masterVerificationKey = generateMasterVerificationKey(ksm.masterKey);
-    ksm.dayMasterKey = generateFirstDayMasterKey(ksm.masterKey);
-    ksm.prevMasterKey = ksm.dayMasterKey;
+    ksm.dayMasterKeys = [generateFirstDayMasterKey(ksm.masterKey)];
+    var i;
+    var lastMasterKey;
+    var nextMasterKey;
+    for (i = 0; i < SAVE_FORWARD_DAYS; i += 1) {
+        lastMasterKey = ksm.dayMasterKeys[ksm.dayMasterKeys.length-1];
+        nextMasterKey = rotateDayMasterKey(lastMasterKey);
+        ksm.dayMasterKeys = ksm.dayMasterKeys.concat(nextMasterKey);
+    }
+    ksm.prevMasterKey = ksm.dayMasterKeys[0];
     ksm.dayForDayMasterKey = day;
     ksm.dayForPrevMasterKey = day;
-    ksm.dayMasterKeys = function (day) {
-        var oldDayForMasterKey = ksm.dayForDayMasterKey;
+    ksm.dayKeys = function (day) {
+        console.log(day);
+        var lastMasterKeyDay = ksm.dayForDayMasterKey + SAVE_FORWARD_DAYS;
         var day_iterate;
         var lastDayToSave;
-        for (day_iterate = oldDayForMasterKey; day_iterate < day;
+        var lastMasterKey;
+        var nextMasterKey;
+        for (day_iterate = lastMasterKeyDay; day_iterate < day;
                  day_iterate+= 1) {
-            ksm.dayMasterKey = rotateDayMasterKey(ksm.dayMasterKey);
+            lastMasterKey = ksm.dayMasterKeys[ksm.dayMasterKeys.length-1];
+            nextMasterKey = rotateDayMasterKey(lastMasterKey);
+            ksm.dayMasterKeys = ksm.dayMasterKeys.slice(1);
+            ksm.dayMasterKeys = ksm.dayMasterKeys.concat(nextMasterKey);
             ksm.dayForDayMasterKey += 1;
             lastDayToSave = ksm.dayForDayMasterKey - SAVE_BACK_DAYS_AMOUNT;
             if (lastDayToSave > ksm.dayForPrevMasterKey) {
@@ -228,7 +242,8 @@ export var KeyStateManager = function (userId) {
                 ksm.dayForPrevMasterKey += 1;
             }
         }
-        var dayKey = generateDayKey(ksm.dayMasterKey);
+        var masterKey = ksm.dayMasterKeys[day - ksm.dayForDayMasterKey];
+        var dayKey = generateDayKey(masterKey);
         var dayVerKey = generateDayVerificationKey(ksm.masterVerificationKey,
                                                    day);
         var dayComKey = generateDailyCommitmentKey(ksm.masterCommitmentKey,
@@ -236,7 +251,7 @@ export var KeyStateManager = function (userId) {
         return [dayKey, dayVerKey, dayComKey];
     };
     ksm.epochKeys = function (day, epoch) {
-        var dayKeys = ksm.dayMasterKeys(day);
+        var dayKeys = ksm.dayKeys(day);
         var dayKey = dayKeys[0];
         var dayVerKey = dayKeys[1];
         var dayComKey = dayKeys[2];
@@ -265,7 +280,7 @@ export var KeyStateManager = function (userId) {
     };
     ksm.exportState = function () {
         var keys = [ksm.masterKey, ksm.identityKey, ksm.masterCommitmentKey,
-                    ksm.masterVerificationKey, ksm.dayMasterKey,
+                    ksm.masterVerificationKey, ksm.dayMasterKeys[0],
                     ksm.prevMasterKey, ksm.dayForDayMasterKey,
                     ksm.dayForPrevMasterKey];
         return keys.map(x => btoa(x));
@@ -276,7 +291,12 @@ export var KeyStateManager = function (userId) {
         ksm.identityKey = decodedKeys[1];
         ksm.masterCommitmentKey = decodedKeys[2];
         ksm.masterVerificationKey = decodedKeys[3];
-        ksm.dayMasterKey = decodedKeys[4];
+        ksm.dayMasterKeys = [decodedKeys[4]];
+        for (i = 0; i < SAVE_FORWARD_DAYS; i += 1) {
+            lastMasterKey = ksm.dayMasterKeys[ksm.dayMasterKeys.length-1];
+            nextMasterKey = rotateDayMasterKey(lastMasterKey);
+            ksm.dayMasterKeys = ksm.dayMasterKeys.concat(nextMasterKey);
+        }
         ksm.prevMasterKey = decodedKeys[5];
         ksm.dayForDayMasterKey = decodedKeys[6];
         ksm.dayForPrevMasterKey = decodedKeys[7];
