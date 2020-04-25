@@ -29,6 +29,8 @@ jobs:
       - name: Run fastlane build
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_PASSWORD: ${{ secrets. FASTLANE_PASSWORD }}
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets. FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
         run: |
           cd example/ios
           fastlane build 
