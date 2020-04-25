@@ -18,11 +18,13 @@ jobs:
           npm install
       - name: Run fastlane setup (create key_chain)
         env:
+          working-directory: ./example/ios
           APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
           fastlane setup --verbose
       - name: Run fastlane build          
+        env:
+          working-directory: ./example/ios
         run: |
           fastlane build --verbose: 
-
