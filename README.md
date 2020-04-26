@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">RN-Contact-Tracing</h1>
+  <h1 font-weight=bold align="center">RN-Contact-Tracing</h1>
 </p>
 
 
@@ -12,10 +12,10 @@
 ---
 
 <p align="center">
-  <h2 align="center">  WIP Library - Don't Use in Production</h2>
+  <h3 font-weight=bold align="center">  WIP Library - Don't Use in Production</h3>
 </p>
 
-
+---
  
 ## About
 This is a react-native library for tracing close contact between 2 mobile devices by exchanging ephemeral tokens over BLE (Bluetooth Low Energy).  
