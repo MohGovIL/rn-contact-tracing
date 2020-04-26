@@ -98,7 +98,8 @@ public class BLEScannerManager {
             ParcelUuid pUuid = scanRecord.getServiceUuids().get(0);
             byte[] byteScannedToken = result.getScanRecord().getServiceData(pUuid);
 
-            String ScannedToken = byteScannedToken != null ? new String(byteScannedToken, Charset.forName("UTF-8")) : "NaN";
+            String deviceName = scanRecord.getDeviceName() != null ? scanRecord.getDeviceName() : "NaN";
+            String ScannedToken = byteScannedToken != null ? new String(byteScannedToken, Charset.forName("UTF-8")) : deviceName;
 
             int tx = scanRecord.getTxPowerLevel();
 
