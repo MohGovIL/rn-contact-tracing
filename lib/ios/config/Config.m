@@ -12,9 +12,10 @@ static long DEFAULT_SCAN_DURATION = 5 * 1000L;
 static long DEFAULT_ADVERTISE_INTERVAL = 3 * 1000L;
 static long DEFAULT_ADVERTISE_DURATION = 7 * 1000L;
 static NSString* DEFAULT_SERVICE_UUID = @"00000000-0000-1000-8000-00805F9B34FB";
-static NSString* DEFAULT_TOKEN = @"default_public_key";
+static NSString* DEFAULT_TOKEN = @"1234";
 
 static NSString* KEY_SERVICE_UUID = @"serviceUUID";
+static NSString* KEY_TOKEN = @"serviceUUID";
 static NSString* KEY_SCAN_DURATION = @"scanDuration";
 static NSString* KEY_SCAN_INTERVAL = @"scanInterval";
 static NSString* KEY_ADVERTISE_DURATION = @"advertiseDuration";
@@ -25,6 +26,8 @@ static NSString* KEY_ADVERTISE_INTERVAL = @"advertiseInterval";
 
 +(void)SetConfig:(NSDictionary*)configDict {
     [Config _save:DEFAULT_SERVICE_UUID key:KEY_SERVICE_UUID dict:configDict];
+    
+    [Config _save:DEFAULT_TOKEN key:KEY_TOKEN dict:configDict];
     
     [Config _save:[NSNumber numberWithLong:DEFAULT_SCAN_DURATION] key:KEY_SCAN_DURATION dict:configDict];
     [Config _save:[NSNumber numberWithLong:DEFAULT_SCAN_INTERVAL] key:KEY_SCAN_INTERVAL dict:configDict];
