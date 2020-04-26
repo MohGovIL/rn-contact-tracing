@@ -1,4 +1,4 @@
-package com.example;
+package com.rncontacttracing.demo;
 
 import com.facebook.react.ReactActivity;
 
