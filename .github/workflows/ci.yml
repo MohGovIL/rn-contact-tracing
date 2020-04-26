@@ -59,6 +59,7 @@ jobs:
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          KEYS_REPO_TOKEN: ${{ secrets.KEYS_REPO_TOKEN }}
         run: |
           cd example/ios
           fastlane build
