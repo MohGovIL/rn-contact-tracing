@@ -58,6 +58,8 @@ Features for rssi calibration (GPS, Proximity)  |WIP|TODO|
 
 The Example project can be used as a reference of how to use the rn-contact-tracing API and as a helpful tool to fine-tune the scanning/advertising configuration
 
+<img align="right" width="200"  src="docs/example.gif">
+
 ### How to run the example project
 ```properties
 npm install
