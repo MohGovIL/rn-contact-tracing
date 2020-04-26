@@ -17,12 +17,12 @@ extension Device {
         return NSFetchRequest<Device>(entityName: "Device")
     }
 
-    @NSManaged public var publicKey: String?
+    @NSManaged public var public_key: String?
     @NSManaged public var device_address: String?
     @NSManaged public var device_protocol: String?
     @NSManaged public var rssi: Int16
-    @NSManaged public var firstTimestamp: Int16
-    @NSManaged public var lastTimestamp: Int16
+    @NSManaged public var device_first_timestamp: Int16
+    @NSManaged public var device_last_timestamp: Int16
     @NSManaged public var tx: Int16
 
 }

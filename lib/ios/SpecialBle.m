@@ -97,8 +97,8 @@ RCT_EXPORT_METHOD(addDemoDevice) {
     NSDictionary* demoDevice = @{
         @"device_address": [SpecialBle randomStringWithLength:8],
         @"rssi": [NSNumber numberWithInt:555],
-        @"firstTimestamp": [NSNumber numberWithInt:unixtime],
-        @"lastTimestamp": [NSNumber numberWithInt:unixtime],
+        @"device_first_timestamp": [NSNumber numberWithInt:unixtime],
+        @"device_last_timestamp": [NSNumber numberWithInt:unixtime],
         @"tx": [NSNumber numberWithInt:0]
     };
     [DBClient addDevice:demoDevice];
