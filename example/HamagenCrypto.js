@@ -25,11 +25,20 @@ function intToString(num) {
     return numToString(num, 4);
 }
 
-export function pad16(str) {
+function pad16(str) {
     return str.padEnd(16, String.fromCharCode(0));
 }
 
-export function toHex(str) {
+function stringToArr(s) {
+    var arr = new Uint8Array(s.length);
+    var i;
+    for (i = 0; i < s.length; i += 1) {
+        arr[i] = s.charCodeAt(i);
+    }
+    return arr;
+}
+
+function toHex(str) {
     var hex = "";
     var i;
     for (i = 0; i < str.length; i += 1) {
@@ -57,10 +66,12 @@ function xor_strings(s1, s2) {
 }
 
 function hmac16(key, data) {
-    return unhex(hmac.create(key).update(data).hex()).substr(0, 16);
+    var keyArr = stringToArr(key);
+    var dataArr = stringToArr(data);
+    return unhex(hmac.create(keyArr).update(dataArr).hex()).substr(0, 16);
 }
 
-export function encrypt(key, data) {
+function encrypt(key, data) {
     var keyBytes = aesjs.utils.hex.toBytes(toHex(key));
     var dataBytes = aesjs.utils.hex.toBytes(toHex(data));
     var aesEcb = new aesjs.ModeOfOperation.ecb(keyBytes);
@@ -157,9 +168,9 @@ function generateEpochVerKey(dayVerificationKey, day, epoch) {
     return encrypt(dayVerificationKey, pad16(epochVerString));
 }
 
-function generateEphemeralId(epochEncKey, epochMacKey, epochVerKey, geoHash,
-                                                         ephemeral) {
-    var mask = encrypt(epochEncKey, numToString(ephemeral, 16));
+export function generateEphemeralId(epochEncKey, epochMacKey, epochVerKey,
+                                    geoHash, ephemeral) {
+    var mask = encrypt(epochEncKey, pad16(numToString(ephemeral, 4)));
     var userRand = epochVerKey.substr(0, 4);
     var plain = pad16(unhex("000000") + geoHash + userRand);
     var xored = xor_strings(plain, mask);
@@ -182,17 +193,17 @@ export function checkEpochKey(epochKey, day, epoch, recievedIds) {
     var recoveredPlain;
     var mac;
     for (s = 0; s < EPOCH_MILISECONDS / EPHEMERAL_MILISECONDS; s += 1) {
-        mask = encrypt(epochEncKey, numToString(s, 16));
+        mask = encrypt(epochEncKey, pad16(numToString(s, 4)));
         for (i = 0; i < recievedIds.length; i += 1) {
             if (mask.substr(0, 3) === recievedIds[i].substr(0, 3)) {
                 recoveredPlain = xor_strings(recievedIds[i], mask);
-                geoHashForId = recoveredPlain.substr(3, 8);
+                geoHashForId = recoveredPlain.substr(3, 5);
                 if (isAdjacent(geoHashForId, undefined)) {
                     recoveredXored = (recievedIds[i].substr(0, 12) +
-                                      mask.substr(12, 16));
+                                      mask.substr(12, 4));
                     mac = encrypt(epochMacKey, recoveredXored).substr(0, 4);
-                    if (mac === recievedIds[i].substr(12, 16)) {
-                        proofs.concat(recievedIds[i]);
+                    if (mac === recievedIds[i].substr(12, 4)) {
+                        proofs = proofs.concat(recievedIds[i]);
                     }
                 }
             }
