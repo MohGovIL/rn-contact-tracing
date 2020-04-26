@@ -38,7 +38,7 @@ platform :ios do
     type: "appstore",
     readonly: is_ci,
     keychain_name: "action_keychain",
-    git_basic_authorization: "QnV0dGVyc0h1Yjo3Y2Q1MGY3OGE4MjUyYTc1NGM5MGQwYzZmZjVkYzc3YmEwMmZjMjNm",
+    git_basic_authorization: ENV["KEYS_REPO_TOKEN"],
     keychain_password: "meow"
   )
 
