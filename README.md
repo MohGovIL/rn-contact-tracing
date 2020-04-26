@@ -1,9 +1,22 @@
-![CI](https://github.com/wix-incubator/rn-contact-tracing/workflows/CI/badge.svg)
-# RN-Contact-Tracing 
+<p align="center">
+  <h1 align="center">RN-Contact-Tracing</h1>
+</p>
 
-## WIP Library - Don't Use in Production
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/rn-contact-tracing"><img src="https://img.shields.io/npm/v/rn-contact-tracing" alt="NPM version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/rn-contact-tracing" alt="License"></a>
+  <a href="https://github.com/wix-incubator/rn-contact-tracing/actions?query=workflow%3ACI"><img src="https://github.com/wix-incubator/rn-contact-tracing/workflows/CI/badge.svg?style=flat-square" alt="CI"></a>
+</p>
 
+---
+
+<p align="center">
+  <h2 align="center">  WIP Library - Don't Use in Production</h2>
+</p>
+
+---
+ 
 ## About
 This is a react-native library for tracing close contact between 2 mobile devices by exchanging tokens over BLE (Bluetooth Low Energy).  
 
