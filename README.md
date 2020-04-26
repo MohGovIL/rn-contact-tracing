@@ -15,7 +15,7 @@
   <h2 align="center">  WIP Library - Don't Use in Production</h2>
 </p>
 
----
+
  
 ## About
 This is a react-native library for tracing close contact between 2 mobile devices by exchanging ephemeral tokens over BLE (Bluetooth Low Energy).  
@@ -49,6 +49,7 @@ Pass scannng & advertising configuration from JS (intervals..) | :white_check_ma
 Integration with tokens provider  |TODO|TODO|
 Tests  |TODO|TODO|]
 Features for rssi calibration (GPS, Proximity)  |WIP|TODO|
+---
 
 
 ## Getting started
@@ -333,8 +334,9 @@ Clear all scans
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
 - `error` - {event.error_message}
 
+---
 
-##### Why did we build this lib?
+### Why did we build this lib?
 Due to COVID-19 pandemic, several groups and health authorities released apps that will help to identify and notify people that are at risk of exposure.
 
 Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), and they willing to add BLE based functionality.  
@@ -348,8 +350,6 @@ In addition, we looked at several great apps written for the same purpose in nat
 ##### Privacy (what do we advertise and save to DB)
 TBD
  
-##### Limitations
-TBD
 
 
 ### References
