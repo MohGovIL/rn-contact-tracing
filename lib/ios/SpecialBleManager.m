@@ -22,6 +22,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 @property (nonatomic, strong) RCTEventEmitter* eventEmitter;
 @property (nonatomic, strong) NSString* scanUUIDString;
 @property (nonatomic, strong) NSString* advertiseUUIDString;
+@property (nonatomic, strong) NSString* publicKey;
 
 
 @end
@@ -71,15 +72,16 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.scanUUIDString = nil;
 }
 
--(void)advertise:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter {
+-(void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter {
     self.advertiseUUIDString = serviceUUIDString;
+    self.publicKey = publicKey;
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
         return;
     }
     if (self.service && self.characteristic) {
         [self _advertise];
     } else {
-        [self _setServiceAndCharacteristics:serviceUUIDString];
+        [self _setServiceAndCharacteristics:serviceUUIDString publicKey:publicKey];
     }
 }
 
@@ -92,7 +94,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 #pragma mark - private methods
 
--(void) _setServiceAndCharacteristics:(NSString*)serviceUUIDString {
+-(void) _setServiceAndCharacteristics:(NSString*)serviceUUIDString publicKey:(NSString*)publicKey {
     if (serviceUUIDString == nil) {
         return;
     }
@@ -100,7 +102,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     CBMutableCharacteristic* myCharacteristic = [[CBMutableCharacteristic alloc]
                                                  initWithType:UUID
                                                  properties:CBCharacteristicPropertyRead
-                                                 value:nil
+                                                 value:[publicKey dataUsingEncoding:NSUTF8StringEncoding]
                                                  permissions:0];
     CBMutableService* myService = [[CBMutableService alloc] initWithType:UUID primary:YES];
     myService.characteristics = [NSArray arrayWithObject:myCharacteristic];
@@ -129,31 +131,40 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI {
     NSString* name = @"";
-    NSString* address = @"";
+    NSString* public_key = @"";
+    int device_first_timestamp = 0;
+    int tx = 0;
     
     NSLog(@"Discovered device with name: %@", peripheral.name);
     if (peripheral && peripheral.name != nil) {
         name = peripheral.name;
     }
     
-    if (advertisementData && [advertisementData[CBAdvertisementDataServiceUUIDsKey] count] > 0) {
-        address = ((CBUUID*)advertisementData[CBAdvertisementDataServiceUUIDsKey][0]).UUIDString;
+    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
+        NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
+        CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
+        
+        NSData *data = dataService[serviceUUID];
+
+        NSString *addressFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        public_key = addressFromData;
+    }
+    
+    if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
+        device_first_timestamp = advertisementData[@"kCBAdvDataTimestamp"];
+    }
+    
+    if (advertisementData && advertisementData[CBAdvertisementDataTxPowerLevelKey]) {
+        tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
     }
     
     NSDictionary* device = @{
-        @"device_address": address,
+        @"public_key": public_key,
         @"rssi": RSSI,
-        @"firstTimestamp": [NSNumber numberWithInt:0],
-        @"lastTimestamp": [NSNumber numberWithInt:0],
-        @"tx": [NSNumber numberWithInt:0]
+        @"device_first_timestamp": [NSNumber numberWithInt:device_first_timestamp],
+        @"device_last_timestamp": [NSNumber numberWithInt:device_first_timestamp],
+        @"tx": [NSNumber numberWithInt:tx]
     };
-//    @NSManaged public var publicKey: String?
-//    @NSManaged public var device_address: String?
-//    @NSManaged public var device_protocol: String?
-//    @NSManaged public var rssi: Int16
-//    @NSManaged public var firstTimestamp: Int16
-//    @NSManaged public var lastTimestamp: Int16
-//    @NSManaged public var tx: Int16
     
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
     
@@ -164,7 +175,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral {
     NSLog(@"Peripheral manager atate: %d", peripheral.state);
-    [self advertise:self.advertiseUUIDString withEventEmitter:self.eventEmitter];
+    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
 }
 
 - (void)peripheralManager:(CBPeripheralManager *)peripheral
