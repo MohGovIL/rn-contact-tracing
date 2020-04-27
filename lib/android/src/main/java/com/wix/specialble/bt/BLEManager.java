@@ -4,9 +4,6 @@ package com.wix.specialble.bt;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.util.Log;
-import android.util.Pair;
-
-import androidx.lifecycle.MutableLiveData;
 
 import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
@@ -113,7 +110,9 @@ public class BLEManager implements IEventListener {
         if (mEventToJSDispatcher != null) {
             mEventToJSDispatcher.onEvent(event, data);
         } else {
-            Log.d(TAG, "BLEManager onEvent() | cannot send to JSDispatcher - it's null | event = "+event+", data = "+data);
+            Log.d(TAG, "BLEManager onEvent() | cannot send to JSDispatcher - it's null | event = " + event + ", data = " + data);
+            // can be null if application flow started from BroadcastReceiver (boot/restart/upgrade).
+            // Service information is still saved to db, but ReactNative UI will not be updated.
         }
     }
 }

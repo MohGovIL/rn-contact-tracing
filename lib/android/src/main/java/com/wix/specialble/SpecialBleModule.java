@@ -4,14 +4,10 @@ package com.wix.specialble;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.Observer;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -49,9 +45,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         this.reactContext = reactContext;
         mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
         bleManager = BLEManager.getInstance(reactContext);
-        mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
         bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
-      //  registerEventLiveData();
+        //  registerEventLiveData();
 
     }
 
@@ -117,10 +112,10 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void getAllDevices(Callback callback) {
         List<Device> devices = bleManager.getAllDevices();
         WritableArray retArray = new WritableNativeArray();
-        for(Device device : devices){
+        for (Device device : devices) {
             retArray.pushMap(device.toWritableMap());
         }
-        callback.invoke(null,retArray); // need to remove this null, it only because ios added it for some reason
+        callback.invoke(null, retArray); // need to remove this null, it only because ios added it for some reason
     }
 
     @ReactMethod
@@ -132,7 +127,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void getAllScans(Callback callback) {
         List<Scan> scans = bleManager.getAllScans();
         WritableArray retArray = new WritableNativeArray();
-        for(Scan scan : scans){
+        for (Scan scan : scans) {
             retArray.pushMap(scan.toWritableMap());
         }
         callback.invoke(retArray);
@@ -142,7 +137,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void getScansByKey(String pubKey, Callback callback) {
         List<Scan> scans = bleManager.getScansByKey(pubKey);
         WritableArray retArray = new WritableNativeArray();
-        for(Scan scan : scans){
+        for (Scan scan : scans) {
             retArray.pushMap(scan.toWritableMap());
         }
         callback.invoke(retArray);
@@ -152,9 +147,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setPublicKeys(ReadableArray pubKeys) {
         ArrayList<PublicKey> pkList = new ArrayList<>();
-        for(int i=0; i<pubKeys.size(); i++){
+        for (int i = 0; i < pubKeys.size(); i++) {
             String pkString = pubKeys.getString(i);
-            PublicKey pk = new PublicKey(i,pkString);
+            PublicKey pk = new PublicKey(i, pkString);
             pkList.add(pk);
         }
         DBClient.getInstance(reactContext).insertAllKeys(pkList);
@@ -204,7 +199,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
             CSVUtil.saveAllDevicesAsCSV(reactContext, bleManager.getAllDevices());
             shareFile(CSVUtil.getDevicesCsvFile(reactContext));
         } catch (Exception e) {
-            Log.e(TAG, "exportAllDevicesCsv: "+e.getMessage(),e); //handle exception
+            Log.e(TAG, "exportAllDevicesCsv: " + e.getMessage(), e); //handle exception
         }
     }
 
@@ -214,7 +209,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
             CSVUtil.saveAllScansAsCSV(reactContext, bleManager.getAllScans());
             shareFile(CSVUtil.getScansCsvFile(reactContext));
         } catch (Exception e) {
-            Log.e(TAG, "exportAllScansCsv: "+e.getMessage(),e); //handle exception
+            Log.e(TAG, "exportAllScansCsv: " + e.getMessage(), e); //handle exception
         }
     }
 
@@ -222,7 +217,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setType("*/*");
-        Uri fileUri = FileProvider.getUriForFile(reactContext, "com.wix.specialble" + ".provider",file);
+        Uri fileUri = FileProvider.getUriForFile(reactContext, "com.wix.specialble" + ".provider", file);
         shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

@@ -38,13 +38,24 @@ public class CSVUtil {
     public static void saveAllScansAsCSV(final Context context, List<Scan> allScans) throws Exception {
         CsvWriter csvWriter = new CsvWriter();
         CsvAppender csvAppender = csvWriter.append(getScansCsvFile(context), StandardCharsets.UTF_8);
-        csvAppender.appendLine("timestamp", "publicKey", "deviceAddress", "deviceProtocol", "rssi");
+        csvAppender.appendLine("timestamp", "publicKey", "deviceAddress", "deviceProtocol",
+                "rssi", "proximity", "acceleration_x", "acceleration_y", "acceleration_z",
+                "rotation_x", "rotation_y", "rotation_z", "rotation_scalar", "battery");
         for (Scan scan : allScans) {
             csvAppender.appendField(String.valueOf(scan.getTimestamp()));
             csvAppender.appendField(scan.getPublicKey());
             csvAppender.appendField(scan.getScanAddress());
             csvAppender.appendField(scan.getScanProtocol());
             csvAppender.appendField(String.valueOf(scan.getRssi()));
+            csvAppender.appendField(String.valueOf(scan.getProximityValue()));
+            csvAppender.appendField(String.valueOf(scan.getAccelerationX()));
+            csvAppender.appendField(String.valueOf(scan.getAccelerationY()));
+            csvAppender.appendField(String.valueOf(scan.getAccelerationZ()));
+            csvAppender.appendField(String.valueOf(scan.getRotationVectorX()));
+            csvAppender.appendField(String.valueOf(scan.getRotationVectorY()));
+            csvAppender.appendField(String.valueOf(scan.getRotationVectorZ()));
+            csvAppender.appendField(String.valueOf(scan.getRotationVectorScalar()));
+            csvAppender.appendField(String.valueOf(scan.getBatteryLevel()));
             csvAppender.endLine();
         }
         csvAppender.close();
