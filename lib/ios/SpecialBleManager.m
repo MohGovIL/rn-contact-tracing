@@ -107,13 +107,15 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     CBMutableService* myService = [[CBMutableService alloc] initWithType:UUID primary:YES];
     myService.characteristics = [NSArray arrayWithObject:myCharacteristic];
     self.service = myService;
+    self.publicKey = publicKey;
     self.characteristic = myCharacteristic;
     [self.cbPeripheral addService:myService];
 }
 
 -(void) _advertise {
     if (self.cbPeripheral.state == CBManagerStatePoweredOn){
-        [self.cbPeripheral startAdvertising:@{CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
+        
+        [self.cbPeripheral startAdvertising:@{CBAdvertisementDataLocalNameKey: self.publicKey, CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
         [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:YES]];
     }
 }
@@ -148,6 +150,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
         NSString *addressFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         public_key = addressFromData;
+    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
+        public_key = advertisementData[CBAdvertisementDataLocalNameKey];
     }
     
     if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
