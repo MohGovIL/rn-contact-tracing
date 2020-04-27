@@ -11,7 +11,7 @@
 #import "SpecialBle.h"
 #import <React/RCTLog.h>
 #import "SpecialBleManager.h"
-#import "Config.h""
+#import "Config.h"
 #import "rn_contact_tracing-Swift.h"
 
 @implementation SpecialBle
@@ -31,7 +31,7 @@ RCT_EXPORT_METHOD(stopBLEScan) {
 }
 
 RCT_EXPORT_METHOD(advertise:(NSString *) serviceUUID data:(NSString*)data) {
-  [[SpecialBleManager sharedManager] advertise:serviceUUID withEventEmitter:self];
+  [[SpecialBleManager sharedManager] advertise:serviceUUID publicKey:data withEventEmitter:self];
 }
 
 RCT_EXPORT_METHOD(stopAdvertise) {
@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(addDemoDevice) {
     NSDate *date = [NSDate date]; // current date
     int unixtime = [date timeIntervalSince1970];
     NSDictionary* demoDevice = @{
-        @"device_address": [SpecialBle randomStringWithLength:8],
+        @"public_key": [SpecialBle randomStringWithLength:8],
         @"rssi": [NSNumber numberWithInt:555],
         @"device_first_timestamp": [NSNumber numberWithInt:unixtime],
         @"device_last_timestamp": [NSNumber numberWithInt:unixtime],

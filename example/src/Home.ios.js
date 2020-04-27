@@ -13,7 +13,7 @@ import SpecialBle from 'rn-contact-tracing';
 import {Button, Badge, Colors} from 'react-native-ui-lib';
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
-const PUBLIC_KEY = '12345678901234567';
+const PUBLIC_KEY = '1234';
 const TAG = "EXAMPLE";
 
 

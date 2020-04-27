@@ -16,7 +16,7 @@
 + (id)sharedManager;
 - (void)scan:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopScan:(RCTEventEmitter*)emitter;
-- (void)advertise:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter;
+- (void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopAdvertise:(RCTEventEmitter*)emitter;
 
 @end

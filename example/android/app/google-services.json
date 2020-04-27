@@ -1,0 +1,43 @@
+{
+  "react-native": {
+    "crashlytics_debug_enabled": true
+  },
+  "project_info": {
+    "project_number": "163152009282",
+    "firebase_url": "https://rn-contact-tracing.firebaseio.com",
+    "project_id": "rn-contact-tracing",
+    "storage_bucket": "rn-contact-tracing.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163152009282:android:e31085e4c5e2b5745af5db",
+        "android_client_info": {
+          "package_name": "com.rncontacttracing.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "163152009282-241n62496n6t9pm99l71podf8fsrcheq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTsakXDqg1BUvqR0AiJmQSyhM5A61zins"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "163152009282-241n62496n6t9pm99l71podf8fsrcheq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

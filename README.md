@@ -1,39 +1,64 @@
-![CI](https://github.com/wix-incubator/rn-contact-tracing/workflows/CI/badge.svg)
-# RN-Contact-Tracing 
+<p align="center">
+  <h1 font-weight=bold align="center">RN-Contact-Tracing</h1>
+</p>
 
-## WIP Library - Don't Use in Production
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/rn-contact-tracing"><img src="https://img.shields.io/npm/v/rn-contact-tracing" alt="NPM version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/rn-contact-tracing" alt="License"></a>
+  <a href="https://github.com/wix-incubator/rn-contact-tracing/actions?query=workflow%3ACI"><img src="https://github.com/wix-incubator/rn-contact-tracing/workflows/CI/badge.svg?style=flat-square" alt="CI"></a>
+</p>
 
+---
+
+<p align="center">
+  <h3 font-weight=bold align="center">  WIP Library - Don't Use in Production</h3>
+</p>
+
+---
+ 
 ## About
-This is a react-native library for tracing close contact between 2 mobile devices by exchanging tokens over BLE (Bluetooth Low Energy).  
+This is a react-native library for tracing close contact between 2 mobile devices by exchanging ephemeral tokens over BLE (Bluetooth Low Energy).  
 
-The library eventually will do the following:
+The library will do the following:
 
-1. Advertise messages with specific _service_uuid_ and generated _token_
-2. Scan for for BLE signals with a specific _service_uuid_ and store the relevant data into local device storage
+1. Advertise message with specific _service_uuid_ and generated _ephemeral token_
+2. Scan for for BLE signals with a specific _service_uuid_ and store the relevant scanned data into local device storage
 3. Provide simple API for JS to init these tasks in background and retrieve the scanned _tokens_
+4. Integrate with a module that will provide ephemerally encrypted tokens (might be optional part of the lib)
 
-This is temporary implementation until Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/) solution.
+There is a chance this lib will be updated after Google & Apple will release the full [Contact Tracing API](https://www.apple.com/covid19/contacttracing/) solution.
+
+
+### Challanges
+1. iOS limitation of using ble while the app in the background - [link](https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/CoreBluetooth_concepts/CoreBluetoothBackgroundProcessingForIOSApps/PerformingTasksWhileYourAppIsInTheBackground.html) 
+2. Estimate the distance between 2 devices without violating user's privacy, using the data we can send over the ble
 
 
 ## Working plan
 
- Functionality | Andorid | iOS | 
+ Functionality | Android | iOS | 
 :------------ | :-------------| :-------------| 
 Scan in foreground | :white_check_mark: |  :white_check_mark: |
 Advertise in foreground | :white_check_mark: |  :white_check_mark: |
 Scan in background | :white_check_mark: | TODO |
 Advertise in background | :white_check_mark: | TODO |
-Save scanned data into local DB | :white_check_mark: | WIP |
-Return scanned data to JS | :white_check_mark: | TODO | 
-Pass scannng & advertising configuration from JS (intervals..) | :white_check_mark: | TODO |
+Save scanned data into local DB | :white_check_mark: | :white_check_mark: |
+Return scanned data to JS | :white_check_mark: | :white_check_mark: | 
+Pass scannng & advertising configuration from JS (intervals..) | :white_check_mark: | :white_check_mark: |
 Integration with tokens provider  |TODO|TODO|
-Deal with permissions and reboot/app update |WIP|TODO|
 Tests  |TODO|TODO|]
 Features for rssi calibration (GPS, Proximity)  |WIP|TODO|
+---
 
 
 ## Getting started
+
+### Example Project 
+
+The Example project can be used as a reference of how to use the rn-contact-tracing API and as a helpful tool to fine-tune the scanning/advertising configuration
+
+<img align="right" width="200"  src="docs/example.gif">
 
 ### How to run the example project
 ```properties
@@ -94,16 +119,9 @@ protected List<ReactPackage> getPackages() {
 
 
 
-
-
-
-
-
-
 ### Supported Platforms
 * iOS 10+
 * Android API 21+
-
 
 
 ## Methods
@@ -152,6 +170,7 @@ Supported options:
 * `scanInterval` - the time in milisec between every scan
 * `advertiseDuration` - advertising duration in milisec (up to 180000ms)
 * `advertiseInterval` - the time in milisec between every advertising
+* `token` -  temporary token to advertise (for testing)
 
 For Android
 * `advertiseTXPowerLevel` - advertise TX power level [docs](https://developer.android.com/reference/android/bluetooth/le/AdvertiseSettings.Builder#setTxPowerLevel(int))
@@ -317,8 +336,9 @@ Clear all scans
 - `foundDevice` - event has 2 params: {event.device_name, event.device_address}
 - `error` - {event.error_message}
 
+---
 
-##### Why did we build this lib?
+### Why did we build this lib?
 Due to COVID-19 pandemic, several groups and health authorities released apps that will help to identify and notify people that are at risk of exposure.
 
 Some of these apps are written with RN and based on tracking user location which is not enough such as [Hamagen](https://github.com/MohGovIL/hamagen-react-native), and they willing to add BLE based functionality.  
@@ -332,8 +352,6 @@ In addition, we looked at several great apps written for the same purpose in nat
 ##### Privacy (what do we advertise and save to DB)
 TBD
  
-##### Limitations
-TBD
 
 
 ### References
