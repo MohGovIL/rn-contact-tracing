@@ -37,7 +37,7 @@ There is a chance this lib will be updated after Google & Apple will release the
 
 ## Working plan
 
- Functionality | Andorid | iOS | 
+ Functionality | Android | iOS | 
 :------------ | :-------------| :-------------| 
 Scan in foreground | :white_check_mark: |  :white_check_mark: |
 Advertise in foreground | :white_check_mark: |  :white_check_mark: |
