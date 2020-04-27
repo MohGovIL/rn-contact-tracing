@@ -17,10 +17,10 @@ public class Device: CoreDataCodable {
         case public_key
         case device_address
         case device_protocol
-        case rssi
+        case device_rssi
         case device_first_timestamp
         case device_last_timestamp
-        case tx
+        case device_tx
     }
     
     // MARK: - Decodable
@@ -49,9 +49,9 @@ public class Device: CoreDataCodable {
         try container.encode(public_key, forKey: .public_key)
         try container.encode(device_address, forKey: .device_address)
         try container.encode(device_protocol, forKey: .device_protocol)
-        try container.encode(rssi, forKey: .rssi)
+        try container.encode(device_rssi, forKey: .device_rssi)
         try container.encode(device_first_timestamp, forKey: .device_first_timestamp)
         try container.encode(device_last_timestamp, forKey: .device_last_timestamp)
-        try container.encode(tx, forKey: .tx)
+        try container.encode(device_tx, forKey: .device_tx)
     }
 }

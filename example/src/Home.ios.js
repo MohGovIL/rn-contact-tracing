@@ -15,7 +15,7 @@ import {
 import SpecialBle from 'rn-contact-tracing';
 import {Button, Badge, Colors, Divider, View, TextField} from 'react-native-ui-lib';
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
-const PUBLIC_KEY = '1234';
+const PUBLIC_KEY = 'IOS-1234';
 const TAG = "EXAMPLE";
 
 const ScanMatchMode = [
@@ -204,9 +204,17 @@ function HomeScreen() {
                 <Text text80BL>ServiceUUID: {SERVICE_UUID}</Text>
 
                 <View style={styles.subContainer}>
-                    {_renderButton('Start BLE service', _startBLEService)}
-                    {_renderButton('Stop BLE service', _stopBLEService)}
+                        {_renderButton('Start Scan', _startScan)}
+                        {_renderButton('Start Advertise', _startAdvertise)}
+                        
                 </View>
+            
+            <View style={styles.subContainer}>
+                {_renderButton('Stop Scan', _stoptScan)}
+                {_renderButton('Stop Advertise', _stopAdvertise)}
+            </View>
+
+            
           <ScrollView>
                 {_renderTextField("Advertised Token", config.token, val => setConfig({
                     ...config,
@@ -239,13 +247,6 @@ function HomeScreen() {
                     ))}
                 </Picker>
           </SafeAreaView>
-
-
-                <View style={styles.subContainer}>
-                    {_renderButton('Start Scan', _startScan)}
-                    {_renderButton('Stop Scan', _stoptScan)}
-                </View>
-
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Advertise</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
@@ -293,9 +294,11 @@ function HomeScreen() {
                 </SafeAreaView>
 
             <View style={styles.subContainer}>
-                    {_renderButton('Start Advertise', _startAdvertise)}
-                    {_renderButton('Stop Advertise', _stopAdvertise)}
+                {_renderButton('Start BLE service', _startBLEService)}
+                {_renderButton('Stop BLE service', _stopBLEService)}
             </View>
+            
+            
                 
             
             <View style={styles.subContainer}>

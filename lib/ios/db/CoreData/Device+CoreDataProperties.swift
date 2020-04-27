@@ -20,9 +20,9 @@ extension Device {
     @NSManaged public var public_key: String?
     @NSManaged public var device_address: String?
     @NSManaged public var device_protocol: String?
-    @NSManaged public var rssi: Int16
+    @NSManaged public var device_rssi: Int16
     @NSManaged public var device_first_timestamp: Int16
     @NSManaged public var device_last_timestamp: Int16
-    @NSManaged public var tx: Int16
+    @NSManaged public var device_tx: Int16
 
 }

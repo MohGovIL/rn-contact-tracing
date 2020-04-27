@@ -75,7 +75,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 -(void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter {
     self.eventEmitter = emitter;
     self.advertiseUUIDString = serviceUUIDString;
-    self.publicKey = publicKey;
+    self.publicKey = [NSString stringWithFormat:@"%@-%@", [[UIDevice currentDevice] name], publicKey];
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
         return;
     }
@@ -162,7 +162,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
                   RSSI:(NSNumber *)RSSI {
     NSString* name = @"";
     NSString* public_key = @"";
-    int device_first_timestamp = 0;
+    NSNumber* device_first_timestamp = @0;
     int tx = 0;
     
     NSLog(@"Discovered device with name: %@", peripheral.name);
@@ -187,15 +187,16 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     }
     
     if (advertisementData && advertisementData[CBAdvertisementDataTxPowerLevelKey]) {
-        tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
+        tx = [[NSString stringWithFormat:@"%@", advertisementData[CBAdvertisementDataTxPowerLevelKey]] intValue];
     }
     
+    int rssiInt = [[NSString stringWithFormat:@"%@", RSSI] intValue];
     NSDictionary* device = @{
         @"public_key": public_key,
-        @"rssi": RSSI,
-        @"device_first_timestamp": [NSNumber numberWithInt:device_first_timestamp],
-        @"device_last_timestamp": [NSNumber numberWithInt:device_first_timestamp],
-        @"tx": [NSNumber numberWithInt:tx]
+        @"device_rssi": [NSNumber numberWithInt:rssiInt],
+        @"device_first_timestamp": device_first_timestamp,
+        @"device_last_timestamp": device_first_timestamp,
+        @"device_tx": [NSNumber numberWithInt:tx]
     };
     
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];

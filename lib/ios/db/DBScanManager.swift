@@ -25,9 +25,9 @@ class DBScanManager {
         scan.publicKey = scanInfo["publicKey"] as? String
         scan.scan_address = scanInfo["scan_address"] as? String
         scan.scan_protocol = scanInfo["scan_protocol"] as? String
-        scan.rssi = scanInfo["rssi"] as! Int16
+        scan.device_rssi = scanInfo["device_rssi"] as! Int16
         scan.timestamp = scanInfo["timestamp"] as! Int16
-        scan.tx = scanInfo["tx"] as! Int16
+        scan.device_tx = scanInfo["device_tx"] as! Int16
         do {
             try context.save()
         } catch let error as NSError {
