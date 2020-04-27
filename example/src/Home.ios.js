@@ -9,7 +9,8 @@ import {
     PermissionsAndroid,
     Platform,
     Picker,
-    ScrollView
+    ScrollView,
+    SafeAreaView
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
 import {Button, Badge, Colors, Divider, View, TextField} from 'react-native-ui-lib';
@@ -225,6 +226,7 @@ function HomeScreen() {
                 </View>
 
                 <Text text80BL style={{marginHorizontal: 10}}>Match Mode</Text>
+          <SafeAreaView style={{flex: 1}}>
                 <Picker
                     style={styles.picker}
                     selectedValue={config.scanMatchMode}
@@ -236,6 +238,7 @@ function HomeScreen() {
                         <Picker.Item key={x.value} value={x.value} label={x.label}/>
                     ))}
                 </Picker>
+          </SafeAreaView>
 
 
                 <View style={styles.subContainer}>
@@ -258,32 +261,36 @@ function HomeScreen() {
                 </View>
 
                 <Text text80BL style={{marginHorizontal: 10}}>Advertise Mode</Text>
-                <Picker
-                    style={styles.picker}
-                    selectedValue={config.advertiseMode}
-                    onValueChange={(val) => {
-                        setConfig({...config, advertiseMode: val})
-                    }}
-                >
-                    {_.map(AdvertiseMode, x => (
-                        <Picker.Item key={x.value} value={x.value} label={x.label}/>
-                    ))}
-                </Picker>
+                
+                <SafeAreaView style={{flex: 1}}>
+                  <Picker
+                      style={styles.picker}
+                      selectedValue={config.advertiseMode}
+                      onValueChange={(val) => {
+                          setConfig({...config, advertiseMode: val})
+                      }}
+                  >
+                      {_.map(AdvertiseMode, x => (
+                          <Picker.Item key={x.value} value={x.value} label={x.label}/>
+                      ))}
+                  </Picker>
+                </SafeAreaView>
 
                 <Text text80BL style={{marginHorizontal: 10}}>Advertise TX Power</Text>
 
-
-                <Picker
-                    style={styles.picker}
-                    selectedValue={config.advertiseTXPowerLevel}
-                    onValueChange={(val) => {
-                        setConfig({...config, advertiseTXPowerLevel: val})
-                    }}
-                >
-                    {_.map(AdvertiseTXPower, x => (
-                        <Picker.Item key={x.value} value={x.value} label={x.label}/>
-                    ))}
-                </Picker>
+                <SafeAreaView style={{flex: 1}}>
+                  <Picker
+                      style={styles.picker}
+                      selectedValue={config.advertiseTXPowerLevel}
+                      onValueChange={(val) => {
+                          setConfig({...config, advertiseTXPowerLevel: val})
+                      }}
+                  >
+                      {_.map(AdvertiseTXPower, x => (
+                          <Picker.Item key={x.value} value={x.value} label={x.label}/>
+                      ))}
+                  </Picker>
+                </SafeAreaView>
 
             <View style={styles.subContainer}>
                     {_renderButton('Start Advertise', _startAdvertise)}
@@ -299,6 +306,24 @@ function HomeScreen() {
               {_renderButton('Get Config', _getConfig)}
               {_renderButton('Set Config', _setConfig)}
             </View>
+            
+            <View style={[styles.subContainer, {display : Platform.OS === 'android' ? 'none' : 'flex'}]}>
+                {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}
+                {_renderButton('Remove Devices from DB', _cleanAllDevicesFromDB)}
+                {_renderButton('Demo Scan Device', _scanDemoDevice)}
+            </View>
+            
+            <SafeAreaView style={{flex: 1}}>
+              <FlatList
+                  data={devices}
+                  style={{marginTop: 5}}
+                  keyExtractor={item => item.public_key}
+                  renderItem={({item}) => <Text style={styles.item}>
+                      {item.public_key} :
+                      {item.device_address} :
+                      {item.device_rssi} </Text>}
+              />
+            </SafeAreaView>
           </ScrollView>
         </View>
 

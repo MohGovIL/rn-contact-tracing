@@ -3,12 +3,12 @@ import _ from 'lodash';
 import {
     NativeEventEmitter,
     TouchableOpacity,
-    Text,
     FlatList,
     StyleSheet,
     PermissionsAndroid,
     Platform,
     Picker,
+    Text,
     ScrollView
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
@@ -39,7 +39,6 @@ const AdvertiseTXPower = [
 function HomeScreen() {
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
-    
     const [config, setConfig] = useState({
         serviceUUID: '',
         scanDuration: 0,
@@ -61,14 +60,7 @@ function HomeScreen() {
     // Start scanning for a specific serviceUUID
     function _startScan() {
         SpecialBle.setConfig(config)
-        if (Platform.OS === 'android')
-        {
-          SpecialBle.startBLEScan();
-        }          
-        else
-        {
-          SpecialBle.startBLEScan(SERVICE_UUID);
-        }      
+        SpecialBle.startBLEScan();
     }
 
     // Stop scanning
@@ -79,14 +71,7 @@ function HomeScreen() {
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
         SpecialBle.setConfig(config);
-        if (Platform.OS === 'android')
-        {
-          SpecialBle.advertise();
-        }
-        else
-        {
-          SpecialBle.advertise(SERVICE_UUID,PUBLIC_KEY);
-        }
+        SpecialBle.advertise();
     }
 
     // Stop advertising
@@ -97,14 +82,7 @@ function HomeScreen() {
     // in Android - start foreground service with scanning & advertising tasks
     function _startBLEService() {
         SpecialBle.setConfig(config);
-        if (Platform.OS === 'android')
-        {
-          SpecialBle.startBLEService();
-        }
-        else
-        {
-          SpecialBle.startBLEService(SERVICE_UUID,PUBLIC_KEY);
-        }
+        SpecialBle.startBLEService();
     }
 
     // stop background tasks
@@ -114,18 +92,9 @@ function HomeScreen() {
 
     // get all devices from DB
     async function _getAllDevicesFromDB() {
-        if (Platform.OS === 'android')
-        {
-          SpecialBle.getAllDevices((devices) => {
-              setDevices(devices)
-          })
-        }
-        else
-        {
-          SpecialBle.getAllDevices((err, devices) => {
+        SpecialBle.getAllDevices((devices) => {
             setDevices(devices)
-          })
-        }
+        })
     }
 
     // clean all devices from DB
@@ -134,11 +103,6 @@ function HomeScreen() {
         _getAllDevicesFromDB();
     }
 
-    // add demo device
-    function _scanDemoDevice() {
-      if (Platform.OS === 'ios')
-        SpecialBle.addDemoDevice();
-    }
     // add list of public_keys
     function _setPublicKeys() {
         let publicKeys = ['12345', '12346', '12347', '12348', '12349']
@@ -146,33 +110,12 @@ function HomeScreen() {
         alert(config.scanInterval)
     }
 
-  // get config
-  function _getConfig() {
-    if (Platform.OS === 'ios')
-    {
-      SpecialBle.getConfig((config) => {
-        alert(JSON.stringify(config));
-      })
+    // get Config
+    function _getConfig() {
+        SpecialBle.getConfig((config) => {
+            setConfig(config);
+        })
     }
-    else
-    {
-      setConfig(config);
-    }
-  }
-
-  // set config
-  function _setConfig() {
-    if (Platform.OS === 'ios')
-    {
-      SpecialBle.setConfig({
-        serviceUUID: '',
-        scanDuration: 0,
-        scanInterval: 0,
-        advertiseInterval: 0,
-        advertiseDuration: 0
-      })
-    }
-  }
 
     // request location permission (only for Android)
     async function _requestLocationPermission() {
@@ -245,7 +188,6 @@ function HomeScreen() {
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Advertise</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                
                     {_renderTextField("Duration in ms", config.advertiseDuration.toString(), val => setConfig({
                         ...config,
                         advertiseDuration: parseInt(val)
@@ -284,9 +226,6 @@ function HomeScreen() {
                     ))}
                 </Picker>
 
-<View style={styles.subContainer}>
-                {_renderButton('Set public Keys', _setPublicKeys)}
-            </View>
 
                 <View style={styles.subContainer}>
                     {_renderButton('Start Advertise', _startAdvertise)}
