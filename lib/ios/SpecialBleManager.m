@@ -150,6 +150,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
         NSString *addressFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         public_key = addressFromData;
+    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
+        public_key = advertisementData[CBAdvertisementDataLocalNameKey];
     }
     
     if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
