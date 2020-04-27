@@ -73,6 +73,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 }
 
 -(void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter {
+    self.eventEmitter = emitter;
     self.advertiseUUIDString = serviceUUIDString;
     self.publicKey = publicKey;
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
@@ -121,9 +122,36 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 #pragma mark - CBCentralManagerDelegate
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
-    NSLog(@"Central manager state: %d", central.state);
-    [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
-    
+    //    NSLog(@"Central manager state: %d", central.state);
+    //    [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+        switch (central.state) {
+                case CBManagerStateUnknown:
+                    NSLog(@"cntral.state is Unknown");
+                    break;
+                case CBManagerStateResetting:
+                    NSLog(@"cntral.state is Resseting");
+
+                    break;
+                case CBManagerStateUnsupported:
+                    NSLog(@"cntral.state is Unsupported");
+
+                    break;
+                case CBManagerStateUnauthorized:
+                    NSLog(@"cntral.state is Unauthorized");
+
+                    break;
+                case CBManagerStatePoweredOff:
+                    NSLog(@"cntral.state is Powered off");
+
+                    break;
+                case CBManagerStatePoweredOn:
+                    NSLog(@"cntral.state is Powered on");
+                    
+                    [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+                    break;
+                default:
+                    break;
+            }
 }
 
 - (void)centralManager:(CBCentralManager *)central
