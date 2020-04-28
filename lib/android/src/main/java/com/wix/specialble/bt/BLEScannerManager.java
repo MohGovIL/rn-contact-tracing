@@ -7,26 +7,31 @@ import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.ParcelUuid;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.listeners.IEventListener;
+import com.wix.specialble.sensor.AccelerometerManager;
+import com.wix.specialble.sensor.ProximityManager;
+import com.wix.specialble.sensor.RotationVectorManager;
+import com.wix.specialble.sensor.SensorUtils;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class BLEScannerManager {
 
-    public static final String SCANNING_STATUS = "scanningStatus";
-    public static final String FOUND_DEVICE = "foundDevice";
-    public static final String FOUND_SCAN = "foundScan";
-    private static BLEScannerManager sScannerManager;
+    private static final String SCANNING_STATUS = "scanningStatus";
+    private static final String FOUND_DEVICE = "foundDevice";
+    private static final String FOUND_SCAN = "foundScan";
+    private RotationVectorManager mRotationVectorManager;
+    private AccelerometerManager mAccelerometerManager;
+    private ProximityManager mProximityManager;
 
     Context mContext;
     BluetoothAdapter bluetoothAdapter;
@@ -42,19 +47,19 @@ public class BLEScannerManager {
         bleScanCallback = new SpecialBLEScanCallback();
         dbClient = DBClient.getInstance(context);
         mEventListenerCallback = eventListenerCallback;
-    }
 
-    public static BLEScannerManager getInstance(Context context, IEventListener eventListenerCallback) {
-        if (sScannerManager != null) {
-            return sScannerManager;
-        }
-        return new BLEScannerManager(context, eventListenerCallback);
-    }
+        // declare sensors
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        mProximityManager = new ProximityManager(sensorManager);
+        mAccelerometerManager = new AccelerometerManager(sensorManager);
+        mRotationVectorManager = new RotationVectorManager(sensorManager);
 
+    }
 
     public void startScan(String serviceUUID) {
         bluetoothAdapter.enable();
         if (bluetoothAdapter.isEnabled()) {
+            registerSensors();
 
             Config config = Config.getInstance(mContext);
             int scanMatchMode = config.getScanMatchMode();
@@ -79,6 +84,8 @@ public class BLEScannerManager {
     public void stopScan() {
         bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback);
         mEventListenerCallback.onEvent(SCANNING_STATUS, false);
+        unregisterSensors();
+
     }
 
     class SpecialBLEScanCallback extends ScanCallback {
@@ -112,6 +119,7 @@ public class BLEScannerManager {
             super.onScanFailed(errorCode);
             if (errorCode != SCAN_FAILED_ALREADY_STARTED) {
                 mEventListenerCallback.onEvent(SCANNING_STATUS,false);
+                unregisterSensors();
             }
             Log.d(TAG, "onScanStartFailed - ErrorCode: " + errorCode);
         }
@@ -142,7 +150,8 @@ public class BLEScannerManager {
                         result.getDevice().getAddress(),
                         BLEManager.BLEProtocol.GAP.toString(),
                         result.getRssi(),
-                        tx);
+                        tx, mProximityManager.getEvents()[0], mAccelerometerManager.getEvents(), mRotationVectorManager.getEvents(), SensorUtils.getBatteryPercentage(mContext));
+
                 dbClient.addScan(newScan);
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
@@ -156,5 +165,17 @@ public class BLEScannerManager {
     private Device getNewDevice(ScanResult result, int tx, String scannedToken, long firstSeenTime, long lastSeenTime) {
         return new Device(firstSeenTime, lastSeenTime, scannedToken, result.getDevice().getAddress(),
                 BLEManager.BLEProtocol.GAP.toString(), result.getRssi(), tx);
+    }
+
+    private void registerSensors() {
+        mProximityManager.registerListener();
+        mAccelerometerManager.registerListener();
+        mRotationVectorManager.registerListener();
+    }
+
+    private void unregisterSensors() {
+        mProximityManager.unregisterListener();
+        mAccelerometerManager.unregisterListener();
+        mRotationVectorManager.unregisterListener();
     }
 }
