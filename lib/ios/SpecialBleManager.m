@@ -163,7 +163,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSString* name = @"";
     NSString* public_key = @"";
     NSNumber* device_first_timestamp = @0;
-    int tx = 0;
+    NSNumber *tx = @0;
     
     NSLog(@"Discovered device with name: %@", peripheral.name);
     if (peripheral && peripheral.name != nil) {
@@ -187,16 +187,15 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     }
     
     if (advertisementData && advertisementData[CBAdvertisementDataTxPowerLevelKey]) {
-        tx = [[NSString stringWithFormat:@"%@", advertisementData[CBAdvertisementDataTxPowerLevelKey]] intValue];
+        tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
     }
     
-    int rssiInt = [[NSString stringWithFormat:@"%@", RSSI] intValue];
     NSDictionary* device = @{
         @"public_key": public_key,
-        @"device_rssi": [NSNumber numberWithInt:rssiInt],
+        @"device_rssi": RSSI,
         @"device_first_timestamp": device_first_timestamp,
         @"device_last_timestamp": device_first_timestamp,
-        @"device_tx": [NSNumber numberWithInt:tx]
+        @"device_tx": tx
     };
     
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
