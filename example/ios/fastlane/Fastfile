@@ -56,6 +56,8 @@ platform :ios do
     project: ENV["XCODE_PROJ"],
     output_directory: "output")
    
+    upload_to_testflight(changelog: "Second Try")
+    
   end
 end
 
