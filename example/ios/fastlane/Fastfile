@@ -55,6 +55,8 @@ platform :ios do
     export_xcargs: "-allowProvisioningUpdates",
     project: ENV["XCODE_PROJ"],
     output_directory: "output")
+    
+    upload_to_testflight()
   end
 end
 
