@@ -142,6 +142,10 @@ function HomeScreen() {
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                    <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>scanDuration</Text>
+                    <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>scanInterval</Text>
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.scanDuration.toString(), val => setConfig({
                         ...config,
                         scanDuration: parseInt(val)
@@ -153,6 +157,10 @@ function HomeScreen() {
                 </View>
 
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Advertise</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                    <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>advertiseDuration</Text>
+                    <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>advertiseInterval</Text>
+                </View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.advertiseDuration.toString(), val => setConfig({
                         ...config,
