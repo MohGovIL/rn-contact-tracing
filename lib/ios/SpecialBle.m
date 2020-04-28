@@ -96,10 +96,10 @@ RCT_EXPORT_METHOD(addDemoDevice) {
     int unixtime = [date timeIntervalSince1970];
     NSDictionary* demoDevice = @{
         @"public_key": [SpecialBle randomStringWithLength:8],
-        @"rssi": [NSNumber numberWithInt:555],
+        @"device_rssi": [NSNumber numberWithInt:555],
         @"device_first_timestamp": [NSNumber numberWithInt:unixtime],
         @"device_last_timestamp": [NSNumber numberWithInt:unixtime],
-        @"tx": [NSNumber numberWithInt:0]
+        @"device_tx": [NSNumber numberWithInt:0]
     };
     [DBClient addDevice:demoDevice];
 }

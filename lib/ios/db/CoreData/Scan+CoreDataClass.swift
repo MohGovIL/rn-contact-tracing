@@ -16,9 +16,9 @@ public class Scan: CoreDataCodable {
         case publicKey
         case scan_address
         case scan_protocol
-        case rssi
+        case device_rssi
         case timestamp
-        case tx
+        case device_tx
     }
     
     // MARK: - Encodable
@@ -27,9 +27,9 @@ public class Scan: CoreDataCodable {
         try container.encode(publicKey, forKey: .publicKey)
         try container.encode(scan_address, forKey: .scan_address)
         try container.encode(scan_protocol, forKey: .scan_protocol)
-        try container.encode(rssi, forKey: .rssi)
+        try container.encode(device_rssi, forKey: .device_rssi)
         try container.encode(timestamp, forKey: .timestamp)
-        try container.encode(tx, forKey: .tx)
+        try container.encode(device_tx, forKey: .device_tx)
     }
 
 }
