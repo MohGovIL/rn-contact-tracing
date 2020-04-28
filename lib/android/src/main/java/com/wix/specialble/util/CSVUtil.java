@@ -39,7 +39,7 @@ public class CSVUtil {
         CsvWriter csvWriter = new CsvWriter();
         CsvAppender csvAppender = csvWriter.append(getScansCsvFile(context), StandardCharsets.UTF_8);
         csvAppender.appendLine("timestamp", "publicKey", "deviceAddress", "deviceProtocol",
-                "rssi", "proximity", "acceleration_x", "acceleration_y", "acceleration_z",
+                "rssi", "tx", "proximity", "acceleration_x", "acceleration_y", "acceleration_z",
                 "rotation_x", "rotation_y", "rotation_z", "rotation_scalar", "battery");
         for (Scan scan : allScans) {
             csvAppender.appendField(String.valueOf(scan.getTimestamp()));
@@ -47,6 +47,7 @@ public class CSVUtil {
             csvAppender.appendField(scan.getScanAddress());
             csvAppender.appendField(scan.getScanProtocol());
             csvAppender.appendField(String.valueOf(scan.getRssi()));
+            csvAppender.appendField(String.valueOf(scan.getTx()));
             csvAppender.appendField(String.valueOf(scan.getProximityValue()));
             csvAppender.appendField(String.valueOf(scan.getAccelerationX()));
             csvAppender.appendField(String.valueOf(scan.getAccelerationY()));
