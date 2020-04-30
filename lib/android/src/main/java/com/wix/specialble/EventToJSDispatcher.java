@@ -29,7 +29,11 @@ public class EventToJSDispatcher implements IEventListener {
     }
 
     private void dispatch(@NonNull String eventName, @Nullable Object data) {
-        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);
+        try {
+            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
     }
 
     @Override
