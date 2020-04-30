@@ -10,7 +10,6 @@ import {
     Platform,
     Picker,
     ScrollView,
-    SafeAreaView,
     TextInput
 } from 'react-native';
 import SpecialBle from 'rn-contact-tracing';
@@ -24,6 +23,7 @@ const TAG = "EXAMPLE";
 function HomeScreen() {
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
+    const [devices, setDevices] = useState([]);
     const [config, setConfig] = useState({
         serviceUUID: '',
         scanDuration: 0,

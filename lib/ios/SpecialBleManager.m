@@ -61,6 +61,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
     if (self.cbManager.state == CBManagerStatePoweredOn) {
         NSLog(@"Start scanning for %@", UUID);
+        // TODO: check usage of those options:
+//        NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber  numberWithBool:YES], CBCentralManagerScanOptionAllowDuplicatesKey, nil];
         [self.cbManager scanForPeripheralsWithServices:@[UUID] options:nil];
         [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
     }
@@ -75,7 +77,6 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 -(void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter {
     self.eventEmitter = emitter;
     self.advertiseUUIDString = serviceUUIDString;
-    self.publicKey = [NSString stringWithFormat:@"%@-%@", [[UIDevice currentDevice] name], publicKey];
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
         return;
     }
@@ -108,7 +109,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     CBMutableService* myService = [[CBMutableService alloc] initWithType:UUID primary:YES];
     myService.characteristics = [NSArray arrayWithObject:myCharacteristic];
     self.service = myService;
-    self.publicKey = publicKey;
+    // TODO: change pulicKey assignment when getting crypto public_key from react-native
+    self.publicKey = [NSString stringWithFormat:@"%@-%@", [[UIDevice currentDevice] name], publicKey];
     self.characteristic = myCharacteristic;
     [self.cbPeripheral addService:myService];
 }
@@ -165,20 +167,20 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSNumber* device_first_timestamp = @0;
     NSNumber *tx = @0;
     
-    NSLog(@"Discovered device with name: %@", peripheral.name);
     if (peripheral && peripheral.name != nil) {
+        NSLog(@"Discovered device with name: %@", peripheral.name);
         name = peripheral.name;
     }
     
-    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
+    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) { // Androids device...
         NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
         CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
         
         NSData *data = dataService[serviceUUID];
 
-        NSString *addressFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        public_key = addressFromData;
-    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
+        public_key = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"Unknown";
+        
+    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) { // IOS device...
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
     }
     
@@ -200,13 +202,20 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
     
+//    NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
+
     [DBClient addDevice:device];
+
+//    if (devicesArray.count == 0)
+//        [DBClient addDevice:device];
+//    else
+//        [DBClient updateDevice:device];
 }
 
 #pragma mark - CBPeripheralDelegate
 
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral {
-    NSLog(@"Peripheral manager atate: %d", peripheral.state);
+    NSLog(@"Peripheral manager atate: %d", (int)peripheral.state);
     [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
 }
 
