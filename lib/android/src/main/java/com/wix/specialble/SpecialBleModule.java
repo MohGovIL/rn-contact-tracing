@@ -233,8 +233,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public boolean isBatteryOptimizationDeactivated() {
-        return DeviceUtil.isBatteryOptimizationDeactivated(reactContext);
+    public void isBatteryOptimizationDeactivated(Callback callback) {
+        callback.invoke(DeviceUtil.isBatteryOptimizationDeactivated(reactContext));
     }
 
 

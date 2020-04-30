@@ -138,12 +138,23 @@ function HomeScreen() {
         SpecialBle.requestToDisableBatteryOptimization();
     }
 
+    // check if device optimized battery usage for app
+    function _requestIsBatteryOptimized(){
+        SpecialBle.isBatteryOptimizationDeactivated((isOptimized) => {
+            alert('App is battery optimized = ' + isOptimized);
+        })
+    }
 
     return (
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.subContainer}>
                 {_renderPermissionButton()}
+                </View>
+
+                <Text text80BL style={{marginHorizontal: 10}}>Battery Optimization (Doze Mode)</Text>
+                <View style={styles.subContainer}>
+                {_renderBatteryOptimizedQueryButton()}
                 {_renderBatteryOptimizationButton()}
                 </View>
                 <View style={styles.subContainer}>
@@ -296,13 +307,22 @@ function HomeScreen() {
         return null;
     }
 
-    function _renderBatteryOptimizationButton() {
+    function _renderBatteryOptimizedQueryButton() {
         if (Platform.OS === 'android')
             return (
-                _renderButton('Battery Optimization', _requestToDisableBatteryOptimization)
+                _renderButton('Is Optimized?', _requestIsBatteryOptimized)
             );
         return null;
     }
+
+    function _renderBatteryOptimizationButton() {
+        if (Platform.OS === 'android')
+            return (
+                _renderButton('Ask disabling', _requestToDisableBatteryOptimization)
+            );
+        return null;
+    }
+
 };
 
 
