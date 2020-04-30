@@ -26,6 +26,7 @@ import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
 import com.wix.specialble.util.CSVUtil;
+import com.wix.specialble.util.DeviceUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -224,6 +225,16 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         Intent chooser = Intent.createChooser(shareIntent, "");
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         reactContext.startActivity(chooser);
+    }
+
+    @ReactMethod
+    public void requestToDisableBatteryOptimization(){
+        DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+    }
+
+    @ReactMethod
+    public boolean isBatteryOptimizationDeactivated() {
+        return DeviceUtil.isBatteryOptimizationDeactivated(reactContext);
     }
 
 

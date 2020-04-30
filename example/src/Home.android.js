@@ -133,14 +133,22 @@ function HomeScreen() {
         }
     }
 
+    // request to disable battery optimization (only for Android >= API 23)
+    function _requestToDisableBatteryOptimization() {
+        SpecialBle.requestToDisableBatteryOptimization();
+    }
+
 
     return (
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.subContainer}>
+                {_renderPermissionButton()}
+                {_renderBatteryOptimizationButton()}
+                </View>
+                <View style={styles.subContainer}>
                     {_statusBadge('Scanning', scanningStatus.toString() === 'true')}
                     {_statusBadge('Advertising', advertisingStatus.toString() === 'true')}
-                    {_renderPermissionButton()}
                 </View>
                 <Text text80BL>ServiceUUID: {config.serviceUUID}</Text>
 
@@ -284,6 +292,14 @@ function HomeScreen() {
         if (Platform.OS === 'android')
             return (
                 _renderButton('Location Permission', _requestLocationPermission)
+            );
+        return null;
+    }
+
+    function _renderBatteryOptimizationButton() {
+        if (Platform.OS === 'android')
+            return (
+                _renderButton('Battery Optimization', _requestToDisableBatteryOptimization)
             );
         return null;
     }
