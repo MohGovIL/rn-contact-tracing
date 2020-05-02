@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import _ from 'lodash';
 import {
     NativeEventEmitter,
@@ -11,8 +11,9 @@ import {
     Text,
     ScrollView
 } from 'react-native';
-import SpecialBle from 'rn-contact-tracing';
+import SpecialBle, {requestLocationPermission, checktLocationPermission} from 'rn-contact-tracing';
 import {Button, Badge, Colors, Divider, View, TextField} from 'react-native-ui-lib';
+
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
 
 const TAG = "EXAMPLE";
@@ -39,6 +40,7 @@ const AdvertiseTXPower = [
 function HomeScreen() {
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
+    const [permissions, setPermissions] = useState({location: false, ignoreBatteryOpt: false});
     const [config, setConfig] = useState({
         serviceUUID: '',
         scanDuration: 0,
@@ -53,8 +55,17 @@ function HomeScreen() {
         const eventEmitter = new NativeEventEmitter(SpecialBle);
         eventEmitter.addListener('scanningStatus', (status) => setScanningStatus(status));
         eventEmitter.addListener('advertisingStatus', (status) => setAdvertisingStatus(status));
-        _getConfig()
+        eventEmitter.addListener('checkPermission', () => _checkPermissions());
+        _getConfig();
+        _checkPermissions();
     }, []);
+
+
+    async function _checkPermissions() {
+        let isGranted = await checktLocationPermission();
+        let ignoreBatteryOpt = await SpecialBle.isBatteryOptimizationDeactivated();
+        setPermissions({...permissions, ...{location: isGranted, ignoreBatteryOpt: ignoreBatteryOpt}})
+    }
 
 
     // Start scanning for a specific serviceUUID
@@ -117,44 +128,81 @@ function HomeScreen() {
         })
     }
 
-    // request location permission (only for Android)
-    async function _requestLocationPermission() {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+
+    function _renderBatteryOptimizedQueryButton() {
+        if (Platform.OS === 'android')
+            return (
+                _renderButton('Is Optimized?', _requestIsBatteryOptimized)
             );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                alert("Location Permission Granted");
-            } else {
-                alert("Location Permission Denied");
-            }
-        } catch (err) {
-            console.warn(err);
-        }
+        return null;
     }
 
+
+    // request to disable battery optimization (only for Android >= API 23)
+    function _requestToDisableBatteryOptimization() {
+        SpecialBle.requestToDisableBatteryOptimization();
+    }
 
     return (
         <View style={styles.container}>
             <ScrollView>
-                <View style={styles.subContainer}>
-                    {_statusBadge('Scanning', scanningStatus.toString() === 'true')}
-                    {_statusBadge('Advertising', advertisingStatus.toString() === 'true')}
-                    {_renderPermissionButton()}
-                </View>
-                <Text text80BL>ServiceUUID: {config.serviceUUID}</Text>
+                {_renderMainSection()}
+                {_renderPermissionSection()}
+                {_renderScanSection()}
+                {_renderAdvertiseSection()}
+            </ScrollView>
+        </View>
+    );
 
-                <View style={styles.subContainer}>
-                    {_renderButton('Start BLE service', _startBLEService)}
-                    {_renderButton('Stop BLE service', _stopBLEService)}
+
+    function _renderMainSection() {
+        return (
+            <Fragment>
+                <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                    {_statusBadge('Scanning', scanningStatus.toString() === 'true', {fontSize: 16, fontWeight: 'bold'})}
+                    {_statusBadge('Advertising', advertisingStatus.toString() === 'true', {
+                        fontSize: 16,
+                        fontWeight: 'bold'
+                    })}
                 </View>
 
+                <Text style={{fontSize: 14, marginVertical: 10}}>ServiceUUID: {config.serviceUUID}</Text>
                 {_renderTextField("Advertised Token", config.token, val => setConfig({
                     ...config,
                     token: val
                 }))}
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                    {_renderButton('Start BLE service', _startBLEService)}
+                    {_renderButton('Stop BLE service', _stopBLEService)}
+                </View>
+            </Fragment>
+        )
+    }
 
-                <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
+
+    function _renderPermissionSection() {
+        return (
+            <Fragment>
+                <Text style={styles.sectionTitle}>Permissions</Text>
+
+                <View style={[styles.subContainer, {justifyContent: 'space-around', marginVertical: 10}]}>
+                    {_statusBadge('Location', permissions.location === true)}
+                    {_statusBadge('Disabled Battery Opt', permissions.ignoreBatteryOpt === true)}
+                </View>
+                <View style={[styles.subContainer, {justifyContent: 'space-around'}]}>
+                    {_renderButton('Ask Location', async () => {
+                        setPermissions({...permissions, ...{location: await requestLocationPermission()}})
+                    })}
+                    {_renderButton('Ask Disable Battery Optimization', _requestToDisableBatteryOptimization)}
+                </View>
+            </Fragment>
+        )
+    }
+
+    function _renderScanSection() {
+        return (
+            <View>
+                <Text style={styles.sectionTitle}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.scanDuration.toString(), val => setConfig({
                         ...config,
@@ -179,14 +227,18 @@ function HomeScreen() {
                     ))}
                 </Picker>
 
-
                 <View style={styles.subContainer}>
                     {_renderButton('Start Scan', _startScan)}
                     {_renderButton('Stop Scan', _stoptScan)}
                 </View>
+            </View>
+        )
+    }
 
-
-                <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Advertise</Text>
+    function _renderAdvertiseSection() {
+        return (
+            <View>
+                <Text style={styles.sectionTitle}>Advertise</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.advertiseDuration.toString(), val => setConfig({
                         ...config,
@@ -231,10 +283,9 @@ function HomeScreen() {
                     {_renderButton('Start Advertise', _startAdvertise)}
                     {_renderButton('Stop Advertise', _stopAdvertise)}
                 </View>
-            </ScrollView>
-        </View>
-
-    );
+            </View>
+        )
+    }
 
     function _renderButton(text, onClick) {
         return (
@@ -252,10 +303,10 @@ function HomeScreen() {
     }
 
 
-    function _renderTextField(placeHolder, value, onChangeText, keyboardType= "default") {
+    function _renderTextField(placeHolder, value, onChangeText, keyboardType = "default") {
         return (
             <TextField
-                style={{marginHorizontal: 10, width: 140}}
+                style={{marginHorizontal: 5, marginBottom: 0, width: 140}}
                 floatingPlaceholder
                 placeholder={placeHolder}
                 floatOnFocus
@@ -267,10 +318,10 @@ function HomeScreen() {
     }
 
 
-    function _statusBadge(statusName, isOn) {
+    function _statusBadge(statusName, isOn, textStyle) {
         return (
             <View style={styles.statusContainer}>
-                <Text>{statusName}</Text>
+                <Text style={textStyle}>{statusName}</Text>
                 <Badge
                     style={{marginHorizontal: 10}}
                     size="small"
@@ -280,13 +331,6 @@ function HomeScreen() {
         );
     }
 
-    function _renderPermissionButton() {
-        if (Platform.OS === 'android')
-            return (
-                _renderButton('Location Permission', _requestLocationPermission)
-            );
-        return null;
-    }
 };
 
 
@@ -296,16 +340,20 @@ const styles = StyleSheet.create({
         marginTop: 20,
         flex: 1,
         marginHorizontal: 5,
+        paddingLeft: 10
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 10
     },
     statusContainer: {
-        flex: 1,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 10
     },
     subContainer: {
-        flexWrap: 'wrap',
         flexDirection: 'row',
-        alignItems: 'center'
     },
     subContainerTextFields: {
         justifyContent: 'space-between',

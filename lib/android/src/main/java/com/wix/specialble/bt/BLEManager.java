@@ -92,14 +92,6 @@ public class BLEManager implements IEventListener {
         return DBClient.getInstance(context).getScansByKey(pubKey);
     }
 
-/*    public MutableLiveData<Pair<String, Object>> getEventLiveData(){
-        return mEventLiveData;
-    }*/
-
-/*    @Override
-    public void onEvent(String event, Object data) {
-        mEventLiveData.postValue(new Pair(event, data));
-    }*/
 
     public void setEventToJSDispatcher(EventToJSDispatcher eventToJSDispatcher) {
         mEventToJSDispatcher = eventToJSDispatcher;
