@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -233,9 +234,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void isBatteryOptimizationDeactivated(Callback callback) {
-        callback.invoke(DeviceUtil.isBatteryOptimizationDeactivated(reactContext));
+    public void isBatteryOptimizationDeactivated(Promise promise) {
+        promise.resolve(DeviceUtil.isBatteryOptimizationDeactivated(reactContext));
     }
-
-
 }

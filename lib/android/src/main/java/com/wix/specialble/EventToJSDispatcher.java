@@ -37,7 +37,7 @@ public class EventToJSDispatcher implements IEventListener {
         if (data instanceof Boolean) {
             dispatch(event, toBoolean((Boolean) data));
         }
-        else if (data instanceof WritableMap) {
+        else if (data==null || data instanceof WritableMap) {
             dispatch(event, data);
         }
         else {

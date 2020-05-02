@@ -20,6 +20,8 @@ import com.wix.specialble.R;
 
 public class DeviceUtil {
     private static final String TAG = DeviceUtil.class.getSimpleName();
+    public static final int IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE = 666;
+
 
     /**
      * Same as {@link #askUserToTurnDozeModeOff(Activity, String, String, String)} but using default title and message
