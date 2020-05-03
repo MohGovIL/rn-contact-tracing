@@ -25,8 +25,8 @@ public class DBClient: NSObject {
     }
 
     @objc(updateDevice:)
-    public static func updateDevice(device: Device){
-        DBDeviceManager.shared.updateDevice()
+    public static func updateDevice(deviceInfo: [String:Any]){
+        DBDeviceManager.shared.updateDevice(deviceInfo: deviceInfo)
     }
 
     @objc(addDevice:)

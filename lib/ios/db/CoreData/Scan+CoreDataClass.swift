@@ -13,7 +13,7 @@ import CoreData
 public class Scan: CoreDataCodable {
     
     enum CodingKeys: Any, CodingKey {
-        case publicKey
+        case public_key
         case scan_address
         case scan_protocol
         case device_rssi
@@ -24,7 +24,7 @@ public class Scan: CoreDataCodable {
     // MARK: - Encodable
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(publicKey, forKey: .publicKey)
+        try container.encode(public_key, forKey: .public_key)
         try container.encode(scan_address, forKey: .scan_address)
         try container.encode(scan_protocol, forKey: .scan_protocol)
         try container.encode(device_rssi, forKey: .device_rssi)

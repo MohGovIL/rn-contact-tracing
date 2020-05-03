@@ -38,13 +38,12 @@ RCT_EXPORT_METHOD(stopAdvertise) {
     [[SpecialBleManager sharedManager] stopAdvertise:self];
 }
 
-RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID interval:(int) interval) {
-  RCTLogInfo(@"startBLEService TBD");
+RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID publicKey:(NSString*) publicKey) {
+    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withPublicKey:publicKey andEventEmitter:self];
 }
 
-
 RCT_EXPORT_METHOD(stopBLEService) {
-  RCTLogInfo(@"stopBLEService TBD");
+    [[SpecialBleManager sharedManager] stopBLEServices:self];
 }
 
 RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {

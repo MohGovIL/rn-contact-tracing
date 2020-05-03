@@ -64,7 +64,7 @@ function HomeScreen() {
         SpecialBle.stopAdvertise();
     }
 
-    // in Android - start foreground service with scanning & advertising tasks
+    // in IOS - starts the ble scan and peripheral services, sets the uuid and public keys and starts the scanning & advertising tasks
     function _startBLEService() {
         SpecialBle.setConfig(config);
         SpecialBle.startBLEService(SERVICE_UUID, PUBLIC_KEY);

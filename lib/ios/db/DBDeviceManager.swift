@@ -13,7 +13,7 @@ class DBDeviceManager {
     static let shared = DBDeviceManager()
     
     func getDeviceByKey(publicKey:String) -> NSArray {
-        return DBManager.shared.getEntityWithPredicate(entity: "Device", predicateKey: "publicKey", predicateValue: publicKey)
+        return DBManager.shared.getEntityWithPredicate(entity: "Device", predicateKey: "public_key", predicateValue: publicKey)
     }
 
     func getAllDevices() -> NSArray {
@@ -24,13 +24,14 @@ class DBDeviceManager {
         DBManager.shared.save(entity: "Device", attributes: deviceInfo)
     }
     
-    func updateDevice() {
-        let context = DBManager.shared.persistentContainer.viewContext
-        do {
-            try context.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
+    func updateDevice(deviceInfo: [String:Any]) {
+        DBManager.shared.updateDevice(attributes: deviceInfo)
+//        let context = DBManager.shared.persistentContainer.viewContext
+//        do {
+//            try context.save()
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
     }
     
     func deleteAllDevices() {

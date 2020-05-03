@@ -15,7 +15,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 @interface SpecialBleManager ()
 
-@property (nonatomic, strong) CBCentralManager* cbManager;
+@property (nonatomic, strong) CBCentralManager* cbCentral;
 @property (nonatomic, strong) CBPeripheralManager* cbPeripheral;
 @property (nonatomic, strong) CBService* service;
 @property (nonatomic, strong) CBCharacteristic* characteristic;
@@ -45,10 +45,27 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.cbManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+//        self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+//        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     }
     return self;
+}
+
+- (void)startBLEServices:(NSString *)serviceUUIDString withPublicKey:(NSString *)publicKey andEventEmitter:(RCTEventEmitter*)emitter
+{
+    // TODO: Change to publicKey!!!
+    self.publicKey = [[UIDevice currentDevice] name];
+    self.eventEmitter = emitter;
+    self.scanUUIDString = serviceUUIDString;
+    self.advertiseUUIDString = serviceUUIDString;
+    
+    self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+}
+
+- (void)stopBLEServices:(RCTEventEmitter*)emitter
+{
+    
 }
 
 -(void)scan:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter {
@@ -59,27 +76,27 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.eventEmitter = emitter;
     self.scanUUIDString = serviceUUIDString;
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
-    if (self.cbManager.state == CBManagerStatePoweredOn) {
+    if (self.cbCentral.state == CBManagerStatePoweredOn) {
         NSLog(@"Start scanning for %@", UUID);
-        // TODO: check usage of those options:
-//        NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber  numberWithBool:YES], CBCentralManagerScanOptionAllowDuplicatesKey, nil];
-        [self.cbManager scanForPeripheralsWithServices:@[UUID] options:nil];
+        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
         [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
     }
 }
 
 - (void)stopScan:(RCTEventEmitter*)emitter {
-    [self.cbManager stopScan];
+    [self.cbCentral stopScan];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:NO]];
     self.scanUUIDString = nil;
 }
 
 -(void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter {
-    self.eventEmitter = emitter;
-    self.advertiseUUIDString = serviceUUIDString;
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
         return;
     }
+    // TODO: Change to publicKey!!!
+    self.publicKey = [[UIDevice currentDevice] name];
+    self.eventEmitter = emitter;
+    self.advertiseUUIDString = serviceUUIDString;
     if (self.service && self.characteristic) {
         [self _advertise];
     } else {
@@ -92,7 +109,6 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:NO]];
     self.advertiseUUIDString = nil;
 }
-
 
 #pragma mark - private methods
 
@@ -110,7 +126,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     myService.characteristics = [NSArray arrayWithObject:myCharacteristic];
     self.service = myService;
     // TODO: change pulicKey assignment when getting crypto public_key from react-native
-    self.publicKey = [NSString stringWithFormat:@"%@-%@", [[UIDevice currentDevice] name], publicKey];
+    if (publicKey)
+        self.publicKey = [[UIDevice currentDevice] name];
     self.characteristic = myCharacteristic;
     [self.cbPeripheral addService:myService];
 }
@@ -166,7 +183,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSString* public_key = @"";
     NSNumber* device_first_timestamp = @0;
     NSNumber *tx = @0;
-    
+    int64_t unixtime = [[NSDate date] timeIntervalSince1970]*1000;
+
     if (peripheral && peripheral.name != nil) {
         NSLog(@"Discovered device with name: %@", peripheral.name);
         name = peripheral.name;
@@ -192,31 +210,48 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
     }
     
-    NSDictionary* device = @{
-        @"public_key": public_key,
-        @"device_rssi": RSSI,
-        @"device_first_timestamp": device_first_timestamp,
-        @"device_last_timestamp": device_first_timestamp,
-        @"device_tx": tx
-    };
+    if (public_key.length == 0)
+    {
+        NSLog(@"*** empty publicKey received");
+        NSLog(@"AdvertisementData: %@", advertisementData);
+        return;
+    }
+    
+    NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
+
+    NSMutableDictionary* device;
+    if (devicesArray.count == 0)
+    {
+        device = [NSMutableDictionary dictionaryWithDictionary:@{
+            @"public_key": public_key,
+            @"device_rssi": RSSI,
+            @"device_first_timestamp": @(unixtime),
+            @"device_last_timestamp": @(unixtime),
+            @"device_tx": tx,
+            @"device_address": @"",
+            @"device_protocol": @""
+        }];
+        [DBClient addDevice:device];
+    }
+    else
+    {
+        device = [NSMutableDictionary dictionaryWithDictionary:[devicesArray firstObject]];
+        // update device
+        [device setValue:@(unixtime) forKey:@"device_last_timestamp"];
+        [device setValue:RSSI forKey:@"device_rssi"];
+        [DBClient updateDevice:device];
+    }
     
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
-    
-//    NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
-
-    [DBClient addDevice:device];
-
-//    if (devicesArray.count == 0)
-//        [DBClient addDevice:device];
-//    else
-//        [DBClient updateDevice:device];
 }
 
 #pragma mark - CBPeripheralDelegate
 
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral {
     NSLog(@"Peripheral manager atate: %d", (int)peripheral.state);
-    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+    NSLog(@"publicKey: %@",self.publicKey);
+    if (self.publicKey)
+        [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
 }
 
 - (void)peripheralManager:(CBPeripheralManager *)peripheral

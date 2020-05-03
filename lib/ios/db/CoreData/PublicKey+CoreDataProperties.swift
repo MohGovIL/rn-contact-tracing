@@ -18,6 +18,6 @@ extension PublicKey {
     }
 
     @NSManaged public var id: Int16
-    @NSManaged public var publicKey: String?
+    @NSManaged public var public_key: String?
 
 }

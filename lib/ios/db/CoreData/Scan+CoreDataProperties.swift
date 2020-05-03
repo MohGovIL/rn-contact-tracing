@@ -16,7 +16,7 @@ extension Scan {
         return NSFetchRequest<Scan>(entityName: "Scan")
     }
 
-    @NSManaged public var publicKey: String?
+    @NSManaged public var public_key: String?
     @NSManaged public var timestamp: Int16
     @NSManaged public var scan_address: String?
     @NSManaged public var device_rssi: Int16
