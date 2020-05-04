@@ -75,7 +75,7 @@ function ResultsScreen({navigation}) {
 
     function timeStampToUTCTime(timestamp) {
         let date = new Date(timestamp)
-        let res = date.toLocaleDateString() + '-' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds() + '.' + date.getUTCMilliseconds();
+        let res = date.toLocaleDateString() + '-' + date.getUTCHours() + ':' + (date.getUTCMinutes()<10 ? '0' : '') + date.getUTCMinutes() + ':' + (date.getUTCSeconds()<10 ? '0' : '') + date.getUTCSeconds() + '.' + date.getUTCMilliseconds();
         return res;
     }
 

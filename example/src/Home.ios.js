@@ -43,7 +43,7 @@ function HomeScreen() {
 
     // Start scanning for a specific serviceUUID
     function _startScan() {
-        alert(JSON.stringify(config))
+//        alert(JSON.stringify(config))
         SpecialBle.setConfig(config)
         SpecialBle.startBLEScan(SERVICE_UUID);
     }
@@ -88,6 +88,12 @@ function HomeScreen() {
         _getAllDevicesFromDB();
     }
 
+    // clean all scans from DB
+    function _cleanAllScansFromDB() {
+        SpecialBle.cleanScansDB();
+        _getAllDevicesFromDB();
+    }
+    
     // add demo device
     function _scanDemoDevice() {
       if (Platform.OS === 'ios')
@@ -98,7 +104,7 @@ function HomeScreen() {
     function _setPublicKeys() {
         let publicKeys = ['12345', '12346', '12347', '12348', '12349']
         SpecialBle.setPublicKeys(publicKeys);
-        alert(config.scanInterval)
+//        alert(config.scanInterval)
     }
 
     // get config
@@ -116,6 +122,12 @@ function HomeScreen() {
     return (
         <View style={styles.container}>
             <ScrollView>
+            
+            <View style={styles.subContainer}>
+                {_renderButton('Start BLE service', _startBLEService)}
+                {_renderButton('Stop BLE service', _stopBLEService)}
+            </View>
+            
             <View style={styles.subContainer}>
                 {_statusBadge('Scanning', scanningStatus.toString() === 'true')}
                 {_statusBadge('Advertising', advertisingStatus.toString() === 'true')}
@@ -135,11 +147,14 @@ function HomeScreen() {
 
 
 
-                {_renderTextField("Advertised Token", config.token, val => setConfig({
-                    ...config,
-                    token: val
-                }))}
 
+            <View style = {{display: 'none'}}>
+            
+                {_renderTextField("Advertised Token", config.token, val => setConfig({
+            ...config,
+        token: val
+        }))}
+            
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>scanDuration</Text>
@@ -171,12 +186,9 @@ function HomeScreen() {
                         advertiseInterval: parseInt(val)
                     }), "numeric")}
                 </View>
+            </View>
 
-
-                <View style={styles.subContainer}>
-                    {_renderButton('Start BLE service', _startBLEService)}
-                    {_renderButton('Stop BLE service', _stopBLEService)}
-                </View>
+                
 
 
                 <View style={styles.subContainer}>
@@ -191,6 +203,7 @@ function HomeScreen() {
                 <View style={[styles.subContainer, {display: Platform.OS === 'android' ? 'none' : 'flex'}]}>
                     {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}
                     {_renderButton('Remove Devices from DB', _cleanAllDevicesFromDB)}
+                    {_renderButton('Remove Scans from DB', _cleanAllScansFromDB)}
                     {_renderButton('Demo Scan Device', _scanDemoDevice)}
                 </View>
             </ScrollView>

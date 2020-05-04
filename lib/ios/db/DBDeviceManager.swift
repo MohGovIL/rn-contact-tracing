@@ -26,12 +26,6 @@ class DBDeviceManager {
     
     func updateDevice(deviceInfo: [String:Any]) {
         DBManager.shared.updateDevice(attributes: deviceInfo)
-//        let context = DBManager.shared.persistentContainer.viewContext
-//        do {
-//            try context.save()
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
     }
     
     func deleteAllDevices() {

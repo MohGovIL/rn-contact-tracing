@@ -19,7 +19,17 @@
 RCT_EXPORT_MODULE();
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"scanningStatus", @"advertisingStatus", @"foundDevice"];
+  return @[@"scanningStatus", @"advertisingStatus", @"foundDevice", @"foundScan"];
+}
+
+#pragma mark - BLE services and tasks
+
+RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID publicKey:(NSString*) publicKey) {
+    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withPublicKey:publicKey andEventEmitter:self];
+}
+
+RCT_EXPORT_METHOD(stopBLEService) {
+    [[SpecialBleManager sharedManager] stopBLEServicesWithEmitter:self];
 }
 
 RCT_EXPORT_METHOD(startBLEScan:(NSString *) serviceUUID) {
@@ -38,17 +48,12 @@ RCT_EXPORT_METHOD(stopAdvertise) {
     [[SpecialBleManager sharedManager] stopAdvertise:self];
 }
 
-RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID publicKey:(NSString*) publicKey) {
-    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withPublicKey:publicKey andEventEmitter:self];
-}
-
-RCT_EXPORT_METHOD(stopBLEService) {
-    [[SpecialBleManager sharedManager] stopBLEServices:self];
-}
-
+// TODO: remove this method?
 RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
     [DBClient savePublicKeys:keys];
 }
+
+#pragma mark - Config
 
 RCT_EXPORT_METHOD(getConfig:(RCTResponseSenderBlock)callback) {
     callback(@[[Config GetConfig]]);
@@ -58,6 +63,8 @@ RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
     [Config SetConfig:config];
 }
 
+#pragma mark - Exports
+
 RCT_EXPORT_METHOD(exportAllDevicesCsv) {
     RCTLogInfo(@"exportAllDevicesCsv TBD");
 }
@@ -65,6 +72,8 @@ RCT_EXPORT_METHOD(exportAllDevicesCsv) {
 RCT_EXPORT_METHOD(exportAllScansCsv) {
     RCTLogInfo(@"exportAllScansCsv TBD");
 }
+
+#pragma mark - Devices
 
 /***********
  * Devices *
@@ -103,29 +112,6 @@ RCT_EXPORT_METHOD(addDemoDevice) {
     [DBClient addDevice:demoDevice];
 }
 
-/***********
- *  Scans  *
- ***********/
-RCT_EXPORT_METHOD(getScansByKey:(NSString*)publicKey scan:(RCTResponseSenderBlock)callback) {
-    callback([DBClient getScanByKey:publicKey]);
-}
-
-//RCT_EXPORT_METHOD(updateScan:(Scan*) scan) {
-//    [DBClient updateScan:scan];
-//}
-
-//RCT_EXPORT_METHOD(scanInfo:(NSDictionary*) scanInfo) {
-//    [DBClient addScan:scanInfo];
-//}
-
-RCT_EXPORT_METHOD(getAllScans:(RCTResponseSenderBlock)callback) {
-    callback([DBClient getAllScans]);
-}
-
-RCT_EXPORT_METHOD(cleanScansDB) {
-    [DBClient clearAllScans];
-}
-
 NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 +(NSString *) randomStringWithLength: (int) len {
@@ -137,6 +123,24 @@ NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345
     }
 
     return randomString;
+}
+
+#pragma mark - Scans
+
+/***********
+ *  Scans  *
+ ***********/
+RCT_EXPORT_METHOD(getScansByKey:(NSString*)publicKey scan:(RCTResponseSenderBlock)callback) {
+    NSArray *array = [DBClient getScanByKey:publicKey];
+    callback(@[array]);
+}
+
+RCT_EXPORT_METHOD(getAllScans:(RCTResponseSenderBlock)callback) {
+    callback([DBClient getAllScans]);
+}
+
+RCT_EXPORT_METHOD(cleanScansDB) {
+    [DBClient clearAllScans];
 }
 
 @end

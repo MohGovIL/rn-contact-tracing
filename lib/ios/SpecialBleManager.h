@@ -15,7 +15,7 @@
 
 + (id)sharedManager;
 - (void)startBLEServices:(NSString *)serviceUUIDString withPublicKey:(NSString *)publicKey andEventEmitter:(RCTEventEmitter*)emitter;
-- (void)stopBLEServices:(RCTEventEmitter*)emitter;
+- (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter;
 - (void)scan:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopScan:(RCTEventEmitter*)emitter;
 - (void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter;
