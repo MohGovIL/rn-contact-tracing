@@ -29,7 +29,11 @@ public class EventToJSDispatcher implements IEventListener {
     }
 
     private void dispatch(@NonNull String eventName, @Nullable Object data) {
-        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);
+        try {
+            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
     }
 
     @Override
@@ -37,7 +41,7 @@ public class EventToJSDispatcher implements IEventListener {
         if (data instanceof Boolean) {
             dispatch(event, toBoolean((Boolean) data));
         }
-        else if (data instanceof WritableMap) {
+        else if (data==null || data instanceof WritableMap) {
             dispatch(event, data);
         }
         else {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_optimization_dialog_title">Battery Optimization</string>
+    <string name="battery_optimization_dialog_message">Turn off battery optimization for this app in order to perform continuous tracing in the background.</string>
+</resources>

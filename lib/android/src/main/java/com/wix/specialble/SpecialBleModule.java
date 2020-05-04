@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -26,6 +27,7 @@ import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
 import com.wix.specialble.util.CSVUtil;
+import com.wix.specialble.util.DeviceUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -226,5 +228,13 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         reactContext.startActivity(chooser);
     }
 
+    @ReactMethod
+    public void requestToDisableBatteryOptimization(){
+        DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+    }
 
+    @ReactMethod
+    public void isBatteryOptimizationDeactivated(Promise promise) {
+        promise.resolve(DeviceUtil.isBatteryOptimizationDeactivated(reactContext));
+    }
 }
