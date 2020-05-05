@@ -205,6 +205,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     
     // get private_key
     if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) { // Androids device...
+//        NSLog(@"Android device");
+//        NSLog(@"AdvertisementData: %@", advertisementData);
         NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
         CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
         
@@ -213,13 +215,21 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         public_key = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"";
         
     } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) { // IOS device...
+//        NSLog(@"iPhone device");
+//        NSLog(@"AdvertisementData: %@", advertisementData);
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
+    } else {
+        NSLog(@"UNKnown device");
+        NSLog(@"*** empty publicKey received");
+        if (advertisementData)
+            NSLog(@"AdvertisementData: %@", advertisementData);
     }
+        
     
     if (public_key.length == 0)
     {
-        NSLog(@"*** empty publicKey received");
-        NSLog(@"AdvertisementData: %@", advertisementData);
+//        NSLog(@"*** empty publicKey received");
+//        NSLog(@"AdvertisementData: %@", advertisementData);
         return;
     }
     
