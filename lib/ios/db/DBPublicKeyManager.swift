@@ -12,7 +12,7 @@ class DBPublicKeyManager {
     
     func savePublicKeys(keys: [String]) {
         for (index,key) in keys.enumerated() {
-            DBManager.shared.save(entity: "PublicKey", attributes: ["id":String(index),"publicKey":key])
+            DBManager.shared.save(entity: "PublicKey", attributes: ["id":String(index),"public_key":key])
         }
     }
 }

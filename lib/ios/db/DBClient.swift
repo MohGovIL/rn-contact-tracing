@@ -11,11 +11,13 @@ import CoreData
 @objc(DBClient)
 public class DBClient: NSObject {
     
+    //MARK:- Public Keys
     @objc(savePublicKeys:)
     public static func savePublicKeys(publicKeys: [String]) {
         DBPublicKeyManager.shared.savePublicKeys(keys: publicKeys)
     }
 
+    //MARK:- Devices
     /***********
      * Devices *
      ***********/
@@ -25,8 +27,8 @@ public class DBClient: NSObject {
     }
 
     @objc(updateDevice:)
-    public static func updateDevice(device: Device){
-        DBDeviceManager.shared.updateDevice()
+    public static func updateDevice(deviceInfo: [String:Any]){
+        DBDeviceManager.shared.updateDevice(deviceInfo: deviceInfo)
     }
 
     @objc(addDevice:)
@@ -45,6 +47,7 @@ public class DBClient: NSObject {
         DBDeviceManager.shared.deleteAllDevices()
     }
 
+    //MARK:- Scans
     /***********
      *  Scans  *
      ***********/
@@ -54,8 +57,8 @@ public class DBClient: NSObject {
     }
 
     @objc(updateScan:)
-    public static func updateScan(scan: Scan){
-        DBScanManager.shared.updateScan()
+    public static func updateScan(scanInfo: [String:Any]){
+        DBScanManager.shared.updateScan(scanInfo: scanInfo)
     }
 
     @objc(addScan:)
