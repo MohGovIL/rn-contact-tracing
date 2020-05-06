@@ -1,5 +1,6 @@
 package com.wix.specialble;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,20 +8,32 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.SystemClock;
+import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
+import com.wix.specialble.receivers.AlarmReceiver;
+
+import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP;
+import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP_AFTER_10;
+import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP_AFTER_5;
 
 public class BLEForegroundService extends Service {
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
 
     BLEManager bleManager;
+    private PowerManager.WakeLock wakeLock;
+
+
     {
         try {
             bleManager = BLEManager.getInstance();
@@ -29,6 +42,7 @@ public class BLEForegroundService extends Service {
         }
     }
     private static Handler handler = new Handler();
+    private static Handler alarmHandler = new Handler();
 
     /**
      * Utility for starting this Service the same way from multiple places.
@@ -82,6 +96,18 @@ public class BLEForegroundService extends Service {
         }
         this.handler.removeCallbacksAndMessages(null);
 
+        if(wakeLock != null && wakeLock.isHeld())
+        {
+            wakeLock.release();
+            wakeLock = null;
+        }
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        alarmIntent.setAction("wake.me.up");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 
     @Override
@@ -111,10 +137,62 @@ public class BLEForegroundService extends Service {
         }
         this.handler.post(this.scanRunnable);
         this.handler.post(this.advertiseRunnable);
+
+        scheduleAlarms();
+
+
+        if(wakeLock == null) {
+            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                    "MyApp::MyWakelockTag");
+            wakeLock.acquire();
+        }
+
+
+
         return START_STICKY;
     }
+    private int alarmInterval = 1000 * 60 * 15;
+    private int alarmInterval_after_5 = 1000 * 60 * 5;
+    private int alarmInterval_after_10 = 1000 * 60 * 10;
+
+    public void scheduleAlarms() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        alarmIntent.setAction(WAKE_ME_UP);
+        
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);
 
 
+        BLEForegroundService.alarmHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntentAfter5 = new Intent(BLEForegroundService.this, AlarmReceiver.class);
+                alarmIntentAfter5.setAction(WAKE_ME_UP_AFTER_5);
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(BLEForegroundService.this, 0, alarmIntentAfter5, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (alarmInterval_after_5), pendingIntent);
+
+            }
+        }, 1000*60*5);
+
+        BLEForegroundService.alarmHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntentAfter10 = new Intent(BLEForegroundService.this, AlarmReceiver.class);
+                alarmIntentAfter10.setAction(WAKE_ME_UP_AFTER_10);
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(BLEForegroundService.this, 0, alarmIntentAfter10, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (alarmInterval_after_10), pendingIntent);
+
+            }
+        }, 1000*60*10);
+
+    }
+    
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
@@ -134,4 +212,5 @@ public class BLEForegroundService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 }

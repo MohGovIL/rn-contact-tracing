@@ -1,6 +1,7 @@
 package com.wix.specialble.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -8,7 +9,12 @@ import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 
 import de.siegmar.fastcsv.writer.CsvAppender;
@@ -76,5 +82,43 @@ public class CSVUtil {
             csvAppender.endLine();
         }
         csvAppender.close();
+    }
+
+    public static void writeToSDFile(Device device, boolean running, String message){
+        File root = android.os.Environment.getExternalStorageDirectory();
+
+        File dir = new File (root.getAbsolutePath() + "/hamagen");
+        dir.mkdirs();
+        File file = null;
+        if(device == null) {
+            file = new File(dir, "alarm.txt");
+        }
+        else {
+            file = new File(dir, device.getPublicKey() + ".txt");
+        }
+        if(!file.exists())
+        {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            FileOutputStream f = new FileOutputStream(file,true);
+            PrintWriter pw = new PrintWriter(f);
+            pw.println(" service is running  " + running + "  : " + new Date() + " " + message);
+            pw.println(System.getProperty("line.separator"));
+            pw.flush();
+            pw.close();
+            f.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.i(TAG, "******* File not found. Did you" +
+                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
