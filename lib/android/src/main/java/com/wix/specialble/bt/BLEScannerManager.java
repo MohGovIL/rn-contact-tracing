@@ -101,16 +101,12 @@ public class BLEScannerManager {
         public void onScanResult(int callbackType, ScanResult result) {
             ScanRecord scanRecord = result.getScanRecord();
             if (scanRecord == null) {
-                writeToSDFile(null, true , "onScanResult: scanRecord is null!");
                 Log.e(TAG, "onScanResult: scanRecord is null!");
-                Log.e("hagai", "onScanResult: scanRecord is null!");
                 return;
             }
 
             if (scanRecord.getServiceUuids() == null) {
                 Log.e(TAG, "onScanResult: getServiceUuids is null!");
-                Log.e("hagai", "onScanResult: getServiceUuids is null!");
-                writeToSDFile(null, true , "onScanResult: getServiceUuids is null!");
                 return;
             }
 
@@ -124,7 +120,6 @@ public class BLEScannerManager {
 
             super.onScanResult(callbackType, result);
             handleScanResults(result, ScannedToken, tx);
-            writeToSDFile(null, true , "handleScanResults ");
         }
 
         @Override
@@ -134,8 +129,6 @@ public class BLEScannerManager {
                 mEventListenerCallback.onEvent(SCANNING_STATUS,false);
                 unregisterSensors();
             }
-            Log.d(TAG, "onScanStartFailed - ErrorCode: " + errorCode);
-            Log.d("hagai", "onScanStartFailed - ErrorCode: " + errorCode);
         }
     }
 
@@ -156,7 +149,7 @@ public class BLEScannerManager {
                     newDevice = getNewDevice(result, tx, scannedToken, System.currentTimeMillis(), System.currentTimeMillis());
                     dbClient.addDevice(newDevice);
                 }
-                writeToSDFile(newDevice, false , "");
+
                 mEventListenerCallback.onEvent(FOUND_DEVICE, newDevice.toWritableMap());
 
                 // handle scans
@@ -182,43 +175,6 @@ public class BLEScannerManager {
                 BLEManager.BLEProtocol.GAP.toString(), result.getRssi(), tx);
     }
 
-    private void writeToSDFile(Device device, boolean scan, String message){
-        File root = android.os.Environment.getExternalStorageDirectory();
-
-        File dir = new File (root.getAbsolutePath() + "/hamagen");
-        dir.mkdirs();
-        File file = null;
-        if(device == null) {
-            file = new File(dir, "data.txt");
-        }
-        else {
-            file = new File(dir, device.getPublicKey() + ".txt");
-        }
-        if(!file.exists())
-        {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            FileOutputStream f = new FileOutputStream(file,true);
-            PrintWriter pw = new PrintWriter(f);
-            pw.println(device != null ? device.toString() : ("scan ? " + scan + " date " + new Date() + " " + message));
-            pw.println(System.getProperty("line.separator"));
-            pw.flush();
-            pw.close();
-            f.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.i(TAG, "******* File not found. Did you" +
-                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     private void registerSensors() {
         mProximityManager.registerListener();
         mAccelerometerManager.registerListener();

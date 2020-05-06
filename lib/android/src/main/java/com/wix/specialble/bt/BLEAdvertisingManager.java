@@ -72,45 +72,7 @@ public class BLEAdvertisingManager {
         settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
         settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
         settingsBuilder.setConnectable(false);
-        writeToSDFile(null,false);
+
         advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
-    }
-
-    private void writeToSDFile(Device device, boolean scan){
-        File root = android.os.Environment.getExternalStorageDirectory();
-
-        File dir = new File (root.getAbsolutePath() + "/hamagen");
-        dir.mkdirs();
-        File file = null;
-        if(device == null) {
-            file = new File(dir, "data.txt");
-        }
-        else {
-            file = new File(dir, device.getPublicKey() == null ? "nan" : device.getPublicKey() + ".txt");
-        }
-        if(!file.exists())
-        {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            FileOutputStream f = new FileOutputStream(file,true);
-            PrintWriter pw = new PrintWriter(f);
-            pw.println(device != null ? device.toString() : "scan ? " + scan + " date " + new Date() + " " );
-            pw.println(System.getProperty("line.separator"));
-            pw.flush();
-            pw.close();
-            f.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.i(TAG, "******* File not found. Did you" +
-                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
