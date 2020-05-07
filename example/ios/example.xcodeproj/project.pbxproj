@@ -393,7 +393,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rncontacttracing;
 				PRODUCT_NAME = "RNCT Demo";
-				PROVISIONING_PROFILE = "b96f10ee-fb24-4d24-b0da-e764bbfa04c7";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "example-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
