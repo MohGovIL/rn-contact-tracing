@@ -1,6 +1,6 @@
 //
-//  BytesUtil.swift
-//  DoubleConversion
+//  BytesUtils.swift
+//  rn-contact-tracing
 //
 //  Created by Yonatan Rimon on 07/05/2020.
 //
@@ -35,7 +35,5 @@ class BytesUtils {
         var pairsMod = pairs
         pairsMod.append(String(string.prefix(2)))
         return toPairsOfChars(pairs: pairsMod, string: String(string.dropFirst(2)))
-    }
-
-    
+    }    
 }
