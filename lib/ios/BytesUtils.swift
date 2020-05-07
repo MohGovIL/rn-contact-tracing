@@ -1,12 +1,12 @@
 //
 //  BytesUtils.swift
-//  rn-contact-tracing
+//  CryptoSwift
 //
 //  Created by Yonatan Rimon on 07/05/2020.
+//  Copyright © 2020 iGates. All rights reserved.
 //
 
 import Foundation
-
 
 class BytesUtils {
     
@@ -35,5 +35,7 @@ class BytesUtils {
         var pairsMod = pairs
         pairsMod.append(String(string.prefix(2)))
         return toPairsOfChars(pairs: pairsMod, string: String(string.dropFirst(2)))
-    }    
+    }
+
+    
 }
