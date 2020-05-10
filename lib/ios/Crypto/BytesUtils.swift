@@ -1,9 +1,8 @@
 //
 //  BytesUtils.swift
-//  CryptoSwift
+//  rn-contact-tracing
 //
-//  Created by Yonatan Rimon on 07/05/2020.
-//  Copyright © 2020 iGates. All rights reserved.
+//  Created by Yonatan Rimon on 10/05/2020.
 //
 
 import Foundation
@@ -39,3 +38,4 @@ class BytesUtils {
 
     
 }
+
