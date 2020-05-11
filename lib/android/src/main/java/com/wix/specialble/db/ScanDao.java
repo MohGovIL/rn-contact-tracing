@@ -17,7 +17,7 @@ public interface ScanDao {
     @Query("SELECT * FROM scans")
     List<Scan> getAllBLEScans();
 
-    @Query("SELECT * FROM scans WHERE publicKey = :publicKey")
+    @Query("SELECT * FROM scans WHERE publicKey = :publicKey ORDER BY timestamp desc")
     List<Scan> getScansByKey(String publicKey);
 
     @Insert
