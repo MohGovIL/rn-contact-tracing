@@ -128,6 +128,21 @@ function HomeScreen() {
         })
     }
 
+    // get Config
+    function _match() {
+        SpecialBle.match();
+    }
+
+    // get Config
+    function fetchInfectionDataByConsent() {
+        SpecialBle.fetchInfectionDataByConsent();
+    }
+
+    // clean all devices from DB
+    function _wipeData() {
+        SpecialBle.cleanDevicesDB();
+        SpecialBle.cleanScansDB();
+    }
 
     function _renderBatteryOptimizedQueryButton() {
         if (Platform.OS === 'android')
@@ -175,6 +190,17 @@ function HomeScreen() {
                     {_renderButton('Start BLE service', _startBLEService)}
                     {_renderButton('Stop BLE service', _stopBLEService)}
                 </View>
+
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                    {_renderButton('Wipe data', _wipeData)}
+                    {_renderButton('Match infected', _match)}
+                </View>
+
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+ 
+                    {_renderButton('Fetch server infected keys', fetchInfectionDataByConsent)}
+                </View>
+
             </Fragment>
         )
     }

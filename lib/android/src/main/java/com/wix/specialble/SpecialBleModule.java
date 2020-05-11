@@ -29,6 +29,8 @@ import com.wix.specialble.kays.PublicKey;
 import com.wix.specialble.util.CSVUtil;
 import com.wix.specialble.util.DeviceUtil;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -236,5 +238,21 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isBatteryOptimizationDeactivated(Promise promise) {
         promise.resolve(DeviceUtil.isBatteryOptimizationDeactivated(reactContext));
+    }
+
+    @ReactMethod
+    public void match() {
+
+    }
+
+    @ReactMethod
+    public ReadableArray fetchInfectionDataByConsent() {
+        List<Scan> scans = bleManager.getAllScans();
+        WritableArray retArray = new WritableNativeArray();
+        for (Scan scan : scans) {
+            retArray.pushMap(scan.toWritableMap());
+        }
+
+        return retArray;
     }
 }
