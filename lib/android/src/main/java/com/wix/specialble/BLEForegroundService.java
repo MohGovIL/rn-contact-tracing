@@ -111,6 +111,7 @@ public class BLEForegroundService extends Service {
         }
         this.handler.post(this.scanRunnable);
         this.handler.post(this.advertiseRunnable);
+        
         return START_STICKY;
     }
 
