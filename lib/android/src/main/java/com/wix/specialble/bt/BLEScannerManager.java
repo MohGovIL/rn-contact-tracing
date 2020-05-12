@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.ParcelUuid;
 import android.util.Log;
 
@@ -20,8 +21,15 @@ import com.wix.specialble.sensor.ProximityManager;
 import com.wix.specialble.sensor.RotationVectorManager;
 import com.wix.specialble.sensor.SensorUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class BLEScannerManager {
@@ -121,7 +129,6 @@ public class BLEScannerManager {
                 mEventListenerCallback.onEvent(SCANNING_STATUS,false);
                 unregisterSensors();
             }
-            Log.d(TAG, "onScanStartFailed - ErrorCode: " + errorCode);
         }
     }
 
@@ -142,6 +149,7 @@ public class BLEScannerManager {
                     newDevice = getNewDevice(result, tx, scannedToken, System.currentTimeMillis(), System.currentTimeMillis());
                     dbClient.addDevice(newDevice);
                 }
+
                 mEventListenerCallback.onEvent(FOUND_DEVICE, newDevice.toWritableMap());
 
                 // handle scans

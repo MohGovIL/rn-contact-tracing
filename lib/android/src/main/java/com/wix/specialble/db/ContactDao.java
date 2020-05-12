@@ -16,7 +16,7 @@ import java.util.List;
 @Dao
 public interface ContactDao {
 
-    @Query("SELECT * FROM scans")
+    @Query("SELECT * FROM contact")
     List<Contact> getAllContacts();
 
     @Insert

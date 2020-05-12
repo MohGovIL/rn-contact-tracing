@@ -261,7 +261,7 @@ public class User {
                 // If there have been too many contacts in this epoch, ignore this contact.
                 return false;
         }
-        mContacts.add(new Contact(otherEphemeralId, rssi, time, ownLocation));
+        mContacts.add(new Contact(otherEphemeralId, rssi, time, ownLocation,null));
         return true;
     }
 
@@ -358,7 +358,7 @@ public class User {
 
     private Triplet<Boolean, byte[], byte[]> isMatch (byte[] mask, byte[] epochMac, Contact contact) {
 
-        byte[] ephId = contact.getEphID();
+        byte[] ephId = contact.getEphemeralId();
         byte[] plain = BytesUtils.xor(mask, ephId);
         byte[] zeros = Arrays.copyOf(plain, 3);
         byte[] ephidGeohash = Arrays.copyOfRange(plain, 3, 3 + Constants.GEOHASH_LEN);

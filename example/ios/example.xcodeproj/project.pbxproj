@@ -167,7 +167,7 @@
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = Y527JZFK2H;
+						DevelopmentTeam = N3P977USJJ;
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Automatic;
 					};
@@ -354,7 +354,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 19;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = Y527JZFK2H;
+				DEVELOPMENT_TEAM = N3P977USJJ;
 				INFOPLIST_FILE = example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -363,7 +363,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rncontacttracing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ble.tracking;
 				PRODUCT_NAME = "RNCT Demo";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "example-Bridging-Header.h";
@@ -382,7 +382,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 19;
-				DEVELOPMENT_TEAM = Y527JZFK2H;
+				DEVELOPMENT_TEAM = N3P977USJJ;
 				INFOPLIST_FILE = example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -391,9 +391,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rncontacttracing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ble.tracking;
 				PRODUCT_NAME = "RNCT Demo";
-				PROVISIONING_PROFILE = "b96f10ee-fb24-4d24-b0da-e764bbfa04c7";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "example-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;

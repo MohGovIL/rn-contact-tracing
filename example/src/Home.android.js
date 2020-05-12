@@ -90,16 +90,6 @@ function HomeScreen() {
         SpecialBle.stopAdvertise();
     }
 
-    // in Android - start foreground service with scanning & advertising tasks
-    function _startBLEService() {
-        SpecialBle.setConfig(config);
-        SpecialBle.startBLEService();
-    }
-
-    // stop background tasks
-    function _stopBLEService() {
-        SpecialBle.stopBLEService();
-    }
 
     // get all devices from DB
     async function _getAllDevicesFromDB() {
@@ -128,21 +118,50 @@ function HomeScreen() {
         })
     }
 
+    /////IGATES API For App
+
+    // in Android - start foreground service with scanning & advertising tasks
+    function _startBLEService() {
+        SpecialBle.setConfig(config);
+        SpecialBle.startBLEService();
+    }
+
+    // stop background tasks
+    function _stopBLEService() {
+        SpecialBle.stopBLEService();
+    }
+
+      // clean all devices from DB
+    function _wipe() {
+        SpecialBle.deleteDatabase();
+    }
+
     // get Config
-    function _match() {
-        SpecialBle.match();
+    function _match(infected_db) {
+        //return SpecialBle.match(infected_db);
+
+        return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
     }
 
     // get Config
     function fetchInfectionDataByConsent() {
-        SpecialBle.fetchInfectionDataByConsent();
+        //return SpecialBle.fetchInfectionDataByConsent();
+        
+        
+        var json ={
+          BLE:
+          [
+            {
+              key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
+              epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
+            }
+          ]
+        };
+        alert(json);
+        return json;
     }
 
-    // clean all devices from DB
-    function _wipeData() {
-        SpecialBle.cleanDevicesDB();
-        SpecialBle.cleanScansDB();
-    }
+  
 
     function _renderBatteryOptimizedQueryButton() {
         if (Platform.OS === 'android')
@@ -192,7 +211,7 @@ function HomeScreen() {
                 </View>
 
                 <View style={[styles.subContainer, {justifyContent: 'center'}]}>
-                    {_renderButton('Wipe data', _wipeData)}
+                    {_renderButton('Wipe data', _wipe)}
                     {_renderButton('Match infected', _match)}
                 </View>
 
