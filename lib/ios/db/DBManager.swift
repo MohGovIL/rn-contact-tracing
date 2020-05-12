@@ -64,7 +64,9 @@ class DBManager {
         let data = NSManagedObject(entity: entity, insertInto: managedContext)
         
         for key in attributes.keys {
-            data.setValue(attributes[key], forKeyPath: key)
+            if let value = attributes[key] {
+                data.setValue(value, forKeyPath: key)
+            }
         }
         do {
             try managedContext.save()
@@ -73,11 +75,35 @@ class DBManager {
         }
     }
     
+    func updateDevice(attributes: [String:Any]){
+        let managedContext = self.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Device")
+        fetchRequest.predicate = NSPredicate(format: "public_key == %@", attributes["public_key"] as! CVarArg)
+
+        do {
+            let results = try managedContext.fetch(fetchRequest) as! [Device]
+            if results.count != 0 {
+                results[0].setValue(attributes["device_last_timestamp"], forKey: "device_last_timestamp")
+                results[0].setValue(attributes["device_rssi"], forKey: "device_rssi")
+            }
+        } catch {
+            print("Fetch Failed: \(error)")
+        }
+
+        do {
+            try managedContext.save()
+           }
+        catch {
+            print("Saving Core Data Failed: \(error)")
+        }
+    }
+    
     func getEntityWithPredicate(entity:String, predicateKey:String, predicateValue:String) -> NSArray {
         
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
-        fetchRequest.predicate = NSPredicate(format: "%@ == %@", predicateKey, predicateValue)
-        
+        let predicateFormat = String(format: "%@ == %@", predicateKey, "%@")
+        fetchRequest.predicate = NSPredicate(format: predicateFormat, predicateValue)
+
         let array = convertCoreDataArrayToData(fetchRequest: fetchRequest)
         
         return array
@@ -126,4 +152,27 @@ class DBManager {
         return array
     }
 
+    func updateScan(attributes: [String:Any]){
+        // TODO: TBD
+//        let managedContext = self.persistentContainer.viewContext
+//        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Scan")
+//        fetchRequest.predicate = NSPredicate(format: "scan_id == %@", attributes["scan_id"] as! CVarArg)
+//
+//        do {
+//            let results = try managedContext.fetch(fetchRequest) as! [Device]
+//            if results.count != 0 {
+//                results[0].setValue(attributes["device_last_timestamp"], forKey: "device_last_timestamp")
+//                results[0].setValue(attributes["device_rssi"], forKey: "device_rssi")
+//            }
+//        } catch {
+//            print("Fetch Failed: \(error)")
+//        }
+//
+//        do {
+//            try managedContext.save()
+//           }
+//        catch {
+//            print("Saving Core Data Failed: \(error)")
+//        }
+    }
 }
