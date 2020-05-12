@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.Date;
+
 @Entity
 public class Device {
 
@@ -113,5 +115,11 @@ public class Device {
 
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "publicKey:" + publicKey + " deviceAddress:" + deviceAddress+ " lastTimestamp:" + new Date(lastTimestamp) + " rssi:" +rssi ;
     }
 }

@@ -12,7 +12,13 @@ import android.util.Log;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.listeners.IEventListener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.UUID;
 
 public class BLEAdvertisingManager {
@@ -66,6 +72,7 @@ public class BLEAdvertisingManager {
         settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
         settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
         settingsBuilder.setConnectable(false);
+
         advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
     }
 }

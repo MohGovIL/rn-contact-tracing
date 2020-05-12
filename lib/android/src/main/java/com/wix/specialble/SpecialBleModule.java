@@ -237,4 +237,19 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void isBatteryOptimizationDeactivated(Promise promise) {
         promise.resolve(DeviceUtil.isBatteryOptimizationDeactivated(reactContext));
     }
+
+    @ReactMethod
+    public String fetchInfectionDataByConsent() {
+        return "";
+    }
+
+    @ReactMethod
+    public String match() {
+        return "";
+    }
+
+    @ReactMethod
+    public String deleteDatabase() {
+        return "";
+    }
 }
