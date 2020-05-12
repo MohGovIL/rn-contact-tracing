@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import com.wix.crypto.Contact;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
 import com.wix.specialble.kays.PublicKey;
@@ -86,4 +87,9 @@ public class DBClient {
     public void clearAllScans() {
         bleDevicesDB.scanDao().clearAll();
     }
+
+    /***********
+     *  Contacts  *
+     ***********/
+    public List<Contact> getAllContacts() { return bleDevicesDB.contactDao().getAllContacts(); }
 }

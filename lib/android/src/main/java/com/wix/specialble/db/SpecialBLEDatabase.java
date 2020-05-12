@@ -9,5 +9,6 @@ import com.wix.specialble.kays.PublicKey;
 public abstract class SpecialBLEDatabase extends RoomDatabase {
     public abstract DeviceDao deviceDao();
     public abstract ScanDao scanDao();
+    public abstract ContactDao contactDao();
 }
 
