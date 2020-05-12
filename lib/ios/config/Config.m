@@ -12,7 +12,7 @@ static long DEFAULT_SCAN_DURATION = 5 * 1000L;
 static long DEFAULT_ADVERTISE_INTERVAL = 3 * 1000L;
 static long DEFAULT_ADVERTISE_DURATION = 7 * 1000L;
 static NSString* DEFAULT_SERVICE_UUID = @"00000000-0000-1000-8000-00805F9B34FB";
-static NSString* DEFAULT_TOKEN = @"1234";
+static NSString* DEFAULT_TOKEN = @"1234-ios-token";
 
 static NSString* KEY_SERVICE_UUID = @"serviceUUID";
 static NSString* KEY_TOKEN = @"token";
@@ -40,19 +40,19 @@ static NSString* KEY_ADVERTISE_INTERVAL = @"advertiseInterval";
     NSMutableDictionary* ans = [[NSMutableDictionary alloc] init];
     
     NSString* serviceUUID = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_SERVICE_UUID];
-    ans[KEY_SERVICE_UUID] = serviceUUID;
+    ans[KEY_SERVICE_UUID] = serviceUUID ?: DEFAULT_SERVICE_UUID;
     
-    NSString* scanDuration = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_SCAN_DURATION];
-    ans[KEY_SCAN_DURATION] = scanDuration;
+    NSNumber* scanDuration = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_SCAN_DURATION];
+    ans[KEY_SCAN_DURATION] = scanDuration ?: @(DEFAULT_SCAN_DURATION);
     
-    NSString* scanInterval = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_SCAN_INTERVAL];
-    ans[KEY_SCAN_INTERVAL] = scanInterval;
+    NSNumber* scanInterval = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_SCAN_INTERVAL];
+    ans[KEY_SCAN_INTERVAL] = scanInterval ?: @(DEFAULT_SCAN_INTERVAL);
 
-    NSString* advertiseInterval = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_ADVERTISE_INTERVAL];
-    ans[KEY_ADVERTISE_INTERVAL] = advertiseInterval;
+    NSNumber* advertiseInterval = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_ADVERTISE_INTERVAL];
+    ans[KEY_ADVERTISE_INTERVAL] = advertiseInterval ?: @(DEFAULT_ADVERTISE_INTERVAL);
     
-    NSString* advertiseDuration = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_ADVERTISE_DURATION];
-    ans[KEY_ADVERTISE_DURATION] = advertiseDuration;
+    NSNumber* advertiseDuration = [[NSUserDefaults standardUserDefaults] objectForKey:KEY_ADVERTISE_DURATION];
+    ans[KEY_ADVERTISE_DURATION] = advertiseDuration ?: @(DEFAULT_ADVERTISE_DURATION);
     
     return ans;
 }

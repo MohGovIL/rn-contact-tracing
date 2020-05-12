@@ -75,7 +75,7 @@ function ResultsScreen({navigation}) {
 
     function timeStampToUTCTime(timestamp) {
         let date = new Date(timestamp)
-        let res = date.toLocaleDateString() + '-' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds() + '.' + date.getUTCMilliseconds();
+        let res = date.toLocaleDateString() + '-' + date.getUTCHours() + ':' + (date.getUTCMinutes()<10 ? '0' : '') + date.getUTCMinutes() + ':' + (date.getUTCSeconds()<10 ? '0' : '') + date.getUTCSeconds() + '.' + date.getUTCMilliseconds();
         return res;
     }
 
@@ -89,7 +89,7 @@ function ResultsScreen({navigation}) {
                 <View flex row center-vertical>
                     <ListItem.Part middle column>
                         <ListItem.Part containerStyle={{marginBottom: 2}}>
-                        {item.public_key && <Text dark10 text70>EphId: {((item.public_key).length > 10) ? (((item.public_key).substring(0, 10 - 3)) + '...') : item.public_key}</Text>}
+                            <Text dark10 text70>EphId: {((item.public_key).length > 10) ? (((item.public_key).substring(0, 10 - 3)) + '...') : item.public_key}</Text>
                             <Text dark10 text70>{item.device_protocol}</Text>
                         </ListItem.Part>
 
