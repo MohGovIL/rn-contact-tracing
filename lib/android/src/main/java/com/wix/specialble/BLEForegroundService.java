@@ -57,11 +57,6 @@ public class BLEForegroundService extends Service {
         } else {
             context.startService(sIntent);
         }
-        byte[] user_id = "carolefuknbaskin".getBytes();
-        byte[] master_key = {48, (byte)231, (byte)159, (byte)145, (byte)170, 36, 30, 66,
-                (byte)148, (byte)231, 102, 88, (byte)130, (byte)240, (byte)255, (byte)231};
-
-        User u = new User(user_id, master_key, 1587592647, context);
     }
 
     private Runnable scanRunnable = new Runnable() {
