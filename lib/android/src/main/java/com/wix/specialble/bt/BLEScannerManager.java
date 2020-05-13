@@ -13,6 +13,9 @@ import android.os.Environment;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import com.wix.crypto.Contact;
+import com.wix.crypto.CryptoManager;
+import com.wix.crypto.utilities.BytesUtils;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.listeners.IEventListener;
@@ -48,6 +51,13 @@ public class BLEScannerManager {
 
     private String TAG = "BLEScannerManager";
     private IEventListener mEventListenerCallback;
+
+
+    // this is a place holder for Geo-Hash Data
+    // it should be injected from the application container level on every change from LocationManager
+    // TODO: provide external API to the react native level
+    ///////////////////////////////////////////////////////////////
+    public static byte[] sGeoHash = new byte[]{ 0, 0,0, 0};
 
     BLEScannerManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;
@@ -161,6 +171,21 @@ public class BLEScannerManager {
                         tx, mProximityManager.getEvents()[0], mAccelerometerManager.getEvents(), mRotationVectorManager.getEvents(), SensorUtils.getBatteryPercentage(mContext));
 
                 dbClient.addScan(newScan);
+
+                int currentTime = (int)(System.currentTimeMillis() / 1000);
+
+                byte[] rssi = BytesUtils.numToBytes(result.getRssi(), 4);
+
+                // todo transport runtime db to sqlite based //
+                ///////////////////////////////////////////////
+                CryptoManager.getInstance(mContext).mySelf.storeContact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
+
+                Contact contact = new Contact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
+                dbClient.storeContact(contact);
+
+
+
+
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
         });

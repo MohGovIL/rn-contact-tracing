@@ -1,5 +1,7 @@
 package com.wix.crypto;
 
+import android.content.Context;
+
 import com.wix.crypto.custom.Pair;
 import com.wix.crypto.custom.Triplet;
 import com.wix.crypto.key.DayKey;
@@ -26,11 +28,15 @@ public class User {
     private byte[] mKeyMasterCommitment;
     private byte[] mKeyMasterVerification;
     private Map<Time, EpochKey> mEpochKeys;
-    private List<Contact> mContacts;
+
     private int mCurrentDay;
     private byte[] mCurrentDayMasterKey;
 
-    public User(byte[] userId, byte[] masterKey, int initTime) {
+    // this should be db based data
+    private List<Contact> mContacts;
+
+    public User(byte[] userId, byte[] masterKey, int initTime, Context ctx)
+    {
 
         mUserId = userId;
         mKeyId = DerivationUtils.getKeyId(masterKey);
@@ -42,7 +48,29 @@ public class User {
         mCurrentDay = t.getDay();
         mCurrentDayMasterKey = DerivationUtils.getNextDayMasterKey(masterKey, true);
         generateEpochKeys(mCurrentDay);
+        serialize(ctx);
     }
+
+    public User(Context ctx)
+    {
+        deserialize(ctx);
+
+    }
+
+
+    public void deserialize(Context ctx)
+    {
+        // write all object data to shared prefs
+    }
+
+    public void serialize(Context ctx)
+    {
+        // read all object data from shared prefs
+    }
+
+
+
+
 
     /**
      * Update the key database to store key's of specific time intreval.

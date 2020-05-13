@@ -1,37 +1,69 @@
 package com.wix.crypto;
 
-import com.wix.crypto.utilities.DerivationUtils;
+import android.content.Context;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by hagai on 12/05/2020.
  */
-public class CryptoManager {
+public class CryptoManager
+{
 
     private static CryptoManager sManagerInstance;
-    private byte[] master_key;
-    private byte[] key_id;
+    private Context mCtx;
 
-    private CryptoManager(){}
+    private CryptoManager()
+    {
+        fetchUserOrCreate();
+    }
 
-    public static CryptoManager getInstance() {
+
+    public User mySelf;
+
+    public static CryptoManager getInstance(Context ctx) 
+    {
         if (sManagerInstance == null)
+        {
             sManagerInstance = new CryptoManager();
+            sManagerInstance.mCtx = ctx.getApplicationContext();
+        }
         return sManagerInstance;
     }
 
-    public void derivInitialKeys()
+    public void fetchUserOrCreate()
     {
-        //Master Key
-        //TODO:: delete after use
-        SecureRandom random = new SecureRandom();
-        master_key = new byte[16];
-        random.nextBytes(master_key);
+        boolean userExists = false;
 
-        //Key ID
-        key_id = DerivationUtils.getKeyId(master_key);
+        if((mySelf = getUserFromDb()) != null)
+        {
+            // user exists
+            // assure all runtime initiation phase
 
-        //
+        }
+        else
+        {
+            SecureRandom random = new SecureRandom();
+            byte[] master_key = new byte[16];
+            random.nextBytes(master_key);
+            byte[] user_id = new byte[16];
+            random.nextBytes(master_key);
+            mySelf = new User(user_id, master_key, (int)System.currentTimeMillis() / 1000, mCtx);
+        }
+    }
+
+    private User getUserFromDb()
+    {
+        return new User(mCtx);
+    }
+
+    public Map<Integer, Map<Integer, ArrayList<byte[]>>> fetchInfectionDataByConsent()
+    {
+        Server server = new Server();
+
+        server.receive_user_key(mySelf.getKeysForServer());
+        return server.send_keys();
     }
 }

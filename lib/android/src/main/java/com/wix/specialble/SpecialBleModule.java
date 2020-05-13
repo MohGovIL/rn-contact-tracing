@@ -20,6 +20,9 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.wix.crypto.Crypto;
+import com.wix.crypto.CryptoManager;
+import com.wix.crypto.User;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
@@ -32,8 +35,10 @@ import com.wix.specialble.util.DeviceUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SpecialBleModule extends ReactContextBaseJavaModule {
+
 
     private final ReactApplicationContext reactContext;
     private final BLEManager bleManager;
@@ -240,12 +245,12 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public String fetchInfectionDataByConsent() {
-        return "";
+        return CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent().toString();
     }
 
     @ReactMethod
-    public String match() {
-        return "";
+    public String match(Map<Integer, Map<Integer, ArrayList<byte[]>>> epochs) {
+        return CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(epochs).toString();
     }
 
     @ReactMethod

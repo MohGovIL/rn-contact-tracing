@@ -80,6 +80,7 @@ public class DBClient {
         bleDevicesDB.scanDao().insert(newScan);
     }
 
+
     public List<Scan> getAllScans() {
        return bleDevicesDB.scanDao().getAllBLEScans();
     }
@@ -88,8 +89,14 @@ public class DBClient {
         bleDevicesDB.scanDao().clearAll();
     }
 
-    /***********
+    /**************
      *  Contacts  *
-     ***********/
+     **************/
     public List<Contact> getAllContacts() { return bleDevicesDB.contactDao().getAllContacts(); }
+
+    public void storeContact(Contact contact)
+    {
+        bleDevicesDB.contactDao().insert(contact);
+    }
+
 }
