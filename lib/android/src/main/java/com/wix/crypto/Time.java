@@ -4,6 +4,9 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Objects;
 
 /**
@@ -43,6 +46,31 @@ public class Time implements Comparable<Time> {
             this.mEpoch = (int)epoch;
         }
     }
+
+    private Time()
+    {
+
+    }
+
+    public JSONObject toJson() throws JSONException
+    {
+        JSONObject jo = new JSONObject();
+        jo.put("Time", mTime);
+        jo.put("Day", mDay);
+        jo.put("Epoch", mEpoch);
+        return jo;
+    }
+
+
+    public static Time fromJson(JSONObject jo) throws JSONException
+    {
+        Time t = new Time();
+        t.mTime = jo.getInt("Time");
+        t.mDay = jo.getInt("Day");
+        t.mEpoch = jo.getInt("Epoch");
+        return t;
+    }
+
 
     public int getUnits() {
 

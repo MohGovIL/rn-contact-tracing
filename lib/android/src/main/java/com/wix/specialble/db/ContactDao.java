@@ -1,5 +1,7 @@
 package com.wix.specialble.db;
 
+import android.database.Cursor;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -34,4 +36,13 @@ public interface ContactDao {
 
     @Query("DELETE FROM Contacts")
     public void clearAll();
+
+    @Query("SELECT * FROM Contacts order by id asc")
+    Cursor getCursorAll();
+
+
+
+    @Query("DELETE FROM Contacts where timestamp < :history")
+    public void deleteContactHistory(int history);
+
 }

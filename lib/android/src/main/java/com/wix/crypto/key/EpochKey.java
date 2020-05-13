@@ -2,8 +2,13 @@ package com.wix.crypto.key;
 
 import com.google.gson.annotations.SerializedName;
 import com.wix.crypto.Crypto;
+import com.wix.crypto.Hex;
+import com.wix.crypto.Time;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by hagai on 11/05/2020.
@@ -51,6 +56,42 @@ public class EpochKey {
         mEpochVer = Crypto.AES(mDayKey.getDayVerificationKey(), epochVerMessage);
 
     }
+
+
+    public JSONObject toJson() throws JSONException
+    {
+        JSONObject jo = new JSONObject();
+        jo.put("PreKey", Hex.toHexString(mPreKey));
+        jo.put("EpochKey", Hex.toHexString(mEpochKey));
+        jo.put("EpochEnc", Hex.toHexString(mEpochEnc));
+        jo.put("EpochMac", Hex.toHexString(mEpochMac));
+        jo.put("EpochVer", Hex.toHexString(mEpochVer));
+        return jo;
+    }
+
+    private EpochKey(byte[] pre, byte[] key, byte[] enc, byte[] mac, byte[] ver)
+    {
+        mPreKey = pre;
+        mEpochKey = key;
+        mEpochEnc = enc;
+        mEpochMac = mac;
+        mEpochVer = ver;
+    }
+
+    public static EpochKey fromJson(JSONObject jo) throws JSONException
+    {
+        return new EpochKey
+        (
+                Hex.fromHexString(jo.getString("PreKey")),
+                Hex.fromHexString(jo.getString("EpochKey")),
+                Hex.fromHexString(jo.getString("EpochEnc")),
+                Hex.fromHexString(jo.getString("EpochMac")),
+                Hex.fromHexString(jo.getString("EpochVer"))
+        );
+    }
+
+
+
 
     public byte[] getPreKey() { return mPreKey; }
 

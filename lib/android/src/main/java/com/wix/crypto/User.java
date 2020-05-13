@@ -2,7 +2,10 @@ package com.wix.crypto;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.util.Log;
+
+import androidx.room.util.StringUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,7 +19,9 @@ import com.wix.crypto.key.EpochKey;
 import com.wix.crypto.key.UserKey;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
+import com.wix.specialble.db.DBClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,46 +61,76 @@ public class User {
     private byte[] mCurrentDayMasterKey;
 
     // this should be db based data
-    @Expose(serialize = false)
-    private List<Contact> mContacts; // not serializable
+//    @Expose(serialize = false)
+//    private List<Contact> mContacts; // not serializable
+
+    DBClient dbClient;
+    SharedPreferences prefs;
 
     public User() {}
 
     public User(byte[] userId, byte[] masterKey, int initTime, Context ctx)
     {
+        setContext(ctx);
         mUserId = userId;
         mKeyId = DerivationUtils.getKeyId(masterKey);
         mKeyMasterCommitment = DerivationUtils.getMasterKeyCommitment(mKeyId, userId);
         mKeyMasterVerification = DerivationUtils.getKeyMasterVerification(masterKey);
         mEpochKeys = new HashMap<>();
-        mContacts = new ArrayList<>();
+//        mContacts = new ArrayList<>();
         Time t = new Time(initTime, Constants.None); //TODO: check if correct way
         mCurrentDay = t.getDay();
         mCurrentDayMasterKey = DerivationUtils.getNextDayMasterKey(masterKey, true);
 
-
         generateEpochKeys(mCurrentDay);
-        serialize(ctx);
+        serialize();
     }
 
-    public User(Context ctx)
+    public void setContext(Context ctx)
     {
-
+        prefs = ctx.getSharedPreferences(USER_PREFS, MODE_PRIVATE);
+        dbClient = DBClient.getInstance(ctx);
     }
 
 
     public static User deserialize(Context ctx)
     {
-        // write all object data to shared prefs
-        Gson gson = new GsonBuilder().create();
         SharedPreferences prefs = ctx.getSharedPreferences(USER_PREFS, MODE_PRIVATE);
         String userData = prefs.getString(PREFS_KEY, null);
 
 
-        if(userData != null) {
+        if(userData != null)
+        {
+            User u = new User();
+            try
+            {
+                u.setContext(ctx);
 
-            User u = gson.fromJson(userData, User.class);
+                JSONObject jo = new JSONObject(userData);
+                u.mUserId =  Hex.fromHexString(jo.getString("mUserId"));
 
+                u.mKeyId =  Hex.fromHexString(jo.getString("mKeyId"));
+                u.mKeyMasterCommitment =  Hex.fromHexString(jo.getString("mKeyMasterCommitment"));
+                u.mKeyMasterVerification =  Hex.fromHexString(jo.getString("mKeyMasterVerification"));
+
+                u.mEpochKeys = new HashMap<>();
+
+                JSONArray epochKeysMap = jo.getJSONArray("mEpochKeys");
+
+                for (int i =0; i < epochKeysMap.length(); i++)
+                {
+                    JSONObject curEpoch = epochKeysMap.getJSONObject(i);
+                    Time t = Time.fromJson(curEpoch.getJSONObject("Time"));
+                    EpochKey k = EpochKey.fromJson(curEpoch.getJSONObject("EpochKey"));
+                    u.mEpochKeys.put(t, k);
+                }
+                u.mCurrentDay = jo.getInt("mCurrentDay");
+                u.mCurrentDayMasterKey =  Hex.fromHexString(jo.getString("mCurrentDayMasterKey"));
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
             return u;
 
         }
@@ -102,14 +138,46 @@ public class User {
         return null;
     }
 
-    public void serialize(Context ctx)
+    public void serialize()
     {
-        // read all object data from shared prefs
-        Gson gson  = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().enableComplexMapKeySerialization().setPrettyPrinting().create();
-        SharedPreferences prefs = ctx.getSharedPreferences(USER_PREFS,MODE_PRIVATE);
+        JSONObject jo = new JSONObject();
+        try
+        {
+            jo.put("mUserId", Hex.toHexString(mUserId));
+            jo.put("mKeyId", Hex.toHexString(mKeyId));
+
+            jo.put("mKeyMasterCommitment", Hex.toHexString(mKeyMasterCommitment));
+
+            jo.put("mKeyMasterVerification", Hex.toHexString(mKeyMasterVerification));
+
+
+
+            JSONArray epochKeysMap = new JSONArray();
+
+            for (Time t : mEpochKeys.keySet())
+            {
+
+                JSONObject curEpoch = new JSONObject();
+                curEpoch.put("Time", t.toJson());
+                curEpoch.put("EpochKey", mEpochKeys.get(t).toJson());
+
+                epochKeysMap.put(curEpoch);
+
+            }
+
+            jo.put("mEpochKeys", epochKeysMap);
+
+
+            jo.put("mCurrentDay", mCurrentDay);
+            jo.put("mCurrentDayMasterKey", Hex.toHexString(mCurrentDayMasterKey));
+
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
         SharedPreferences.Editor prefsEditor = prefs.edit();
-        String json = gson.toJson(this);
-        prefsEditor.putString(PREFS_KEY,json);
+        prefsEditor.putString(PREFS_KEY, jo.toString());
         prefsEditor.apply();
     }
 
@@ -133,6 +201,7 @@ public class User {
 
         generateEpochKeys(future.getDay());
         deleteHistory(past.getTime());
+        serialize();
     }
 
     /**
@@ -186,21 +255,36 @@ public class User {
         List<Match> matches = new ArrayList<>();
 
         // Make sure the contacts are sorted so as to make the sliding window work properly
-        Collections.sort(mContacts, new Comparator<Contact>() {
+//        Collections.sort(mContacts, new Comparator<Contact>() {
+//
+//            @Override
+//            public int compare(Contact o1, Contact o2) {
+//
+//                return o1.getTimestamp() - o2.getTimestamp(); // TODO: check if correct comparisson
+//            }
+//        });
 
-            @Override
-            public int compare(Contact o1, Contact o2) {
 
-                return o1.getTimestamp() - o2.getTimestamp(); // TODO: check if correct comparisson
-            }
-        });
+
+
+
 
         // domain is a time up to units (actually a string "day-epoch-unit")
         // and its range is a list of (mask, epochMAC)
         Map<String, ArrayList<Pair<byte[], byte[]>>> mapUnitKeys = new HashMap<>();
 
         int earlierTime = Constants.None; // TODO: if there is a better way, in python that's null
-        for(Contact contact : mContacts) {
+
+        Cursor c = dbClient.getCursorAll();
+        while (c.moveToNext())
+        {
+            Contact contact = new Contact
+            (
+                    c.getBlob(c.getColumnIndex("ephemeral_id")),
+                    c.getBlob(c.getColumnIndex("rssi")),
+                    c.getInt(c.getColumnIndex("timestamp")),
+                    c.getBlob(c.getColumnIndex("geohash"))
+            );
 
             int time = contact.getTimestamp() - Time.JITTER_THRESHOLD;
 
@@ -283,6 +367,7 @@ public class User {
 
             mEpochKeys.remove(t);
         }
+        serialize();
     }
 
     /**
@@ -301,6 +386,7 @@ public class User {
         }
 
         UserKey keys = new UserKey(mUserId, mKeyId, epochs, mKeyMasterVerification);
+        serialize();
 
         return keys;
     }
@@ -316,14 +402,16 @@ public class User {
      */
     public boolean storeContact(byte[] otherEphemeralId, byte[] rssi, int time, byte[] ownLocation) {
 
-        if (mContacts.size() >= Time.MAX_CONTACTS_IN_WINDOW) {
-            int pastContactTime = mContacts.get(mContacts.size() - Time.MAX_CONTACTS_IN_WINDOW).getTimestamp();
-
-            if(time - pastContactTime < Time.WINDOW)
-                // If there have been too many contacts in this epoch, ignore this contact.
-                return false;
-        }
-        mContacts.add(new Contact(otherEphemeralId, rssi, time, ownLocation));
+//        if (mContacts.size() >= Time.MAX_CONTACTS_IN_WINDOW) {
+//            int pastContactTime = mContacts.get(mContacts.size() - Time.MAX_CONTACTS_IN_WINDOW).getTimestamp();
+//
+//            if(time - pastContactTime < Time.WINDOW)
+//                // If there have been too many contacts in this epoch, ignore this contact.
+//                return false;
+//        }
+//
+//
+        dbClient.storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation));
         return true;
     }
 
@@ -333,19 +421,22 @@ public class User {
      * @param contact - Contact to delete.
      */
     public void deleteContact(Contact contact) {
+//
+//        //TODO: check if correct impl
+//
+//        List<Contact> contacts = new ArrayList<>();
+//
+//        for(Contact c : mContacts) {
+//
+//            if(c.equals(contact)) {
+//                contacts.add(c);
+//            }
+//        }
+//
+//        mContacts = contacts;
 
-        //TODO: check if correct impl
+        dbClient.delete(contact);
 
-        List<Contact> contacts = new ArrayList<>();
-
-        for(Contact c : mContacts) {
-
-            if(c.equals(contact)) {
-                contacts.add(c);
-            }
-        }
-
-        mContacts = contacts;
     }
 
     /**
@@ -370,16 +461,9 @@ public class User {
             }
         }
         mEpochKeys = dictEpochKeys;
+        serialize();
 
-        List<Contact> listContact = new ArrayList<>();
-        for(Contact c : mContacts) {
-
-            if(c.getTimestamp() >= dTime) {
-                listContact.add(c);
-            }
-        }
-
-        mContacts = listContact;
+        dbClient.deleteContactHistory(dTime);
     }
 
     /**
@@ -417,6 +501,7 @@ public class User {
             mCurrentDay ++;
             mCurrentDayMasterKey = DerivationUtils.getNextDayMasterKey(mCurrentDayMasterKey, false);
         }
+        serialize();
     }
 
     private Triplet<Boolean, byte[], byte[]> isMatch (byte[] mask, byte[] epochMac, Contact contact) {
@@ -460,7 +545,7 @@ public class User {
 
     public Map<Time, EpochKey> getEpochKeys() { return mEpochKeys; }
 
-    public List<Contact> getContacts() { return mContacts; }
+    public List<Contact> getContacts() { return dbClient.getAllContacts(); }
 
     public int getCurrentDay() { return mCurrentDay; }
 
