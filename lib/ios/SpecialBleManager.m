@@ -65,7 +65,18 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     // set singleton's data
     // TODO: Change to publicKey (crypto)!!!
     self.publicKey = [CryptoClient getEphemeralId];
-//    self.publicKey = [[UIDevice currentDevice] name];
+//    NSArray* eph = [CryptoClient getEphemeralId];
+//
+//    NSMutableString * str = [NSMutableString string];
+//    for (int i = 0; i<eph.count; i++)
+//    {
+//        [str appendFormat:@"%c ", eph[i]];
+//    }
+//
+//    char b[] = {[str characterAtIndex:0]};
+//    NSData* d = [NSData dataWithBytes:b length:1];
+
+    //    self.publicKey = [[UIDevice currentDevice] name];
     self.eventEmitter = emitter;
     self.scanUUIDString = serviceUUIDString;
     self.advertiseUUIDString = serviceUUIDString;
@@ -161,7 +172,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 -(void) _advertise {
     if (self.cbPeripheral.state == CBManagerStatePoweredOn){
-        
+        self.publicKey = [CryptoClient getEphemeralId];
         [self.cbPeripheral startAdvertising:@{CBAdvertisementDataLocalNameKey: self.publicKey, CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
         [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:YES]];
     }

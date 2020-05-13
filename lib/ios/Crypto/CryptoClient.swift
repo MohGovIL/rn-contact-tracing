@@ -17,7 +17,7 @@ public class CryptoClient : NSObject {
     }
     
     @objc(getEphemeralId)
-    static public func getEphemeralId() -> String! {
+    static public func getEphemeralId() -> String {
         return CryptoManager.shared.getStringEphemeral()
     }
     

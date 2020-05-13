@@ -39,10 +39,29 @@ public class CryptoManager {
         let timeS = Int(Date().timeIntervalSince1970)
         let geoHash:[UInt8] = Array(repeating: 1, count: 5)
         let ephemeral = mySelf.generate_ephemeral_id(time: timeS, geo_hash: geoHash)
+        var str = ""
+        for byte in ephemeral {
+            let u = UnicodeScalar(byte)
+            // Convert UnicodeScalar to a Character.
+            let char = Character(u)
+
+            // Write results.
+//            print(char)
+
+            str.append(char)
+        }
         
-        let ephemeralString = String(bytes: ephemeral, encoding: .ascii)
+        let stringArray = Array(str)
+        var res:[UInt16] = []
+        for i in 0..<stringArray.count {
+            res.append(contentsOf: stringArray[i].utf16)
+        }
         
-        return ephemeralString!
+        return str
+        
+//        let ephemeralString = String(bytes: ephemeral, encoding: .ascii)
+//        let b = ephemeral.reduce("", { $0 + String(format: "%c", $1)})
+//        return ephemeralString!
     }
     
     
