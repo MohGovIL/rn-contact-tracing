@@ -1,6 +1,7 @@
 package com.wix.crypto;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.wix.crypto.custom.Pair;
 import com.wix.crypto.custom.Triplet;
@@ -53,14 +54,15 @@ public class User {
 
     public User(Context ctx)
     {
-        deserialize(ctx);
+
 
     }
 
 
-    public void deserialize(Context ctx)
+    public static User deserialize(Context ctx)
     {
         // write all object data to shared prefs
+        return null;
     }
 
     public void serialize(Context ctx)
@@ -101,6 +103,7 @@ public class User {
      */
     public byte[] generateEphemeralId(int time, byte[] geoHash) {
 
+        Log.e("hagai", "generateEphemeralId: ");
         assert geoHash.length == Constants.GEOHASH_LEN;
         Time t = new Time(time, Constants.None); // TODO: check if correct
         assert mEpochKeys.containsKey(t) : "Epoch key is not present";
@@ -333,6 +336,8 @@ public class User {
      * @param targetDay - day to update.
      */
     private void generateEpochKeys(int targetDay) {
+
+        Log.e("hagai", "generateEpochKeys: ");
 
         boolean keysPresent = true;
         for(int epoch = 0; epoch < Time.EPOCHS_IN_DAY; epoch ++) {

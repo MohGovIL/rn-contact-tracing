@@ -1,6 +1,7 @@
 package com.wix.crypto;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -15,8 +16,9 @@ public class CryptoManager
     private static CryptoManager sManagerInstance;
     private Context mCtx;
 
-    private CryptoManager()
+    private CryptoManager(Context ctx)
     {
+        mCtx = ctx;
         fetchUserOrCreate();
     }
 
@@ -27,8 +29,7 @@ public class CryptoManager
     {
         if (sManagerInstance == null)
         {
-            sManagerInstance = new CryptoManager();
-            sManagerInstance.mCtx = ctx.getApplicationContext();
+            sManagerInstance = new CryptoManager(ctx.getApplicationContext());
         }
         return sManagerInstance;
     }
@@ -45,6 +46,7 @@ public class CryptoManager
         }
         else
         {
+            Log.e("hagai", "fetchUserOrCreate: ");
             SecureRandom random = new SecureRandom();
             byte[] master_key = new byte[16];
             random.nextBytes(master_key);
@@ -56,7 +58,7 @@ public class CryptoManager
 
     private User getUserFromDb()
     {
-        return new User(mCtx);
+        return User.deserialize(mCtx);
     }
 
     public Map<Integer, Map<Integer, ArrayList<byte[]>>> fetchInfectionDataByConsent()
