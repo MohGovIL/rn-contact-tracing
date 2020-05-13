@@ -77,12 +77,11 @@ public class User {
 
     public User(Context ctx)
     {
-        deserialize(ctx);
 
     }
 
 
-    public void deserialize(Context ctx)
+    public static User deserialize(Context ctx)
     {
         // write all object data to shared prefs
         Gson gson = new GsonBuilder().create();
@@ -98,6 +97,7 @@ public class User {
 
         }
 
+        return null;
     }
 
     public void serialize(Context ctx)
@@ -146,6 +146,7 @@ public class User {
      */
     public byte[] generateEphemeralId(int time, byte[] geoHash) {
 
+        Log.e("hagai", "generateEphemeralId: ");
         assert geoHash.length == Constants.GEOHASH_LEN;
         Time t = new Time(time, Constants.None); // TODO: check if correct
         assert mEpochKeys.containsKey(t) : "Epoch key is not present";
@@ -181,7 +182,7 @@ public class User {
             @Override
             public int compare(Contact o1, Contact o2) {
 
-                return o1.getTime() - o2.getTime(); // TODO: check if correct comparisson
+                return o1.getTimestamp() - o2.getTimestamp(); // TODO: check if correct comparisson
             }
         });
 
@@ -192,7 +193,7 @@ public class User {
         int earlierTime = Constants.None; // TODO: if there is a better way, in python that's null
         for(Contact contact : mContacts) {
 
-            int time = contact.getTime() - Time.JITTER_THRESHOLD;
+            int time = contact.getTimestamp() - Time.JITTER_THRESHOLD;
 
             // Remove all entries unit_keys[t] for t < time (will save memory usage)
             // For it to work we need self.contact to be ordered by contact.time
@@ -214,7 +215,7 @@ public class User {
                 earlierTime = time;
             }
 
-            while(time <= contact.getTime() + Time.JITTER_THRESHOLD)
+            while(time <= contact.getTimestamp() + Time.JITTER_THRESHOLD)
             {
 
                 Time t = new Time(time, Constants.None);
@@ -307,7 +308,7 @@ public class User {
     public boolean storeContact(byte[] otherEphemeralId, byte[] rssi, int time, byte[] ownLocation) {
 
         if (mContacts.size() >= Time.MAX_CONTACTS_IN_WINDOW) {
-            int pastContactTime = mContacts.get(mContacts.size() - Time.MAX_CONTACTS_IN_WINDOW).getTime();
+            int pastContactTime = mContacts.get(mContacts.size() - Time.MAX_CONTACTS_IN_WINDOW).getTimestamp();
 
             if(time - pastContactTime < Time.WINDOW)
                 // If there have been too many contacts in this epoch, ignore this contact.
@@ -364,7 +365,7 @@ public class User {
         List<Contact> listContact = new ArrayList<>();
         for(Contact c : mContacts) {
 
-            if(c.getTime() >= dTime) {
+            if(c.getTimestamp() >= dTime) {
                 listContact.add(c);
             }
         }
@@ -378,6 +379,8 @@ public class User {
      * @param targetDay - day to update.
      */
     private void generateEpochKeys(int targetDay) {
+
+        Log.e("hagai", "generateEpochKeys: ");
 
         boolean keysPresent = true;
         for(int epoch = 0; epoch < Time.EPOCHS_IN_DAY; epoch ++) {
@@ -409,7 +412,7 @@ public class User {
 
     private Triplet<Boolean, byte[], byte[]> isMatch (byte[] mask, byte[] epochMac, Contact contact) {
 
-        byte[] ephId = contact.getEphemeralId();
+        byte[] ephId = contact.getEphemeral_id();
         byte[] plain = BytesUtils.xor(mask, ephId);
         byte[] zeros = Arrays.copyOf(plain, 3);
         byte[] ephidGeohash = Arrays.copyOfRange(plain, 3, 3 + Constants.GEOHASH_LEN);

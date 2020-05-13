@@ -51,8 +51,14 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         super(reactContext);
         this.reactContext = reactContext;
         mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
+
+        // init crypto lib //
+        /////////////////////
+        CryptoManager.getInstance(reactContext);
+
         bleManager = BLEManager.getInstance(reactContext);
         bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
+
         //  registerEventLiveData();
 
     }

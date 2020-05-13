@@ -16,7 +16,7 @@ import java.util.List;
 @Dao
 public interface ContactDao {
 
-    @Query("SELECT * FROM contact")
+    @Query("SELECT * FROM Contacts")
     List<Contact> getAllContacts();
 
     @Insert
@@ -32,6 +32,6 @@ public interface ContactDao {
     void delete(Contact... contacts);
 
 
-    @Query("DELETE FROM contact")
+    @Query("DELETE FROM Contacts")
     public void clearAll();
 }
