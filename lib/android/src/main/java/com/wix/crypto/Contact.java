@@ -18,17 +18,17 @@ public class Contact{
 
     @NonNull
     @ColumnInfo(name = "ephemeral_id")
-    private byte[] ephemeralId;
+    private byte[] ephemeral_id;
 
     @ColumnInfo(name = "rssi")
-    private byte[] RSSI;
+    private byte[] rssi;
 
     @NonNull
     @ColumnInfo(name = "timestamp")
-    private int Time;
+    private int timestamp;
 
     @ColumnInfo(name = "geohash")
-    private byte[] Location;
+    private byte[] geohash;
 
     @ColumnInfo(name = "user_id")
     private byte[] user_id;
@@ -45,10 +45,10 @@ public class Contact{
 
         assert ephemeralId.length == Constants.MESSAGE_LEN;
 
-        this.ephemeralId = ephemeralId;
-        this.RSSI = rssi;
-        this.Time = time;
-        this.Location = location;
+        this.ephemeral_id = ephemeralId;
+        this.rssi = rssi;
+        this.timestamp = time;
+        this.geohash = location;
 //        this.user_id = user_id;
     }
 
@@ -58,39 +58,40 @@ public class Contact{
     public boolean equals(Object obj) {
 
         Contact other = (Contact)obj;
-        if(ephemeralId == other.ephemeralId &&
-                RSSI == other.RSSI &&
-                Time == other.Time &&
-                Location == other.Location)
+        if(ephemeral_id == other.ephemeral_id &&
+                rssi == other.rssi &&
+                timestamp == other.timestamp &&
+                geohash == other.geohash)
             return true;
 
         return false;
     }
 
-    public byte[] getEphemeralId() { return ephemeralId; }
+    @NonNull
+    public byte[] getEphemeral_id() { return ephemeral_id; }
 
-    public byte[] getRSSI() { return RSSI; }
+    public byte[] getRssi() { return rssi; }
 
-    public int getTime() { return Time; }
+    public int getTimestamp() { return timestamp; }
 
-    public byte[] getLocation() { return Location; }
+    public byte[] getGeohash() { return geohash; }
 
     public byte[] getUser_id() { return user_id; }
 
-    public void setEphemeralId(@NonNull byte[] mEphID) {
-        this.ephemeralId = mEphID;
+    public void setEphemeral_id(@NonNull byte[] mEphID) {
+        this.ephemeral_id = mEphID;
     }
 
-    public void setRSSI(byte[] mRSSI) {
-        this.RSSI = mRSSI;
+    public void setRssi(byte[] mRSSI) {
+        this.rssi = mRSSI;
     }
 
-    public void setTime(int mTime) {
-        this.Time = mTime;
+    public void setTimestamp(int mTime) {
+        this.timestamp = mTime;
     }
 
-    public void setLocation(byte[] mLocation) {
-        this.Location = mLocation;
+    public void setGeohash(byte[] mLocation) {
+        this.geohash = mLocation;
     }
 
     public void setUser_id(byte[] user_id) {
