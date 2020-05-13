@@ -7,7 +7,7 @@
 //
 #import "SpecialBleManager.h"
 #import "rn_contact_tracing-Swift.h"
-
+#import "Config.h"
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
@@ -26,6 +26,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 @property (nonatomic, strong) NSString* advertiseUUIDString;
 @property (nonatomic, strong) NSString* publicKey;
 
+@property NSDictionary* config;
+@property BOOL advertisingIsOn;
 
 @end
 
@@ -45,6 +47,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (instancetype)init {
     if (self = [super init]) {
+        self.config = [Config GetConfig];
 //        self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 //        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     }
@@ -57,9 +60,12 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)startBLEServices:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter
 {
+//    User* mySelf = [CryptoClient getMySelf];
+    self.advertisingIsOn = YES;
     // set singleton's data
     // TODO: Change to publicKey (crypto)!!!
-    self.publicKey = [[UIDevice currentDevice] name];
+    self.publicKey = [CryptoClient getEphemeralId];
+//    self.publicKey = [[UIDevice currentDevice] name];
     self.eventEmitter = emitter;
     self.scanUUIDString = serviceUUIDString;
     self.advertiseUUIDString = serviceUUIDString;
@@ -79,6 +85,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
 {
+    self.advertisingIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
 }
@@ -258,6 +265,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
             @"device_protocol": @"GAP" //TODO: not used may remove
         }];
         [DBClient addDevice:device];
+        
     }
     else
     { // old device found, just update
@@ -285,7 +293,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     
     // add to DB
     [DBClient addScan:scan];
-    
+//    User* mySelf = [CryptoClient getMySelf];
     // send foundScan event
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_SCAN body:scan];
 }
@@ -337,11 +345,29 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
-    NSLog(@"didStartAdvertising");
+    NSLog(@"didStartAdvertising, duration:%@ , interval:%@",self.config[KEY_ADVERTISE_DURATION], self.config[KEY_ADVERTISE_INTERVAL] );
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_DURATION] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self stopAdvertise:self.eventEmitter];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_INTERVAL] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (self.advertisingIsOn)
+                [self _advertise];
+            else
+                NSLog(@"interval received but advertising is off!!!");
+        });
+    });
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral {
     NSLog(@"Peripheral name:%@", peripheral.name);
+}
+
+
+-(NSString*)fetchInfectionDataByConsent
+{
+    
+    
+    
+    return @"";
 }
 
 @end

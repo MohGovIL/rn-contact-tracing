@@ -21,4 +21,6 @@
 - (void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopAdvertise:(RCTEventEmitter*)emitter;
 
+- (NSString*)fetchInfectionDataByConsent;
+
 @end

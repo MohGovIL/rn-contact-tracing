@@ -1,6 +1,5 @@
 //
 //  BytesUtils.swift
-//  Crypto
 //
 //  Created by Yonatan Rimon on 13/05/2020.
 //  Copyright © 2020 iGates. All rights reserved.
@@ -17,7 +16,6 @@ let STRINGS = ["id" : [UInt8]("IdentityKey".data(using: .ascii)!),
                "dverif" : [UInt8]("DeriveVerificationKey".data(using: .ascii)!),
                "depoch" : [UInt8]("DeriveEpoch".data(using: .ascii)!),
                "verifkey" : [UInt8]("VerificationKey".data(using: .ascii)!)]
-
 
 class BytesUtils {
     
