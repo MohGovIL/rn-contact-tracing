@@ -109,8 +109,6 @@ public class User {
         String json = gson.toJson(this);
         prefsEditor.putString(PREFS_KEY,json);
         prefsEditor.apply();
-
-        deserialize(ctx);
     }
 
 
