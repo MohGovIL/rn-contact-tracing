@@ -1,8 +1,9 @@
 //
 //  BytesUtils.swift
-//  rn-contact-tracing
+//  Crypto
 //
-//  Created by Yonatan Rimon on 10/05/2020.
+//  Created by Yonatan Rimon on 13/05/2020.
+//  Copyright © 2020 iGates. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +18,8 @@ let STRINGS = ["id" : [UInt8]("IdentityKey".data(using: .ascii)!),
                "depoch" : [UInt8]("DeriveEpoch".data(using: .ascii)!),
                "verifkey" : [UInt8]("VerificationKey".data(using: .ascii)!)]
 
-public class BytesUtils {
+
+class BytesUtils {
     
     // Int to bytes array
     class func numToBytes(num: Int, numBytes: Int) -> [UInt8] {
@@ -65,7 +67,7 @@ public class BytesUtils {
     // xor
     class func xor(_ a: [UInt8],_ b: [UInt8]) -> [UInt8] {
         // TODO: ASSERT
-        //     assert len(a) == len(b)
+        //     assert len(a) == len(b)      
         return zip(a, b).map{$0^$1}
     }
 }
