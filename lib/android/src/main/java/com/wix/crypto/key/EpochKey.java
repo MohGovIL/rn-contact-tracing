@@ -1,5 +1,6 @@
 package com.wix.crypto.key;
 
+import com.google.gson.annotations.SerializedName;
 import com.wix.crypto.Crypto;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
@@ -9,10 +10,15 @@ import com.wix.crypto.utilities.DerivationUtils;
  */
 public class EpochKey {
 
+    @SerializedName("PreKey")
     private byte[] mPreKey;
+    @SerializedName("EpochKey")
     private byte[] mEpochKey;
+    @SerializedName("EpochEnc")
     private byte[] mEpochEnc;
+    @SerializedName("EpochMac")
     private byte[] mEpochMac;
+    @SerializedName("EpochVer")
     private byte[] mEpochVer;
 
     /**
