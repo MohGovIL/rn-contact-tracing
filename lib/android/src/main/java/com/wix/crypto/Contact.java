@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 /**
  * Created by hagai on 11/05/2020.
  */
-@Entity(tableName = "Contacts", indices = {@Index(value = {"ephemeral_id"},unique = true)})
+@Entity(tableName = "Contacts", indices = {@Index(value = {"ephemeral_id"})})
 public class Contact{
 
     @PrimaryKey(autoGenerate = true)

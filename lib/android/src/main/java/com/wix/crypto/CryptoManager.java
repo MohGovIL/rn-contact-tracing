@@ -52,7 +52,7 @@ public class CryptoManager
             random.nextBytes(master_key);
             byte[] user_id = new byte[16];
             random.nextBytes(master_key);
-            mySelf = new User(user_id, master_key, (int)System.currentTimeMillis() / 1000, mCtx);
+            mySelf = new User(user_id, master_key, (int)(System.currentTimeMillis() / 1000), mCtx);
         }
     }
 

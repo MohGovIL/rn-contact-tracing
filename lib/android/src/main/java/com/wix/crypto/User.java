@@ -48,6 +48,8 @@ public class User {
         Time t = new Time(initTime, Constants.None); //TODO: check if correct way
         mCurrentDay = t.getDay();
         mCurrentDayMasterKey = DerivationUtils.getNextDayMasterKey(masterKey, true);
+
+
         generateEpochKeys(mCurrentDay);
         serialize(ctx);
     }
@@ -106,10 +108,19 @@ public class User {
         Log.e("hagai", "generateEphemeralId: ");
         assert geoHash.length == Constants.GEOHASH_LEN;
         Time t = new Time(time, Constants.None); // TODO: check if correct
-        assert mEpochKeys.containsKey(t) : "Epoch key is not present";
+
+        EpochKey epochKey = null;
+        if(!mEpochKeys.containsKey(t) && mEpochKeys.get(t) != null)// "Epoch key is not present";
+        {
+            int timeStamp = (int)(System.currentTimeMillis() / 1000);
+            this.updateKeyDatabase(timeStamp - 14 * 24 * 3600, timeStamp + 24*3600);
+        }
+
+        epochKey = mEpochKeys.get(t);
 
         int tUnitS = t.getUnits();
-        EpochKey epochKey = mEpochKeys.get(t);
+
+
 
         byte[] mask = Crypto.AES(epochKey.getEpochEncKey(), BytesUtils.numToBytes(tUnitS, Constants.MESSAGE_LEN));
         byte[] userRand = Arrays.copyOf(epochKey.getEpochVerKey(), Constants.USER_RAND_LEN);

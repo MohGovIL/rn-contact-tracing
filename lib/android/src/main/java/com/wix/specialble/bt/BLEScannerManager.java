@@ -57,7 +57,7 @@ public class BLEScannerManager {
     // it should be injected from the application container level on every change from LocationManager
     // TODO: provide external API to the react native level
     ///////////////////////////////////////////////////////////////
-    public static byte[] sGeoHash = new byte[]{ 0, 0,0, 0};
+    public static byte[] sGeoHash = new byte[]{ 0, 0,0, 0, 0};
 
     BLEScannerManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;
