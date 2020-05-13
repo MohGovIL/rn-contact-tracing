@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.wix.crypto.CryptoManager;
+import com.wix.crypto.utilities.BytesUtils;
 import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
@@ -70,8 +71,7 @@ public class BLEManager implements IEventListener {
 
     public void advertise()
     {
-        int currentTime = (int)(System.currentTimeMillis() / 1000);
-        bleAdvertiser.startAdvertise(mConfig.getServiceUUID(), new String(CryptoManager.getInstance(context).mySelf.generateEphemeralId(currentTime, BLEScannerManager.sGeoHash)));
+        bleAdvertiser.startAdvertise(mConfig.getServiceUUID());
     }
 
     public void stopAdvertise() {

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import com.wix.crypto.CryptoManager;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.listeners.IEventListener;
 
@@ -56,7 +57,7 @@ public class BLEAdvertisingManager {
         mEventListenerCallback.onEvent(ADVERTISING_STATUS, false);
     }
 
-    public void startAdvertise(String serviceUUID, String publicKey) {
+    public void startAdvertise(String serviceUUID) {
         Config config = Config.getInstance(mContext);
 
         ParcelUuid pUuid = new ParcelUuid(UUID.fromString(serviceUUID));
@@ -65,7 +66,11 @@ public class BLEAdvertisingManager {
         dataBuilder.addServiceUuid(pUuid);
         dataBuilder.setIncludeDeviceName(false);
         dataBuilder.setIncludeTxPowerLevel(true);
-        dataBuilder.addServiceData(pUuid, publicKey.getBytes(Charset.forName("UTF-8")));
+
+        int currentTime = (int)(System.currentTimeMillis() / 1000);
+        byte[] key = CryptoManager.getInstance(mContext).mySelf.generateEphemeralId(currentTime, BLEScannerManager.sGeoHash);
+
+        dataBuilder.addServiceData(pUuid, key);
 
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
         settingsBuilder.setAdvertiseMode(config.getAdvertiseMode());
