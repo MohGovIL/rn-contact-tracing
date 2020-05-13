@@ -48,18 +48,18 @@ jobs:
       - name: Install pod dependencies
         run: |
           cd example/ios && pod install
-      - name: Run fastlane setup (create key_chain)
-        env:
-          APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-        run: |
-          cd example/ios
-          fastlane setup
-      - name: Run fastlane build
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          KEYS_REPO_TOKEN: ${{ secrets.KEYS_REPO_TOKEN }}
-        run: |
-          cd example/ios
-          fastlane build
+      # - name: Run fastlane setup (create key_chain)
+      #   env:
+      #     APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
+      #     TEAM_ID: ${{ secrets.TEAM_ID }}
+      #   run: |
+      #     cd example/ios
+      #     fastlane setup
+      # - name: Run fastlane build
+      #   env:
+      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      #     FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+      #     KEYS_REPO_TOKEN: ${{ secrets.KEYS_REPO_TOKEN }}
+      #   run: |
+      #     cd example/ios
+      #     fastlane build
