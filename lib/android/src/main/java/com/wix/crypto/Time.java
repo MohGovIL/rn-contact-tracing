@@ -2,6 +2,8 @@ package com.wix.crypto;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 /**
@@ -18,8 +20,11 @@ public class Time implements Comparable<Time> {
     public static final int WINDOW = 5 * 60;
     public static final int MAX_CONTACTS_IN_WINDOW = 1000;
 
+    @SerializedName("Time")
     private int mTime;
+    @SerializedName("Day")
     private int mDay;
+    @SerializedName("Epoch")
     private int mEpoch;
 
     //TODO: create two constructors one with two params and one with only unix time

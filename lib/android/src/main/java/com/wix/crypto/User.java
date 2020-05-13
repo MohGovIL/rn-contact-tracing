@@ -1,7 +1,14 @@
 package com.wix.crypto;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.wix.crypto.custom.Pair;
 import com.wix.crypto.custom.Triplet;
 import com.wix.crypto.key.DayKey;
@@ -9,6 +16,9 @@ import com.wix.crypto.key.EpochKey;
 import com.wix.crypto.key.UserKey;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,26 +28,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by hagai on 11/05/2020.
  */
 public class User {
 
-    private byte[] mUserId;
-    private byte[] mKeyId;
-    private byte[] mKeyMasterCommitment;
-    private byte[] mKeyMasterVerification;
-    private Map<Time, EpochKey> mEpochKeys;
+    public static final String USER_PREFS = "user_prefs";
+    public static final String PREFS_KEY = "user_data";
+    private static final String TAG = "User";
 
+    @SerializedName("UserId")
+    private byte[] mUserId;
+    @SerializedName("KeyId")
+    private byte[] mKeyId;
+    @SerializedName("KeyMasterCommitment")
+    private byte[] mKeyMasterCommitment;
+    @SerializedName("KeyMasterVerification")
+    private byte[] mKeyMasterVerification;
+    @SerializedName("EpochKeys")
+    private Map<Time, EpochKey> mEpochKeys;
+    @SerializedName("CurrentDay")
     private int mCurrentDay;
+    @SerializedName("CurrentDayMasterKey")
     private byte[] mCurrentDayMasterKey;
 
     // this should be db based data
-    private List<Contact> mContacts;
+    @Expose(serialize = false)
+    private List<Contact> mContacts; // not serializable
+
+    public User() {}
 
     public User(byte[] userId, byte[] masterKey, int initTime, Context ctx)
     {
-
         mUserId = userId;
         mKeyId = DerivationUtils.getKeyId(masterKey);
         mKeyMasterCommitment = DerivationUtils.getMasterKeyCommitment(mKeyId, userId);
@@ -61,11 +85,32 @@ public class User {
     public void deserialize(Context ctx)
     {
         // write all object data to shared prefs
+        Gson gson = new GsonBuilder().create();
+        SharedPreferences prefs = ctx.getSharedPreferences(USER_PREFS, MODE_PRIVATE);
+        String userData = prefs.getString(PREFS_KEY, null);
+
+
+        if(userData != null) {
+
+            User u = gson.fromJson(userData, User.class);
+
+            return u;
+
+        }
+
     }
 
     public void serialize(Context ctx)
     {
         // read all object data from shared prefs
+        Gson gson  = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().enableComplexMapKeySerialization().setPrettyPrinting().create();
+        SharedPreferences prefs = ctx.getSharedPreferences(USER_PREFS,MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        String json = gson.toJson(this);
+        prefsEditor.putString(PREFS_KEY,json);
+        prefsEditor.apply();
+
+        deserialize(ctx);
     }
 
 
