@@ -53,7 +53,7 @@ public class User {
     All stored keys before past_time will be deleted.
      * @param futureTime - end time to store keys(should be a time from the future).
      */
-    private void updateKeyDatabase(int pastTime, int futureTime) {
+    public void updateKeyDatabase(int pastTime, int futureTime) {
 
         Time past = new Time(pastTime, Constants.None); // TODO: check if correct
         Time future = new Time(futureTime, Constants.None); // TODE: check if correct
@@ -86,15 +86,11 @@ public class User {
         byte[] zeroBytesThree = new byte[] {0x00, 0x00, 0x00};
         byte[] zeroBytesFour = new byte[]  {0x00, 0x00, 0x00, 0x00};
 
-        byte[] plain = BytesUtils.byteConcatination(BytesUtils.byteConcatination(zeroBytesThree, geoHash),
-                BytesUtils.byteConcatination(userRand, zeroBytesFour));
+        byte[] plain = BytesUtils.byteConcatenation(BytesUtils.byteConcatenation(zeroBytesThree, geoHash),BytesUtils.byteConcatenation(userRand, zeroBytesFour));
 
         byte[] cIJS = BytesUtils.xor(plain, mask);
 
-        return BytesUtils.byteConcatination(Arrays.copyOf(cIJS, 12),
-                Arrays.copyOf(Crypto.AES(epochKey.getEpocMacKey(),
-                        cIJS),
-                        4));
+        return BytesUtils.byteConcatenation(Arrays.copyOf(cIJS, 12),Arrays.copyOf(Crypto.AES(epochKey.getEpocMacKey(),cIJS),4));
     }
 
     /**
@@ -102,9 +98,7 @@ public class User {
      * @param infectedKeyDatabase
      * @return -  List of matches with the infected user.
      */
-    public List<Match> findCryptoMatches(Map<Integer, Map<Integer, byte[]> > infectedKeyDatabase) {
-
-        //TODO: missing implementation
+    public List<Match> findCryptoMatches(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedKeyDatabase) {
 
         List<Match> matches = new ArrayList<>();
 
@@ -158,44 +152,29 @@ public class User {
                 if(!mapUnitKeys.containsKey(timeKey)) {
 
                     mapUnitKeys.put(timeKey, new ArrayList<Pair<byte[], byte[]>>());
-                    for (int i = 0; i < infectedKeyDatabase.size() ; i++)
+                    if(infectedKeyDatabase.get(t.getDay()) != null && infectedKeyDatabase.get(t.getDay()).get(t.getEpoch()) != null )
                     {
-                        byte[] epochKey = infectedKeyDatabase.get(t.getDay()).get(t.getEpoch());
+                        for (int i = 0; i < infectedKeyDatabase.get(t.getDay()).get(t.getEpoch()).size(); i++) {
+                            byte[] epochKey = infectedKeyDatabase.get(t.getDay()).get(t.getEpoch()).get(i);
 
-                        Pair<byte[], byte[]> epochEncAndMac = DerivationUtils.getEpochKeys(epochKey, t.getDay(), t.getEpoch());
-                        byte[] mask = Crypto.AES(epochEncAndMac.getFirst(), BytesUtils.numToBytes(unit, Constants.MESSAGE_LEN));
-                        mapUnitKeys.get(timeKey).add(new Pair<byte[],byte[]>(mask, epochEncAndMac.getSecond()));
+                            Pair<byte[], byte[]> epochEncAndMac = DerivationUtils.getEpochKeys(epochKey, t.getDay(), t.getEpoch());
+                            byte[] mask = Crypto.AES(epochEncAndMac.getFirst(), BytesUtils.numToBytes(unit, Constants.MESSAGE_LEN));
+                            mapUnitKeys.get(timeKey).add(new Pair<>(mask, epochEncAndMac.getSecond()));
+                        }
                     }
-
                 }
 
-                for (int j = 0; j < mapUnitKeys.size(); j++) {
-                    ArrayList<Pair<byte[], byte[]>> pairList = mapUnitKeys.get(timeKey);
-                    Pair<byte[], byte[]> pair = pairList.get(j);
-                    Triplet<Boolean, byte[],byte[]> match = isMatch(pair.getFirst(), pair.getSecond(),contact);
-
+                for ( Pair<byte[], byte[]> entry : mapUnitKeys.get(timeKey)) {
+                    Triplet<Boolean, byte[],byte[]> match = isMatch(entry.getFirst(), entry.getSecond(),contact);
                     if(match.getFirst())
                     {
                         matches.add(new Match(contact,match.getSecond(),match.getThird(),t,unit));
                     }
                 }
-
-                //TODO: missing porting of this part:
-                /**
-                 *  for mask, epoch_mac in unit_keys[t_key]:
-                 *                     match = self._is_match(mask, epoch_mac, contact) # Page 15 ... checks if in the list of stored ephemeral IDs
-                 *                     if match[0]:
-                 *                         matches.append(Match(contact, match[1], match[2], t, unit))
-                 *
-                 *         return matches
-                 */
-
-
-
             }
 
         }
-        return null;
+        return matches;
     }
 
     /**
@@ -261,7 +240,7 @@ public class User {
                 // If there have been too many contacts in this epoch, ignore this contact.
                 return false;
         }
-        mContacts.add(new Contact(otherEphemeralId, rssi, time, ownLocation,null));
+        mContacts.add(new Contact(otherEphemeralId, rssi, time, ownLocation));
         return true;
     }
 
@@ -343,8 +322,7 @@ public class User {
         assert mCurrentDay <= targetDay : "Cannot retrieve keys from the past";
         while (mCurrentDay <= targetDay) {
 
-            System.out.println("Current Day Master Key" + mCurrentDayMasterKey);
-            DayKey currentDayKey = new DayKey(targetDay, mCurrentDayMasterKey, mKeyMasterVerification, mKeyMasterCommitment);
+            DayKey currentDayKey = new DayKey(mCurrentDay, mCurrentDayMasterKey, mKeyMasterVerification, mKeyMasterCommitment);
 
             for(int i = 0; i < Time.EPOCHS_IN_DAY; i ++) { // iterate over the epochs of each day
 
@@ -369,20 +347,21 @@ public class User {
 
             if ( b != 0x00 ) {
 
-                return new Triplet<Boolean,byte[],byte[]>(false, new byte[]{0x00}, new byte[]{0x00});
+                return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
             }
         }
 
         // The application check the part of EphID which corresponds to the MAC (Matched Occured)
-        byte[] x = BytesUtils.byteConcatination(Arrays.copyOf(ephId, ephId.length - 4), Arrays.copyOf(mask, mask.length - 4));
-        byte[] y = Arrays.copyOf(ephId, ephId.length - 4);
 
-        if(y == Arrays.copyOf(Crypto.AES(epochMac, x), 4)) { // TODO: check this correct comparison
+        byte[] x = BytesUtils.byteConcatenation(Arrays.copyOf(ephId, ephId.length - 4), Arrays.copyOfRange(mask,mask.length-4,mask.length));
+        byte[] y = Arrays.copyOfRange(ephId, ephId.length - 4,ephId.length);
 
-            return new Triplet<Boolean,byte[],byte[]>(true, ephidGeohash, ephIdUserRand);
+        if(Arrays.equals(y,Arrays.copyOf(Crypto.AES(epochMac, x), 4)))
+        {
+            return new Triplet<>(true, ephidGeohash, ephIdUserRand);
         }
 
-        return new Triplet<Boolean,byte[],byte[]>(false, new byte[]{0x00}, new byte[]{0x00});
+        return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
     }
 
 

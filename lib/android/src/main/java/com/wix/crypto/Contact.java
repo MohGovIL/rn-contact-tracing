@@ -41,7 +41,7 @@ public class Contact{
      * @param time - Time of contact as recorded by the receiving user.
      * @param location - Location of user contact when BLE message received.
      */
-    public Contact(byte[] ephemeralId, byte[] rssi, int time, byte[] location, byte[] user_id) {
+    public Contact(byte[] ephemeralId, byte[] rssi, int time, byte[] location) {
 
         assert ephemeralId.length == Constants.MESSAGE_LEN;
 
@@ -49,7 +49,7 @@ public class Contact{
         this.RSSI = rssi;
         this.Time = time;
         this.Location = location;
-        this.user_id = user_id;
+//        this.user_id = user_id;
     }
 
     public Contact(){}

@@ -18,30 +18,30 @@ public class EpochKey {
     /**
      *
      * @param day - epoch day.
-     * @param epochIndex - epoch index.
+     * @param epochKey - epoch index.
      * @param mDayKey - day key.
      */
     public EpochKey(int day, int epochIndex, DayKey mDayKey) {
 
-        byte[] timePrefix = BytesUtils.byteConcatination(BytesUtils.numToBytes(day, 4),
+        byte[] timePrefix = BytesUtils.byteConcatenation(BytesUtils.numToBytes(day, 4),
                 BytesUtils.numToBytes(epochIndex, 1));
 
         byte[] zeroByteEleven = new byte[] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         byte[] zeroByteTen = new byte[]    {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-        byte[] preKeyMessage = BytesUtils.byteConcatination(timePrefix, zeroByteEleven);
+        byte[] preKeyMessage = BytesUtils.byteConcatenation(timePrefix, zeroByteEleven);
 
         mPreKey = Crypto.AES(mDayKey.getDayKey(), preKeyMessage);
 
         mEpochKey = DerivationUtils.getKeyEpoch(mPreKey, mDayKey.getDayCommitKey(), BytesUtils.numToBytes(day, 4), BytesUtils.numToBytes(epochIndex, 1));
 
-        byte[] epochEncMessage = BytesUtils.byteConcatination(timePrefix, zeroByteEleven);
+        byte[] epochEncMessage = BytesUtils.byteConcatenation(timePrefix, zeroByteEleven);
         mEpochEnc = Crypto.AES(mEpochKey, epochEncMessage);
 
-        byte[] epochMACmessage = BytesUtils.byteConcatination(timePrefix, zeroByteTen);
+        byte[] epochMACmessage = BytesUtils.byteConcatenation(timePrefix, zeroByteTen);
         mEpochMac = Crypto.AES(mEpochKey, epochMACmessage);
 
-        byte[] epochVerMessage = BytesUtils.byteConcatination(timePrefix, zeroByteEleven);
+        byte[] epochVerMessage = BytesUtils.byteConcatenation(timePrefix, zeroByteEleven);
         mEpochVer = Crypto.AES(mDayKey.getDayVerificationKey(), epochVerMessage);
 
     }

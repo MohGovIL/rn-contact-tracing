@@ -44,7 +44,7 @@ public class Crypto {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
             ans = cipher.doFinal(message);
 

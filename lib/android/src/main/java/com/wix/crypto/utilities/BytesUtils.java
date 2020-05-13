@@ -7,15 +7,15 @@ public class BytesUtils {
 
     public static byte[] numToBytes(int num, int numBytes) {
 
-        int[] result = new int[numBytes];
+        byte[] result = new byte[numBytes];
         for(int i = 0; i < numBytes; i ++) {
-            result[i] = num & 0xff;
+            result[i] = (byte)(num & 0xff);
             num >>= 8;
         }
 
         assert num == 0 : "Sanity Check";
 
-        return result.toString().getBytes(); //TODO: not sure if this conversion is OK.
+        return result;
     }
 
     // TODO: check if this method is correct
@@ -37,7 +37,7 @@ public class BytesUtils {
         for(int i = 0; i < pad.length; i ++) {
             pad[i] = 0;
         }
-        byte[] result = byteConcatination(array, pad);
+        byte[] result = byteConcatenation(array, pad);
 
         return result;
     }
@@ -55,7 +55,7 @@ public class BytesUtils {
         return result;
     }
 
-    public static final byte[] byteConcatination(byte[] firstArray, byte[] secondArray) {
+    public static final byte[] byteConcatenation(byte[] firstArray, byte[] secondArray) {
 
         int firstLen = firstArray.length;
         int secondLen = secondArray.length;

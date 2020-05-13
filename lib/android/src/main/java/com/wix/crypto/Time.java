@@ -1,5 +1,7 @@
 package com.wix.crypto;
 
+import androidx.annotation.Nullable;
+
 import java.util.Objects;
 
 /**
@@ -27,7 +29,7 @@ public class Time implements Comparable<Time> {
 
             this.mTime = unixTime;
             this.mDay = unixTime / DAY;
-            this.mEpoch = (unixTime % DAY) / epoch;
+            this.mEpoch = (unixTime % DAY) / EPOCH;
 
         } else {
 
@@ -75,7 +77,23 @@ public class Time implements Comparable<Time> {
             return 1;
     }
 
-    public int dayToSeconds(int day) { return DAY * day; }
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        //return this.mDay == obj. && this.mEpoch == other.epoch
+        if (obj == null) {
+            return false;
+        }
+
+        if (!Time.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+
+        final Time other = (Time) obj;
+
+        return this.mDay == other.mDay && this.mEpoch == other.mEpoch;
+    }
+
+    public static int dayToSeconds(int day) { return DAY * day; }
 
     public int getTime() { return mTime; }
 
@@ -85,6 +103,6 @@ public class Time implements Comparable<Time> {
 
     public boolean largerEqualThan(Time start) {
 //        EPOCHS_IN_DAY*self.day + self.epoch <= EPOCHS_IN_DAY*other.day + other.epoch
-        return EPOCHS_IN_DAY*this.mDay + this.mEpoch <= EPOCHS_IN_DAY*start.mDay + start.mEpoch;
+        return EPOCHS_IN_DAY*this.mDay + this.mEpoch >= EPOCHS_IN_DAY*start.mDay + start.mEpoch;
     }
 }

@@ -22,7 +22,7 @@ public class DerivationUtils {
 
     public static final byte[] getMasterKeyCommitment(byte[] keyId, byte[] userId) {
 
-        byte[] message = BytesUtils.byteConcatination(userId, Constants.ENCODED_STRINGS.get("idCom"));
+        byte[] message = BytesUtils.byteConcatenation(userId, Constants.ENCODED_STRINGS.get("idCom"));
         byte[ ] keyMasterCommitment = Crypto.HMAC(keyId, message);
 
         return Arrays.copyOf(keyMasterCommitment, Constants.KEY_LEN);
@@ -54,9 +54,9 @@ public class DerivationUtils {
 
     public static byte[] getKeyEpoch(byte[] preKey, byte[] commitKey, byte[] day, byte[] epoch) {
 
-        byte[] messagePart1 = BytesUtils.byteConcatination(commitKey, day);
-        byte[] messagePart2 = BytesUtils.byteConcatination(epoch, Constants.ENCODED_STRINGS.get("depoch"));
-        byte[] message = BytesUtils.byteConcatination(messagePart1, messagePart2);
+        byte[] messagePart1 = BytesUtils.byteConcatenation(commitKey, day);
+        byte[] messagePart2 = BytesUtils.byteConcatenation(epoch, Constants.ENCODED_STRINGS.get("depoch"));
+        byte[] message = BytesUtils.byteConcatenation(messagePart1, messagePart2);
 
         byte[] epochKey = Crypto.HMAC(preKey, message);
 
@@ -67,7 +67,7 @@ public class DerivationUtils {
         assert day.length == 4;
 
         byte[] zeroBytes = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-        byte[] message = BytesUtils.byteConcatination(day, zeroBytes);
+        byte[] message = BytesUtils.byteConcatenation(day, zeroBytes);
 
         return Crypto.AES(keyMasterCommitment, message);
     }
@@ -75,7 +75,7 @@ public class DerivationUtils {
     public static byte[] getKeyVerificationForDayI(byte[] keyMasterVerification, int dayI) {
 
         byte[] day = BytesUtils.numToBytes(dayI, 4);
-        byte[] message = BytesUtils.byteConcatination(day, Constants.ENCODED_STRINGS.get("dverif"));
+        byte[] message = BytesUtils.byteConcatenation(day, Constants.ENCODED_STRINGS.get("dverif"));
 
         byte[] result = Crypto.HMAC(keyMasterVerification, message);
 
@@ -85,17 +85,17 @@ public class DerivationUtils {
     //TODO:: problem with Pair data type.
     public static Pair<byte[],byte[]> getEpochKeys(byte[] epochKey, int day, int epoch) {
 
-        byte[] prefix = BytesUtils.byteConcatination(BytesUtils.numToBytes(day, 4), BytesUtils.numToBytes(epoch, 1));
+        byte[] prefix = BytesUtils.byteConcatenation(BytesUtils.numToBytes(day, 4), BytesUtils.numToBytes(epoch, 1));
         byte[] zeroByteEleven = new byte[] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         byte[] zeroByteTen = new byte[]    {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 
-        byte[] epochEnc = Crypto.AES(epochKey, BytesUtils.byteConcatination(prefix, zeroByteEleven));
+        byte[] epochEnc = Crypto.AES(epochKey, BytesUtils.byteConcatenation(prefix, zeroByteEleven));
 
-        byte[] message = BytesUtils.byteConcatination(prefix, zeroByteTen);
-        byte[] epochMac = Crypto.AES(epochEnc, message);
+        byte[] message = BytesUtils.byteConcatenation(prefix, zeroByteTen);
+        byte[] epochMac = Crypto.AES(epochKey, message);
 
-        return new Pair<byte[], byte[]>(epochEnc, epochMac);
+        return new Pair<>(epochEnc, epochMac);
     }
 
     public static byte[] getKeyForDayI(byte[] dayMasterKey) {
