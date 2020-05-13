@@ -9,28 +9,28 @@ import androidx.room.PrimaryKey;
 /**
  * Created by hagai on 11/05/2020.
  */
-@Entity(indices = {@Index(value = {"EphemeralID"},unique = true)})
+@Entity(tableName = "Contacts", indices = {@Index(value = {"ephemeral_id"},unique = true)})
 public class Contact{
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "Id")
+    @ColumnInfo(name = "id")
     private int id;
 
     @NonNull
-    @ColumnInfo(name = "EphemeralID")
+    @ColumnInfo(name = "ephemeral_id")
     private byte[] ephemeralId;
 
-    @ColumnInfo(name = "Rssi")
+    @ColumnInfo(name = "rssi")
     private byte[] RSSI;
 
     @NonNull
-    @ColumnInfo(name = "Received_time")
+    @ColumnInfo(name = "timestamp")
     private int Time;
 
-    @ColumnInfo(name = "Location")
+    @ColumnInfo(name = "geohash")
     private byte[] Location;
 
-    @ColumnInfo(name = "User_Id")
+    @ColumnInfo(name = "user_id")
     private byte[] user_id;
 
     /**
