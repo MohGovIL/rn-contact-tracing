@@ -2,13 +2,16 @@ package com.wix.specialble;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Callback;
@@ -287,6 +290,10 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         //loadDatabase(reactContext.getApplicationContext());
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = extractInfectedDbFromJson(null); //TODO::pass epochs when ready
         List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
+        if(result.size() > 0)
+        {
+            Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();
+        }
         return parseResultToJson(result);
     }
 
