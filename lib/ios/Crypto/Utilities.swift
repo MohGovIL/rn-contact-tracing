@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Match
+class Match : Codable
 {
     var contact: Contact;
     var infected_geohash: [UInt8];

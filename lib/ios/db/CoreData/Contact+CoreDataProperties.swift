@@ -15,8 +15,8 @@ extension Contact {
         return NSFetchRequest<Contact>(entityName: "Contact")
     }
 
-    @NSManaged public var ephemeral_id: String?
-    @NSManaged public var geohash: String?
+    @NSManaged public var ephemeral_id: Data
+    @NSManaged public var geohash: Data
     @NSManaged public var id: Int32
     @NSManaged public var rssi: Int16
     @NSManaged public var timestamp: Int

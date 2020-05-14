@@ -21,5 +21,19 @@ public class CryptoClient : NSObject {
         return CryptoManager.shared.getStringEphemeral()
     }
     
+    @objc(saveMyUserToDisk)
+    static public func saveMyUserToDisk() {
+        CryptoManager.shared.saveMyUserToDisk()
+    }
     
+    @objc(decodeKey:)
+    static public func decodeKey(_ k: String) {
+        let a = k.asciiToUInt8Bytes()
+        print(a)
+    }
+    
+    @objc(findMatch::)
+    static public func findMatch(startDay: Int, infectedArray: [[[String]]]) -> String  {
+        return CryptoManager.shared.findMatch(startDay: startDay, infectedArray: infectedArray)
+    }
 }

@@ -17,7 +17,7 @@ public class User : NSObject, Codable {
     var K_master_com:[UInt8] = []
     var K_master_ver:[UInt8] = []
     var epoch_keys:[Time:EpochKey] = [:]
-    var contacts:[Contact] = []
+//    var contacts:[Contact] = []
     var curr_day: Int = 0
     var curr_day_master_key:[UInt8] = []
 //    var _get_epoch_keys:[UInt8]
@@ -63,7 +63,7 @@ public class User : NSObject, Codable {
         self.K_master_com = []
         self.K_master_ver = []
         self.epoch_keys = [:]
-        self.contacts = []
+//        self.contacts = []
         self.curr_day = 0
         self.curr_day_master_key = []
     }
@@ -82,7 +82,7 @@ public class User : NSObject, Codable {
         self.K_master_com = DerivationUtils.get_key_master_com(key_id: self.K_id, user_id: self.user_id)
         self.K_master_ver = Crypto.hmac_sha256_firstItems(key: master_key, data: STRINGS["verifkey"]!, numberOfItems: const_KEY_LEN)
         self.epoch_keys = [:]
-        self.contacts = []
+//        self.contacts = []
         self.curr_day = Time(init_time).day
         self.curr_day_master_key = DerivationUtils.get_next_day_master_key(prev_master_key: master_key, install_day: true)
         self._get_epoch_keys(target_day: self.curr_day)
@@ -145,50 +145,54 @@ public class User : NSObject, Codable {
         var matches:[Match] = []
         
         // Make sure the contacts are sorted so as to make the sliding window work properly
-        self.contacts = self.contacts.sorted(by: { $0.timestamp < $1.timestamp })
-
         // domain is a time up to units (actually a string "day-epoch-unit")
         // and its range is a list of (mask, epochMAC)
         var unit_keys:[String:[([UInt8],[UInt8])]] = [:]
         var earliest_time = 0
-        for contact in self.contacts {
-            var time = contact.timestamp - Constants.JITTER_THRESHOLD
-            
-            // Remove all entries unit_keys[t] for t < time (will save memory usage)
-            // For it to work we need self.contact to be ordered by contact.time
-            if earliest_time != 0 {
-                while earliest_time < time {
-                    let t_dict_key = Time(earliest_time).str_with_units()
-                    unit_keys.removeValue(forKey: t_dict_key)
-                    earliest_time += Constants.T_UNIT
-                }
-            } else {
-                earliest_time = time
-            }
-            
-            while time <= contact.time + Constants.JITTER_THRESHOLD {
-                let t = Time(time)
-                let t_key = t.str_with_units()
-                let unit = t.get_units()
-                time += Constants.T_UNIT
+        if let fetchedObjects = DBClient.getContacts().fetchedObjects {
+            for contact in fetchedObjects {
+                var time = contact.timestamp - Constants.JITTER_THRESHOLD
                 
-                if unit_keys[t_key] == nil {
-                    unit_keys[t_key] = [([UInt8], [UInt8])]()
-                    if infected_key_database[t.day] != nil && (infected_key_database[t.day]![t.epoch] != nil) {
-                        for epoch_key in infected_key_database[t.day]![t.epoch]! {
-                            let epoch_enc = DerivationUtils.get_epoch_keys(epoch_key: epoch_key, day: t.day, epoch: t.epoch).0
-                            let epoch_mac = DerivationUtils.get_epoch_keys(epoch_key: epoch_key, day: t.day, epoch: t.epoch).1
-                            let mask = Crypto.encrypt(key: epoch_enc, plain: BytesUtils.numToBytes(num: unit, numBytes: const_MESSAGE_LEN))
-                            let newTuple = (mask, epoch_mac)
-                            unit_keys[t_key]!.append(newTuple)
+                // Remove all entries unit_keys[t] for t < time (will save memory usage)
+                // For it to work we need self.contact to be ordered by contact.time
+                if earliest_time != 0 {
+                    while earliest_time < time {
+                        let t_dict_key = Time(earliest_time).str_with_units()
+                        unit_keys.removeValue(forKey: t_dict_key)
+                        earliest_time += Constants.T_UNIT
+                    }
+                } else {
+                    earliest_time = time
+                }
+                if(contact.timestamp == 0)
+                {
+                    print("--------------------------")
+                }
+                
+                while time <= contact.timestamp + Constants.JITTER_THRESHOLD {
+                    let t = Time(time)
+                    let t_key = t.str_with_units()
+                    let unit = t.get_units()
+                    time += Constants.T_UNIT
+                    
+                    if unit_keys[t_key] == nil {
+                        unit_keys[t_key] = [([UInt8], [UInt8])]()
+                        if infected_key_database[t.day] != nil && (infected_key_database[t.day]![t.epoch] != nil) {
+                            for epoch_key in infected_key_database[t.day]![t.epoch]! {
+                                let epoch_enc = DerivationUtils.get_epoch_keys(epoch_key: epoch_key, day: t.day, epoch: t.epoch).0
+                                let epoch_mac = DerivationUtils.get_epoch_keys(epoch_key: epoch_key, day: t.day, epoch: t.epoch).1
+                                let mask = Crypto.encrypt(key: epoch_enc, plain: BytesUtils.numToBytes(num: unit, numBytes: const_MESSAGE_LEN))
+                                let newTuple = (mask, epoch_mac)
+                                unit_keys[t_key]!.append(newTuple)
+                            }
                         }
                     }
-                }
-                
-                for (mask, epoch_mac) in unit_keys[t_key]! {
-                    let match = self._is_match(mask: mask, epoch_mac: epoch_mac, contact: contact)
-                    if match.0 == true {
-                        matches.append(Match(contact: contact, ephid_geohash: match.1, ephid_user_rand: match.2, other_time: t, other_unit: unit))
+                    
+                    for (mask, epoch_mac) in unit_keys[t_key]! {
+                        let match = self._is_match(mask: mask, epoch_mac: epoch_mac, contact: contact)
+                        if match.0 == true {
+                            matches.append(Match(contact: contact, ephid_geohash: match.1, ephid_user_rand: match.2, other_time: t, other_unit: unit))
+                        }
                     }
                 }
             }
@@ -243,28 +247,32 @@ public class User : NSObject, Codable {
     // :param time:                current time.
     // :param own_location:        current location
     func  store_contact(other_ephemeral_id: [UInt8], rssi: Int, time: Int, own_location: [UInt8]) -> Bool {
-        if self.contacts.count > 0 && time < self.contacts.last!.timestamp - Constants.JITTER_THRESHOLD {
+        let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
+        if contactsCount > 0 && time < (DBClient.getContacts().fetchedObjects!.last!).timestamp - Constants.JITTER_THRESHOLD {
             // We expect contacts to come in chronological order
             // Up to jitter
             return false
         }
-        if self.contacts.count >= Constants.MAX_CONTACTS_IN_WINDOW {
-            let past_contact_time = self.contacts[self.contacts.count - Constants.MAX_CONTACTS_IN_WINDOW].timestamp
-            if time - past_contact_time < Constants.T_WINDOW {
-                // If there have been too many contacts in this epoch, ignore this contact.
-                return false
-            }
-        }
-        let contact = Contact()
-        contact.setContactData(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location)
-        self.contacts.append(contact)
+//        if contactsCount >= Constants.MAX_CONTACTS_IN_WINDOW {
+//            let past_contact_time = (DBClient.getContacts().fetchedObjects! )[DBClient.getContacts().fetchedObjects!.count - Constants.MAX_CONTACTS_IN_WINDOW].timestamp
+//            if time - past_contact_time < Constants.T_WINDOW {
+//                // If there have been too many contacts in this epoch, ignore this contact.
+//                return false
+//            }
+//        }
+        
+        DBContactManager.shared.addNewContact(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location, id: contactsCount+1)
+//        let contact = Contact()
+//        contact.setContactData(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location)
+//        self.contacts.append(contact)
         return true
     }
     
     // deletes a contact from local contact DB.
     // :param contact: Contact to delete.
     func  delete_contact(contact: Contact) {
-        self.contacts.removeAll{$0 == contact}
+        DBClient.deleteContact(contact)
+//        self.contacts.removeAll{$0 == contact}
     }
     
     // Delete all history before a specific time.
@@ -277,7 +285,9 @@ public class User : NSObject, Codable {
         let t = Time(dtime)
         
         self.epoch_keys = self.epoch_keys.filter { $0.key >= t }
-        self.contacts = self.contacts.filter { $0.time >= dtime }
+        CryptoClient.saveMyUserToDisk()
+        DBClient.deleteContactsHistory(dtime: dtime)
+//        self.contacts = self.contacts.filter { $0.time >= dtime }
     }
     
     // Makes sure the user has all epoch keys corresponding to a given day
@@ -315,7 +325,7 @@ public class User : NSObject, Codable {
     }
     
     func _is_match(mask: [UInt8], epoch_mac: [UInt8], contact: Contact) -> (Bool, [UInt8], [UInt8]) {
-        let ephid = contact.EphID
+        let ephid = [UInt8](contact.ephemeral_id)
         let plain = BytesUtils.xor(mask, ephid)
         let zeros = Array(plain[0..<3])
         let ephid_geohash = Array(plain[3..<3+const_GEOHASH_LEN])

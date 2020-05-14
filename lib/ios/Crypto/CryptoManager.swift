@@ -19,10 +19,10 @@ public class CryptoManager {
     }
     
     // MARK:- Private funcs
-    fileprivate func writeUserToDefaults(_ user: User) {
+    fileprivate func writeUserToDefaults(user: User, key: String) {
         let jsonData = try! JSONEncoder().encode(user)
         let userDefaults = UserDefaults.standard
-        userDefaults.set(jsonData, forKey: "mySelf")
+        userDefaults.set(jsonData, forKey: key)
         userDefaults.synchronize()
     }
     
@@ -38,12 +38,16 @@ public class CryptoManager {
             print("userKey: \(userKey)")
             print("init_time: \(init_time)")
             let user = User(user_id: userKey, master_key: masterKey, init_time: init_time)
-            writeUserToDefaults(user)
+            writeUserToDefaults(user: user, key: "mySelf")
             return user
         }
     }
     
     // MARK:- User funcs
+    func saveMyUserToDisk() {
+        writeUserToDefaults(user: mySelf,key: "mySelf")
+    }
+    
     func getStringEphemeral() -> String {
         let timeS = Int(Date().timeIntervalSince1970)
         let geoHash:[UInt8] = Array(repeating: 1, count: 5)
@@ -77,10 +81,53 @@ public class CryptoManager {
         let server_msg = server.send_keys()
         return server_msg;
     }
+    
+    
+    func findMatch(startDay: Int, infectedArray: [[[String]]]) -> String {
+        var infectedEpochs:[Int: [Int : [[UInt8]]]] = [:]
+        
+        for i in 0..<14 {
+            infectedEpochs[i+startDay] = [:]
+            for j in 0..<24 {
+                let currentEpochsHex = infectedArray[i][j]
+                
+                let currentEpochsBinary : [[UInt8]] = currentEpochsHex.map { DBClient.stringToBytes($0)! }
+                
+                
+                
+                infectedEpochs[i+startDay]![j] = currentEpochsBinary
+                
+            }
+        }
+        
+        let matches =  mySelf.find_crypto_matches(infected_key_database: infectedEpochs)
+        var matchesResults:[[String:Any]] = []
+        for match in matches {
+            var currentMatch:[String:Any] = [:]
+            
+            currentMatch["ephemeral_id"] =  match.contact.ephemeral_id.hex()
+            currentMatch["timestamp"] = match.contact.timestamp
+            currentMatch["geohash"] = match.contact.geohash.hex()
+            currentMatch["rssi"] = match.contact.rssi
+            
+            matchesResults.append(currentMatch)
+        }
+        let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
+//        do{
+//            d = try JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
+//        } catch {
+//            
+//        }
+        return String(data: d, encoding: .utf8) ?? ""
+    }
 }
 
 // MARK:- Extentions
 extension Data {
+    func hex() -> String {
+           return map { String(format: "%02hhx", $0) }.joined()
+    }
+    
     init(randomOfLength length: Int) {
         var bytes = [UInt8](repeating: 0, count: length)
         let status = SecRandomCopyBytes(kSecRandomDefault, length, &bytes)
@@ -109,5 +156,3 @@ extension String {
         return res.map{ UInt8($0 & 0x00ff) }
     }
 }
-
-

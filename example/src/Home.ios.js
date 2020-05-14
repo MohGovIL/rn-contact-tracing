@@ -127,27 +127,32 @@ function HomeScreen() {
 
     // match
     function _match(infected_db) {
-        //return SpecialBle.match(infected_db);
+        return SpecialBle.match("infected_db");
 
-        return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+        // return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
     }
 
     // fetch
     function fetchInfectionDataByConsent() {
-        //return SpecialBle.fetchInfectionDataByConsent();
+        return SpecialBle.fetchInfectionDataByConsent();
         
         
-        var json ={
-          BLE:
-          [
-            {
-              key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
-              epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
-            }
-          ]
-        };
-        alert(json);
-        return json;
+        // var json ={
+        //   BLE:
+        //   [
+        //     {
+        //       key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
+        //       epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
+        //     }
+        //   ]
+        // };
+        // alert(json);
+        // return json;
+    }
+
+    // add contacts to DB
+    function _writeContactsToDB() {
+        SpecialBle.writeContactsToDB();
     }
 
     return (
@@ -173,6 +178,10 @@ function HomeScreen() {
             <View style={[styles.subContainer, {justifyContent: 'center'}]}>
 
                 {_renderButton('Fetch server infected keys', fetchInfectionDataByConsent)}
+            </View>
+
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                {_renderButton('Add Contacts to DB', _writeContactsToDB)}
             </View>
 
             <View style = {{display: 'none'}}>
