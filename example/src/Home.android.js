@@ -136,29 +136,14 @@ function HomeScreen() {
         SpecialBle.deleteDatabase();
     }
 
-    // get Config
-    function _match(infected_db) {
-        //return SpecialBle.match(infected_db);
-
-        return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+    // get match results
+    function _match() {
+        return SpecialBle.match("this will be the infected map");
     }
 
-    // get Config
+    // get user contacts data
     function fetchInfectionDataByConsent() {
-        //return SpecialBle.fetchInfectionDataByConsent();
-        
-        
-        var json ={
-          BLE:
-          [
-            {
-              key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
-              epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
-            }
-          ]
-        };
-        alert(json);
-        return json;
+        return SpecialBle.fetchInfectionDataByConsent();
     }
 
   

@@ -282,14 +282,12 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-//    public String match(Map<Integer, Map<Integer, ArrayList<byte[]>>> epochs)
-    public String match()
+    public String match(String epochs)
     {
-//        loadDatabase(reactContext.getApplicationContext());
-
-        Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = extractInfectedDbFromJson();
+        //loadDatabase(reactContext.getApplicationContext());
+        Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = extractInfectedDbFromJson(null); //TODO::pass epochs when ready
         List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
-        return "";
+        return parseResultToJson(result);
     }
 
     private String infectedDbToJson(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedDb)
@@ -350,12 +348,17 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         return root.toString();
     }
 
-    private Map<Integer, Map<Integer, ArrayList<byte[]>>> extractInfectedDbFromJson()
+    private Map<Integer, Map<Integer, ArrayList<byte[]>>> extractInfectedDbFromJson(String epochs)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedDb = new HashMap<>();
         try
         {
-            JSONObject jsonRes = new JSONObject(loadJSONFromAsset(reactContext.getApplicationContext()));
+            JSONObject jsonRes;
+            if(epochs != null)
+                jsonRes = new JSONObject(epochs);
+            else
+                jsonRes = new JSONObject(loadJSONFromAsset(reactContext.getApplicationContext())); ///for testing
+
             JSONArray infected = jsonRes.getJSONArray("infected");
             int startDay = jsonRes.getInt("startDay");
 
@@ -428,4 +431,10 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
             ex.printStackTrace();
         }
     }
+
+    private String parseResultToJson(List<Match> result)
+    {
+        return "";
+    }
+
 }
