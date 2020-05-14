@@ -1,9 +1,12 @@
 package com.wix.specialble.db;
 
 import android.content.Context;
+import android.database.Cursor;
 
+import androidx.room.Delete;
 import androidx.room.Room;
 
+import com.wix.crypto.Contact;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
 import com.wix.specialble.kays.PublicKey;
@@ -79,11 +82,47 @@ public class DBClient {
         bleDevicesDB.scanDao().insert(newScan);
     }
 
+
     public List<Scan> getAllScans() {
        return bleDevicesDB.scanDao().getAllBLEScans();
     }
 
     public void clearAllScans() {
         bleDevicesDB.scanDao().clearAll();
+    }
+
+    /**************
+     *  Contacts  *
+     **************/
+    public List<Contact> getAllContacts() { return bleDevicesDB.contactDao().getAllContacts(); }
+
+    public void storeContact(Contact contact)
+    {
+        bleDevicesDB.contactDao().insert(contact);
+    }
+
+
+    public Cursor getCursorAll()
+    {
+        return bleDevicesDB.contactDao().getCursorAll();
+    }
+
+    public void delete(Contact contact)
+    {
+        bleDevicesDB.contactDao().delete(contact);
+    }
+
+    public void delete(Contact... contacts)
+    {
+        bleDevicesDB.contactDao().delete(contacts);
+    }
+
+    public void deleteContactHistory(int history)
+    {
+        bleDevicesDB.contactDao().deleteContactHistory(history);
+    }
+
+    public void deleteDatabase() {
+        bleDevicesDB.contactDao().clearAll();
     }
 }
