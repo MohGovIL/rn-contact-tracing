@@ -5,12 +5,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
-import androidx.room.util.StringUtil;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.wix.crypto.custom.Pair;
 import com.wix.crypto.custom.Triplet;
@@ -19,6 +13,7 @@ import com.wix.crypto.key.EpochKey;
 import com.wix.crypto.key.UserKey;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
+import com.wix.crypto.utilities.Hex;
 import com.wix.specialble.db.DBClient;
 
 import org.json.JSONArray;
@@ -27,9 +22,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,9 +205,9 @@ public class User {
      *
      * Raises an error if epoch keys are not present.
      */
-    public byte[] generateEphemeralId(int time, byte[] geoHash) {
+    public byte[] generateEphemeralId(int time, byte[] geoHash)
+    {
 
-        Log.e("hagai", "generateEphemeralId: ");
         assert geoHash.length == Constants.GEOHASH_LEN;
         Time t = new Time(time, Constants.None); // TODO: check if correct
 
@@ -533,7 +525,6 @@ public class User {
 
         return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
     }
-
 
     public byte[] getUserId() { return mUserId; }
 

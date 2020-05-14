@@ -95,6 +95,9 @@ public class BLEManager implements IEventListener {
         return DBClient.getInstance(context).getScansByKey(pubKey);
     }
 
+    public void wipeDatabase() {
+        DBClient.getInstance(context).deleteDatabase();
+    }
 
     public void setEventToJSDispatcher(EventToJSDispatcher eventToJSDispatcher) {
         mEventToJSDispatcher = eventToJSDispatcher;

@@ -2,8 +2,7 @@ package com.wix.crypto.key;
 
 import com.google.gson.annotations.SerializedName;
 import com.wix.crypto.Crypto;
-import com.wix.crypto.Hex;
-import com.wix.crypto.Time;
+import com.wix.crypto.utilities.Hex;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
 

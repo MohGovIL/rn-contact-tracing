@@ -1,7 +1,9 @@
 package com.wix.specialble;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -20,9 +22,16 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.wix.crypto.Contact;
 import com.wix.crypto.Crypto;
 import com.wix.crypto.CryptoManager;
+import com.wix.crypto.Match;
 import com.wix.crypto.User;
+import com.wix.crypto.utilities.BytesUtils;
+import com.wix.crypto.utilities.Hex;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
@@ -32,8 +41,20 @@ import com.wix.specialble.kays.PublicKey;
 import com.wix.specialble.util.CSVUtil;
 import com.wix.specialble.util.DeviceUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -250,17 +271,161 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public String fetchInfectionDataByConsent() {
-        return CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent().toString();
+    public void deleteDatabase() {
+         //bleManager.clearAllDevices();
     }
 
     @ReactMethod
-    public String match(Map<Integer, Map<Integer, ArrayList<byte[]>>> epochs) {
-        return CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(epochs).toString();
+    public String fetchInfectionDataByConsent()
+    {
+        return infectedDbToJson(CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent());
     }
 
     @ReactMethod
-    public String deleteDatabase() {
+//    public String match(Map<Integer, Map<Integer, ArrayList<byte[]>>> epochs)
+    public String match()
+    {
+//        loadDatabase(reactContext.getApplicationContext());
+
+        Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = extractInfectedDbFromJson();
+        List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
         return "";
+    }
+
+    private String infectedDbToJson(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedDb)
+    {
+        JSONObject root = new JSONObject();
+        JSONArray rootInfected = new JSONArray();
+
+        try
+        {
+            boolean first = true;
+            Object[] keySetArray = infectedDb.keySet().toArray();
+            for (int k = 0; k < 14 ; k++)
+            {
+                int day = -1;
+                if(k < keySetArray.length)
+                {
+                    day = (int) keySetArray[k];
+                }
+                if (first)
+                {
+                    root.put("startDay",day);
+                    first = false;
+                }
+
+                Map<Integer, ArrayList<byte[]>> epochs = infectedDb.get(day);
+                JSONArray rootInfectedEpochs = new JSONArray();
+                if(epochs != null)
+                {
+                    Object[] epochKeySetArray = epochs.keySet().toArray();
+                    for (int x = 0; x < 24; x++)
+                    {
+                        int epocKey = -1;
+                        if (x < epochKeySetArray.length)
+                        {
+                            epocKey = (int) epochKeySetArray[x];
+                        }
+                        ArrayList<byte[]> ephs = epochs.get(epocKey);
+                        JSONArray rootInfectedEpochsInnerLevel = new JSONArray();
+
+                        if (ephs != null)
+                        {
+                            for (int i = 0; i < ephs.size(); i++)
+                            {
+                                String converted = Hex.toHexString(ephs.get(i), null);
+                                rootInfectedEpochsInnerLevel.put(converted);
+                            }
+                        }
+                        rootInfectedEpochs.put(rootInfectedEpochsInnerLevel);
+                    }
+                }
+                rootInfected.put(rootInfectedEpochs);
+            }
+            root.put("infected",rootInfected);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return root.toString();
+    }
+
+    private Map<Integer, Map<Integer, ArrayList<byte[]>>> extractInfectedDbFromJson()
+    {
+        Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedDb = new HashMap<>();
+        try
+        {
+            JSONObject jsonRes = new JSONObject(loadJSONFromAsset(reactContext.getApplicationContext()));
+            JSONArray infected = jsonRes.getJSONArray("infected");
+            int startDay = jsonRes.getInt("startDay");
+
+            for (int i = 0; i < infected.length(); i++,startDay++)
+            {
+                infectedDb.put(startDay, new HashMap<Integer, ArrayList< byte[]>>());
+                JSONArray epochsArray = infected.getJSONArray(i);
+
+                for (int j = 0; j < epochsArray.length(); j++)
+                {
+                    JSONArray eph = epochsArray.getJSONArray(j);
+                    infectedDb.get(startDay).put(j, new ArrayList<byte[]>());
+                    for (int k = 0; k < eph.length(); k++) {
+                        String epoc = eph.getString(k);
+                        byte[] epocBytes = Hex.hexStringToByteArray(epoc);
+                        infectedDb.get(startDay).get(j).add(epocBytes);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return infectedDb;
+    }
+
+    private String loadJSONFromAsset(Context ctx) {
+        String json = null;
+        try {
+            InputStream is = ctx.getResources().openRawResource(R.raw.infected);//ctx.getAssets().open("infected.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    private void loadDatabase(Context ctx)
+    {
+        String json = null;
+        try {
+            InputStream is = ctx.getResources().openRawResource(R.raw.outputcontacts);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+
+            JSONArray dbArray = new JSONArray(json);
+
+            for (int i = 0; i < dbArray.length(); i++)
+            {
+                JSONObject jo = dbArray.getJSONObject(i);
+
+                byte[] otherEphemeralId = Hex.hexStringToByteArray(jo.getString("ephemeral_id"));
+                byte[] rssi = BytesUtils.numToBytes(jo.getInt("rssi"),4);
+                byte[] ownLocation = Hex.hexStringToByteArray(jo.getString("geohash"));
+                int time = jo.getInt("timestamp");
+                DBClient.getInstance(reactContext).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation));
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

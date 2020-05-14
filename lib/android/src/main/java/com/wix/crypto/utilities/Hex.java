@@ -1,4 +1,4 @@
-package com.wix.crypto;
+package com.wix.crypto.utilities;
 
 
 /*
@@ -163,5 +163,17 @@ public final class Hex {
             l = (l << 8) + s;
         }
         return l;
+    }
+
+    public static byte[] hexStringToByteArray(String s)
+    {
+        int len = s.length();
+        byte[] data = new byte[len/2];
+
+        for(int i = 0; i < len; i+=2){
+            data[i/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+        }
+
+        return data;
     }
 }

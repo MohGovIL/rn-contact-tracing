@@ -112,7 +112,6 @@ public class DBClient {
         bleDevicesDB.contactDao().delete(contact);
     }
 
-
     public void delete(Contact... contacts)
     {
         bleDevicesDB.contactDao().delete(contacts);
@@ -121,5 +120,9 @@ public class DBClient {
     public void deleteContactHistory(int history)
     {
         bleDevicesDB.contactDao().deleteContactHistory(history);
+    }
+
+    public void deleteDatabase() {
+        bleDevicesDB.contactDao().clearAll();
     }
 }
