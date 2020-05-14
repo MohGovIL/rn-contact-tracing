@@ -61,6 +61,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.wix.crypto.Constants.NUM_OF_DAYS;
+import static com.wix.crypto.Constants.NUM_OF_EPOCHS;
+
 public class SpecialBleModule extends ReactContextBaseJavaModule {
 
 
@@ -275,7 +278,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void deleteDatabase() {
-         //bleManager.clearAllDevices();
+         bleManager.wipeDatabase();
     }
 
     @ReactMethod
@@ -287,7 +290,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public String match(String epochs)
     {
-        //loadDatabase(reactContext.getApplicationContext());
+        //loadDatabase(reactContext.getApplicationContext());//open this to load db for testing from raw...
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = extractInfectedDbFromJson(null); //TODO::pass epochs when ready
         List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
         if(result.size() > 0)
@@ -306,7 +309,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         {
             boolean first = true;
             Object[] keySetArray = infectedDb.keySet().toArray();
-            for (int k = 0; k < 14 ; k++)
+            for (int k = 0; k < NUM_OF_DAYS ; k++)
             {
                 int day = -1;
                 if(k < keySetArray.length)
@@ -324,7 +327,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
                 if(epochs != null)
                 {
                     Object[] epochKeySetArray = epochs.keySet().toArray();
-                    for (int x = 0; x < 24; x++)
+                    for (int x = 0; x < NUM_OF_EPOCHS; x++)
                     {
                         int epocKey = -1;
                         if (x < epochKeySetArray.length)
@@ -439,9 +442,22 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private String parseResultToJson(List<Match> result)
+    private String parseResultToJson(List<Match> matches)
     {
-        return "";
+        JSONArray result = new JSONArray();
+        try
+        {
+            for (Match match : matches)
+            {
+                result.put(match.toJsonObject());
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return result.toString();
     }
 
 }

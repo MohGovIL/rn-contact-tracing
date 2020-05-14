@@ -6,6 +6,14 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.wix.crypto.utilities.Hex;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 /**
  * Created by hagai on 11/05/2020.
  */
@@ -104,5 +112,24 @@ public class Contact{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public JSONObject toJson()
+    {
+        JSONObject jo = new JSONObject();
+
+        try
+        {
+            jo.put("ephemeral_id", Hex.toHexString(ephemeral_id,null));
+            jo.put("rssi", ByteBuffer.wrap(rssi).order(ByteOrder.LITTLE_ENDIAN).getInt());//TODO:: check big/little indian
+            jo.put("geohash",Hex.toHexString(geohash,null));
+            jo.put("timestamp",timestamp);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return jo;
     }
 }

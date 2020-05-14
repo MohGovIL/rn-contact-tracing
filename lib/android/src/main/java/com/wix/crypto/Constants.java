@@ -30,4 +30,6 @@ public class Constants {
     public static final int GEOHASH_LEN = 5;
     public static final int USER_RAND_LEN = 4;
     public static final int None = -1;
+    public static final int NUM_OF_DAYS = 14;
+    public static final int NUM_OF_EPOCHS = 24;
 }

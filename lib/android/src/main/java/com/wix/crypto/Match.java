@@ -1,5 +1,7 @@
 package com.wix.crypto;
 
+import org.json.JSONObject;
+
 /**
  * Created by hagai on 11/05/2020.
  */
@@ -35,4 +37,9 @@ public class Match {
     public byte[] getProof() { return mProof; }
 
     public int getInfectedTime() { return mInfectedTime; }
+
+    public JSONObject toJsonObject()
+    {
+        return mContact.toJson();
+    }
 }
