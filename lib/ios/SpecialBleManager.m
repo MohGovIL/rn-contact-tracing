@@ -55,7 +55,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 #pragma mark BLE Services
 
-- (void)startBLEServices:(NSString *)serviceUUIDString withPublicKey:(NSString *)publicKey andEventEmitter:(RCTEventEmitter*)emitter
+- (void)startBLEServices:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter
 {
     // set singleton's data
     // TODO: Change to publicKey (crypto)!!!
@@ -74,7 +74,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     if (!self.cbPeripheral)
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self advertise:serviceUUIDString publicKey:publicKey withEventEmitter:emitter];
+        [self advertise:serviceUUIDString publicKey:self.publicKey withEventEmitter:emitter];
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter

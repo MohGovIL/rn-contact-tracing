@@ -24,13 +24,30 @@ RCT_EXPORT_MODULE();
 
 #pragma mark - BLE services and tasks
 
-RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID publicKey:(NSString*) publicKey) {
-    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withPublicKey:publicKey andEventEmitter:self];
+// *** API FOR HAMAGEN *** //
+
+RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID) {
+    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withEventEmitter:self];
 }
 
 RCT_EXPORT_METHOD(stopBLEService) {
     [[SpecialBleManager sharedManager] stopBLEServicesWithEmitter:self];
 }
+
+RCT_EXPORT_METHOD(deleteDatabase) {
+    [DBClient clearAllDevices];
+    [DBClient clearAllScans];
+}
+
+RCT_EXPORT_METHOD(findMatchForInfection) {
+    // TBD
+}
+
+RCT_EXPORT_METHOD(fetchInfectionDataByConsent) {
+    // TBD
+}
+
+// ***** Aditional methods ***** //
 
 RCT_EXPORT_METHOD(startBLEScan:(NSString *) serviceUUID) {
   [[SpecialBleManager sharedManager] scan:serviceUUID withEventEmitter:self];
@@ -50,7 +67,7 @@ RCT_EXPORT_METHOD(stopAdvertise) {
 
 // TODO: remove this method?
 RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
-    [DBClient savePublicKeys:keys];
+//    [DBClient savePublicKeys:keys];
 }
 
 #pragma mark - Config
@@ -66,11 +83,11 @@ RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
 #pragma mark - Exports
 
 RCT_EXPORT_METHOD(exportAllDevicesCsv) {
-    RCTLogInfo(@"exportAllDevicesCsv TBD");
+//    RCTLogInfo(@"exportAllDevicesCsv TBD");
 }
 
 RCT_EXPORT_METHOD(exportAllScansCsv) {
-    RCTLogInfo(@"exportAllScansCsv TBD");
+//    RCTLogInfo(@"exportAllScansCsv TBD");
 }
 
 #pragma mark - Devices
