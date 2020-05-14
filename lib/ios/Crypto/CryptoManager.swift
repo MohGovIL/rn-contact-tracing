@@ -14,62 +14,21 @@ public class CryptoManager {
     
     
     // MARK:- LifeCycle
-    
     private init(){
-//        super.init()
         mySelf = fetchUser()
     }
     
-    private func writeUserToDefaults(_ user: User) {
-//        let encoder = JSONEncoder()
-//        if let encoded = try? encoder.encode(mySelf) {
-//            let defaults = UserDefaults.standard
-//            defaults.set(encoded, forKey: "SavedModel")
-//            defaults.synchronize()
-//        }
-
+    // MARK:- Private funcs
+    fileprivate func writeUserToDefaults(_ user: User) {
         let jsonData = try! JSONEncoder().encode(user)
         let userDefaults = UserDefaults.standard
-//        let encodedData: Data = NSKeyedArchiver.archivedData(withRootObject: mySelf)
         userDefaults.set(jsonData, forKey: "mySelf")
         userDefaults.synchronize()
     }
     
-    func getStringEphemeral() -> String {
-        let timeS = Int(Date().timeIntervalSince1970)
-        let geoHash:[UInt8] = Array(repeating: 1, count: 5)
-        let ephemeral = mySelf.generate_ephemeral_id(time: timeS, geo_hash: geoHash)
-        var str = ""
-        for byte in ephemeral {
-            let u = UnicodeScalar(byte)
-            // Convert UnicodeScalar to a Character.
-            let char = Character(u)
-
-            // Write results.
-//            print(char)
-
-            str.append(char)
-        }
-        
-        let stringArray = Array(str)
-        var res:[UInt16] = []
-        for i in 0..<stringArray.count {
-            res.append(contentsOf: stringArray[i].utf16)
-        }
-        
-        return str
-        
-//        let ephemeralString = String(bytes: ephemeral, encoding: .ascii)
-//        let b = ephemeral.reduce("", { $0 + String(format: "%c", $1)})
-//        return ephemeralString!
-    }
-    
-    
-    @objc(fetchUser)
-    func fetchUser() -> User! {
+    fileprivate func fetchUser() -> User! {
         if let decoded  = UserDefaults.standard.data(forKey: "mySelf") {
             let user = try! JSONDecoder().decode(User.self, from: decoded)
-//            let user = NSKeyedUnarchiver.unarchiveObject(with: decoded) as! User
             return user
         } else {
             let masterKey = [UInt8](Data(randomOfLength: 16))
@@ -84,7 +43,31 @@ public class CryptoManager {
         }
     }
     
-    
+    // MARK:- User funcs
+    func getStringEphemeral() -> String {
+        let timeS = Int(Date().timeIntervalSince1970)
+        let geoHash:[UInt8] = Array(repeating: 1, count: 5)
+        let ephemeralUInt8 = mySelf.generate_ephemeral_id(time: timeS, geo_hash: geoHash)
+        
+        // Encode to string
+        var ephemeralString = ""
+        for byte in ephemeralUInt8 {
+            let u = UnicodeScalar(byte)
+            // Convert UnicodeScalar to a Character.
+            let char = Character(u)
+            ephemeralString.append(char)
+        }
+        
+        // decode the string key back to [UInt8], use:
+//        let decodedEphemeral = ephemeralString.asciiToUInt8Bytes()
+        
+//        print("Ephemeral: \(ephemeralUInt8)")
+//        print("String:    \(ephemeralString)")
+//        print("Decoded:   \(decodedEphemeral)")
+//        print("bytes r ==:\(ephemeralUInt8 == decodedEphemeral)")
+        
+        return ephemeralString
+    }
     
     func fetchInfectionDataByConsent() -> [Int: [Int : [[UInt8]]]] {
         let server = Server()
@@ -96,7 +79,7 @@ public class CryptoManager {
     }
 }
 
-
+// MARK:- Extentions
 extension Data {
     init(randomOfLength length: Int) {
         var bytes = [UInt8](repeating: 0, count: length)
@@ -109,11 +92,21 @@ extension Data {
     }
 }
 
-
 extension String {
     init?(bytes: UnsafePointer<UInt8>, count: Int) {
         let bp = UnsafeBufferPointer(start: bytes, count: count)
         self.init(bytes: bp, encoding: .utf8)
+    }
+    
+    func asciiToUInt8Bytes() -> [UInt8] {
+        // Decode to ByteArray
+        let stringArray = Array(self)
+        var res:[UInt16] = []
+        for i in 0..<stringArray.count {
+            res.append(contentsOf: stringArray[i].utf16)
+        }
+        // convert to [UInt8]
+        return res.map{ UInt8($0 & 0x00ff) }
     }
 }
 

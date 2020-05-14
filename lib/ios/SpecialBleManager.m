@@ -333,6 +333,10 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
                 NSLog(@"publicKey: %@",self.publicKey);
                 if (self.publicKey)
                     [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+                else {
+                    self.publicKey = [CryptoClient getEphemeralId];
+                    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+                }
                 break;
             default:
                 break;
