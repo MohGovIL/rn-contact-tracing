@@ -81,7 +81,7 @@ class Crypto {
             var bytes = [UInt8](repeating: 0, count: cryptData.length)
             cryptData.getBytes(&bytes, length: cryptData.length)
             
-            return [UInt8](cryptData)
+            return bytes
         }
         
         return [UInt8]()
@@ -100,7 +100,7 @@ class Crypto {
 //    assert len(key) == KEY_LEN, "We only support 128 bit key, but len(key) = {})".format(len(key))
 //    assert len(plain) == KEY_LEN, "We only support 128 bit key, but len(key) = {})".format(len(key))
 
-        return encrypt_cryptography(key: key, plain: plain);
+        return encrypt_cryptography(key: key, plain: plain)
     }
 }
 
