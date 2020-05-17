@@ -307,8 +307,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void writeContactsToDB()
+    public void writeContactsToDB(String db)
     {
-        ParseUtils.loadDatabase(reactContext.getApplicationContext());
+        ParseUtils.loadDatabase(reactContext.getApplicationContext(), db);
     }
 }

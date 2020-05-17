@@ -135,18 +135,28 @@ public class ParseUtils {
         return json;
     }
 
-    public static void loadDatabase(Context ctx)
+    public static void loadDatabase(Context ctx, String jsonArray)
     {
         String json = null;
-        try {
-            InputStream is = ctx.getResources().openRawResource(R.raw.outputcontacts);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
+        try
+        {
+            JSONArray dbArray;
+            if(jsonArray != null && jsonArray.length() > 0)
+            {
+                dbArray = new JSONArray(jsonArray);
+            }
+            else
+            {
 
-            JSONArray dbArray = new JSONArray(json);
+                InputStream is = ctx.getResources().openRawResource(R.raw.outputcontacts);
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+                json = new String(buffer, "UTF-8");
+
+                dbArray = new JSONArray(json);
+            }
 
             for (int i = 0; i < dbArray.length(); i++)
             {
