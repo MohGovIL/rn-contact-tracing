@@ -7,7 +7,7 @@
 //
 #import "SpecialBleManager.h"
 #import "rn_contact_tracing-Swift.h"
-
+#import "Config.h"
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
@@ -26,6 +26,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 @property (nonatomic, strong) NSString* advertiseUUIDString;
 @property (nonatomic, strong) NSString* publicKey;
 
+@property NSDictionary* config;
+@property BOOL advertisingIsOn;
 
 @end
 
@@ -45,6 +47,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (instancetype)init {
     if (self = [super init]) {
+        self.config = [Config GetConfig];
 //        self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 //        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     }
@@ -57,9 +60,17 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)startBLEServices:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter
 {
+    // advertising state flag
+    self.advertisingIsOn = YES;
+    
+//    // add contact to DB
+//    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
+//    NSArray* geo = @[@0, @0, @0, @0, @0];
+//    [DBClient addContact:eph :11 :123456789 :geo :1];
+//
+    
     // set singleton's data
-    // TODO: Change to publicKey (crypto)!!!
-    self.publicKey = [[UIDevice currentDevice] name];
+    self.publicKey = [CryptoClient getEphemeralId];
     self.eventEmitter = emitter;
     self.scanUUIDString = serviceUUIDString;
     self.advertiseUUIDString = serviceUUIDString;
@@ -79,6 +90,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
 {
+    self.advertisingIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
 }
@@ -154,7 +166,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 -(void) _advertise {
     if (self.cbPeripheral.state == CBManagerStatePoweredOn){
-        
+        self.publicKey = [CryptoClient getEphemeralId];
         [self.cbPeripheral startAdvertising:@{CBAdvertisementDataLocalNameKey: self.publicKey, CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
         [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:YES]];
     }
@@ -218,6 +230,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 //        NSLog(@"iPhone device");
 //        NSLog(@"AdvertisementData: %@", advertisementData);
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
+        [CryptoClient decodeKey:public_key];
     } else {
         NSLog(@"UNKnown device");
         NSLog(@"*** empty publicKey received");
@@ -242,6 +255,14 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
     }
     
+    // add contact to DB
+//    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
+    NSArray* geo = @[@0, @0, @0, @0, @0];
+//    NSData* data = [public_key dataUsingEncoding:NSUTF8StringEncoding];
+//    uint8_t *bytes = (uint8_t *)[data bytes];
+
+    [DBClient addContact:public_key :[RSSI integerValue] :unixtime :geo :1];
+    
     // get current device from DB
     NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
 
@@ -258,6 +279,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
             @"device_protocol": @"GAP" //TODO: not used may remove
         }];
         [DBClient addDevice:device];
+
     }
     else
     { // old device found, just update
@@ -267,10 +289,10 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         [device setValue:RSSI forKey:@"device_rssi"];
         [DBClient updateDevice:device];
     }
-    
+
     // send foundDevice event
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
-    
+
     // handle scans
     NSArray* scansArray = [DBClient getScanByKey:public_key];
     NSDictionary* scan = @{
@@ -282,10 +304,10 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         @"scan_address": @"", //TODO: not used maybe remove
         @"scan_protocol": @"GAP" //TODO: not used maybe remove
     };
-    
+
     // add to DB
     [DBClient addScan:scan];
-    
+
     // send foundScan event
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_SCAN body:scan];
 }
@@ -314,6 +336,10 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
                 NSLog(@"publicKey: %@",self.publicKey);
                 if (self.publicKey)
                     [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+                else {
+                    self.publicKey = [CryptoClient getEphemeralId];
+                    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+                }
                 break;
             default:
                 break;
@@ -337,11 +363,68 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
-    NSLog(@"didStartAdvertising");
+    NSLog(@"didStartAdvertising, duration:%@ , interval:%@",self.config[KEY_ADVERTISE_DURATION], self.config[KEY_ADVERTISE_INTERVAL] );
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_DURATION] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self stopAdvertise:self.eventEmitter];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_INTERVAL] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (self.advertisingIsOn)
+                [self _advertise];
+            else
+                NSLog(@"interval received but advertising is off!!!");
+        });
+    });
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral {
     NSLog(@"Peripheral name:%@", peripheral.name);
 }
+
+
+-(NSString*)findMatchForInfections
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    
+    NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"infected"]];
+    NSLog(resJSON);
+    return resJSON;
+}
+
+
+- (void) writeContactsDB
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    
+    int numberOfContactsAdded = 0;
+    for (NSDictionary* contactDict in contactsArray) {
+        [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
+        numberOfContactsAdded+=1;
+    }
+    NSLog(@"%d",numberOfContactsAdded);
+//    [self writeContactsArray:contactsArray fromIndex:0 toIndex:50];
+}
+
+//- (void) writeContactsArray:(NSArray<NSDictionary*>*)array fromIndex:(int)from toIndex:(int)to
+//{
+//    int numberOfContactsAdded = from;
+//    for (int i = from; i<MIN(to, array.count); i++ )
+//    {
+//        NSDictionary* contactDict = array[i];
+//        [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
+//        numberOfContactsAdded+=1;
+//        NSLog(@"%d",numberOfContactsAdded);
+//    }
+//    if (numberOfContactsAdded<array.count)
+//    {
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self writeContactsArray:array fromIndex:numberOfContactsAdded toIndex:to+50];
+//        });
+//    }
+//    else
+//        NSLog(@"Finished adding %d contacts", numberOfContactsAdded);
+//}
 
 @end

@@ -56,6 +56,17 @@ class DBManager {
         return container
     }()
     
+//    func addContact(_ contact: Contact) {
+//        let managedContext = self.persistentContainer.viewContext
+//        let entity = NSEntityDescription.entity(forEntityName: "Contact", in: managedContext)!
+//
+//        do {
+//            try managedContext.save()
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//    }
+    
     func save(entity:String, attributes: [String:Any]) {
       
         let managedContext = self.persistentContainer.viewContext
@@ -107,6 +118,14 @@ class DBManager {
         let array = convertCoreDataArrayToData(fetchRequest: fetchRequest)
         
         return array
+    }
+    
+    func getFetchedResults(_ entity: String) -> NSFetchedResultsController<NSManagedObject> {
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entity)
+        let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        return NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
     }
     
     func getAll(_ entity:String) -> NSArray {
