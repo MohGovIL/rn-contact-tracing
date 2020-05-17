@@ -24,14 +24,22 @@ function HomeScreen() {
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
     const [devices, setDevices] = useState([]);
-    const [config, setConfig] = useState({
-        serviceUUID: '',
-        scanDuration: 0,
-        scanInterval: 0,
-        advertiseInterval: 0,
-        advertiseDuration: 0,
+    const config = {
+        serviceUUID: SERVICE_UUID,
+        scanDuration: 60000,
+        scanInterval: 240000,
+        advertiseInterval: 45000,
+        advertiseDuration: 10000,
         token: 'default_token'
-    });
+      };
+    // const [config, setConfig] = useState({
+    //     serviceUUID: '00000000-0000-1000-8000-00805F9B34FB',
+    //     scanDuration: 60000,
+    //     scanInterval: 240000,
+    //     advertiseInterval: 45000,
+    //     advertiseDuration: 10000,
+    //     token: 'default_token'
+    // });
 
     useEffect(() => {
         const eventEmitter = new NativeEventEmitter(SpecialBle);
@@ -43,7 +51,7 @@ function HomeScreen() {
 
     // Start scanning for a specific serviceUUID
     function _startScan() {
-        // SpecialBle.setConfig(config)
+        SpecialBle.setConfig(config)
         SpecialBle.startBLEScan(SERVICE_UUID);
     }
 
@@ -54,7 +62,7 @@ function HomeScreen() {
 
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
-        // SpecialBle.setConfig(config);
+        SpecialBle.setConfig(config);
         SpecialBle.advertise(SERVICE_UUID, PUBLIC_KEY);
     }
 
@@ -85,9 +93,9 @@ function HomeScreen() {
 
     // get config
     function _getConfig() {
-        SpecialBle.getConfig((config) => {
-            setConfig(config);
-        })
+        // SpecialBle.getConfig((config) => {
+        //     setConfig(config);
+        // })
     }
 
     // set config
@@ -111,8 +119,8 @@ function HomeScreen() {
 
     // in IOS - starts the ble scan and peripheral services, sets the uuid and public keys and starts the scanning & advertising tasks
     function _startBLEService() {
-        // SpecialBle.setConfig(config);
-        SpecialBle.startBLEService(SERVICE_UUID);
+        SpecialBle.setConfig(config);
+        SpecialBle.startBLEService();
     }
 
     // stop background tasks
@@ -165,11 +173,11 @@ function HomeScreen() {
             </View>
             <Text text80BL>ServiceUUID: {config.serviceUUID}</Text>
 
-            <View style={styles.subContainer}>
-                {_renderButton('Start BLE service', _startBLEService)}
-                {_renderButton('Stop BLE service', _stopBLEService)}
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                    {_renderButton('Start BLE service', _startBLEService)}
+                    {_renderButton('Stop BLE service', _stopBLEService)}
             </View>
-            
+
             <View style={[styles.subContainer, {justifyContent: 'center'}]}>
                 {_renderButton('Wipe data', _wipe)}
                 {_renderButton('Match infected', _match)}
@@ -316,16 +324,20 @@ const styles = StyleSheet.create({
         marginTop: 20,
         flex: 1,
         marginHorizontal: 5,
+        paddingLeft: 10
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 10
     },
     statusContainer: {
-        flex: 1,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 10
     },
     subContainer: {
-        flexWrap: 'wrap',
         flexDirection: 'row',
-        alignItems: 'center'
     },
     subContainerTextFields: {
         justifyContent: 'space-between',
@@ -335,13 +347,6 @@ const styles = StyleSheet.create({
     picker: {
         marginHorizontal: 10,
         width: 300
-    },
-    btn: {
-        marginHorizontal: 5,
-        marginVertical: 10,
-        padding: 10,
-        alignItems: 'center',
-        backgroundColor: 'orange'
     },
     item: {
         padding: 10,

@@ -26,8 +26,8 @@ RCT_EXPORT_MODULE();
 
 // *** API FOR HAMAGEN *** //
 
-RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID) {
-    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withEventEmitter:self];
+RCT_EXPORT_METHOD(startBLEService) {
+    [[SpecialBleManager sharedManager] startBLEServicesWithEventEmitter:self];
 }
 
 RCT_EXPORT_METHOD(stopBLEService) {
@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(fetchInfectionDataByConsent) {
     // TBD
 }
 
-RCT_EXPORT_METHOD(writeContactsToDB) {
+RCT_EXPORT_METHOD(writeContactsToDB:(NSString *) jsonString) {
     [[SpecialBleManager sharedManager] writeContactsDB];
 }
 

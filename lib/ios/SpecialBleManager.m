@@ -58,7 +58,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 #pragma mark BLE Services
 
-- (void)startBLEServices:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter
+- (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter
 {
     // advertising state flag
     self.advertisingIsOn = YES;
@@ -72,20 +72,20 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     // set singleton's data
     self.publicKey = [CryptoClient getEphemeralId];
     self.eventEmitter = emitter;
-    self.scanUUIDString = serviceUUIDString;
-    self.advertiseUUIDString = serviceUUIDString;
+    self.scanUUIDString = self.config[KEY_SERVICE_UUID] ;
+    self.advertiseUUIDString = self.config[KEY_SERVICE_UUID];
     
     // init and start the scan Central
     if (!self.cbCentral)
         self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self scan:serviceUUIDString withEventEmitter:emitter];
+        [self scan:self.scanUUIDString withEventEmitter:emitter];
     
     // init and start the advertise Peropheral
     if (!self.cbPeripheral)
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self advertise:serviceUUIDString publicKey:self.publicKey withEventEmitter:emitter];
+        [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
@@ -363,10 +363,11 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
-    NSLog(@"didStartAdvertising, duration:%@ , interval:%@",self.config[KEY_ADVERTISE_DURATION], self.config[KEY_ADVERTISE_INTERVAL] );
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_DURATION] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    NSLog(@"didStartAdvertising, duration:%d , interval:%d",
+    [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self stopAdvertise:self.eventEmitter];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_INTERVAL] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (self.advertisingIsOn)
                 [self _advertise];
             else

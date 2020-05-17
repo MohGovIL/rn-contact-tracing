@@ -14,7 +14,7 @@
 @interface SpecialBleManager : NSObject <CBCentralManagerDelegate, CBPeripheralManagerDelegate, CBPeripheralDelegate>
 
 + (id)sharedManager;
-- (void)startBLEServices:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter;
+- (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter;
 - (void)scan:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopScan:(RCTEventEmitter*)emitter;
