@@ -219,10 +219,7 @@ public class User {
         }
 
         epochKey = mEpochKeys.get(t);
-
         int tUnitS = t.getUnits();
-
-
 
         byte[] mask = Crypto.AES(epochKey.getEpochEncKey(), BytesUtils.numToBytes(tUnitS, Constants.MESSAGE_LEN));
         byte[] userRand = Arrays.copyOf(epochKey.getEpochVerKey(), Constants.USER_RAND_LEN);
@@ -256,16 +253,11 @@ public class User {
 //            }
 //        });
 
-
-
-
-
-
         // domain is a time up to units (actually a string "day-epoch-unit")
         // and its range is a list of (mask, epochMAC)
         Map<String, ArrayList<Pair<byte[], byte[]>>> mapUnitKeys = new HashMap<>();
 
-        int earlierTime = Constants.None; // TODO: if there is a better way, in python that's null
+        int earlierTime = Constants.None;
 
         Cursor c = dbClient.getCursorAll();
         while (c.moveToNext())
@@ -439,11 +431,9 @@ public class User {
      *
      * Note -  deleting all keys and contacts.
      */
-    public void deleteHistory(int dTime) {
-
-        //TODO:: check if correct
-
-        Time t = new Time(dTime, Constants.None); //TODO: fix this
+    public void deleteHistory(int dTime)
+    {
+        Time t = new Time(dTime, Constants.None);
         Map<Time, EpochKey> dictEpochKeys = new HashMap<>();
 
         for(Map.Entry<Time, EpochKey> entry : mEpochKeys.entrySet()) {
