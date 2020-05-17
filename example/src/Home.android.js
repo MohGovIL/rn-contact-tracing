@@ -138,12 +138,12 @@ function HomeScreen() {
 
     // get match results
     function _match() {
-        return SpecialBle.match("this will be the infected map");
+        SpecialBle.match("this will be the infected map", result => { return result; });
     }
 
     // get user contacts data
     function fetchInfectionDataByConsent() {
-        return SpecialBle.fetchInfectionDataByConsent();
+        SpecialBle.fetchInfectionDataByConsent( result => {return result;});
     }
 
   

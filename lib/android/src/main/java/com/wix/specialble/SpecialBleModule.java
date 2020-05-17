@@ -283,18 +283,18 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public String fetchInfectionDataByConsent()
+    public void fetchInfectionDataByConsent(Callback callback)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> results = CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent();
         if(results.size() > 0)
         {
             CryptoManager.getInstance(reactContext).createNewUser();
         }
-        return ParseUtils.infectedDbToJson(results);
+        callback.invoke(ParseUtils.infectedDbToJson(results));
     }
 
     @ReactMethod
-    public String match(String epochs)
+    public void match(String epochs, Callback callback)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = ParseUtils.extractInfectedDbFromJson(epochs, reactContext.getApplicationContext()); //TODO::pass epochs when ready
         List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
@@ -302,7 +302,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         {
             Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();
         }
-        return ParseUtils.parseResultToJson(result);
+//        return ParseUtils.parseResultToJson(result);/**/
+        callback.invoke(ParseUtils.parseResultToJson(result));
     }
 
     @ReactMethod
