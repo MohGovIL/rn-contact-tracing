@@ -23,10 +23,10 @@ public interface ContactDao
     @Query("SELECT * FROM Contacts")
     List<Contact> getAllContacts();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Contact contact);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(Contact... contacts);
 
     @Delete
