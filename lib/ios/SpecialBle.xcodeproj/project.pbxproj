@@ -22,7 +22,6 @@
 		26E9DD0F244F40E600E8CD92 /* DBDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF9244F40E600E8CD92 /* DBDeviceManager.swift */; };
 		26E9DD10244F40E600E8CD92 /* SpecialBle.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCFA244F40E600E8CD92 /* SpecialBle.m */; };
 		26E9DD11244F40E600E8CD92 /* SpecialBleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */; };
-		26E9DD12244F40E600E8CD92 /* tracer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DD01244F40E600E8CD92 /* tracer.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,7 +55,6 @@
 		26E9DCFB244F40E600E8CD92 /* SpecialBleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBleManager.h; sourceTree = "<group>"; };
 		26E9DCFC244F40E600E8CD92 /* SpecialBle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBle.h; sourceTree = "<group>"; };
 		26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBleManager.m; sourceTree = "<group>"; };
-		26E9DD02244F40E600E8CD92 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,34 +104,9 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
-		26E9DCFE244F40E600E8CD92 /* Bluetrace */ = {
-			isa = PBXGroup;
-			children = (
-				26E9DCFF244F40E600E8CD92 /* Database */,
-			);
-			path = Bluetrace;
-			sourceTree = "<group>";
-		};
-		26E9DCFF244F40E600E8CD92 /* Database */ = {
-			isa = PBXGroup;
-			children = (
-				26E9DD00244F40E600E8CD92 /* Models */,
-			);
-			path = Database;
-			sourceTree = "<group>";
-		};
-		26E9DD00244F40E600E8CD92 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				26E9DD01244F40E600E8CD92 /* tracer.xcdatamodeld */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				26E9DCFE244F40E600E8CD92 /* Bluetrace */,
 				26E9DCEA244F40E600E8CD92 /* db */,
 				26E9DCFC244F40E600E8CD92 /* SpecialBle.h */,
 				26E9DCFA244F40E600E8CD92 /* SpecialBle.m */,
@@ -212,7 +185,6 @@
 				26E9DD0B244F40E600E8CD92 /* Model.xcdatamodeld in Sources */,
 				26E9DD10244F40E600E8CD92 /* SpecialBle.m in Sources */,
 				26E9DD09244F40E600E8CD92 /* Model+CoreDataModel.swift in Sources */,
-				26E9DD12244F40E600E8CD92 /* tracer.xcdatamodeld in Sources */,
 				26E9DD04244F40E600E8CD92 /* Scan+CoreDataClass.swift in Sources */,
 				26E9DD0E244F40E600E8CD92 /* DBClient.swift in Sources */,
 				26E9DD03244F40E600E8CD92 /* DBPublicKeyManager.swift in Sources */,
@@ -380,16 +352,6 @@
 			);
 			currentVersion = 26E9DCF5244F40E600E8CD92 /* Model.xcdatamodel */;
 			path = Model.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-		26E9DD01244F40E600E8CD92 /* tracer.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				26E9DD02244F40E600E8CD92 /* Model.xcdatamodel */,
-			);
-			currentVersion = 26E9DD02244F40E600E8CD92 /* Model.xcdatamodel */;
-			path = tracer.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

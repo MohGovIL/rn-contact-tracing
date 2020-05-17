@@ -39,12 +39,16 @@ RCT_EXPORT_METHOD(deleteDatabase) {
     [DBClient clearAllScans];
 }
 
-RCT_EXPORT_METHOD(findMatchForInfection) {
-    // TBD
+RCT_EXPORT_METHOD(match:(NSString *) jsonString) {
+    [[SpecialBleManager sharedManager] findMatchForInfections];
 }
 
 RCT_EXPORT_METHOD(fetchInfectionDataByConsent) {
     // TBD
+}
+
+RCT_EXPORT_METHOD(writeContactsToDB) {
+    [[SpecialBleManager sharedManager] writeContactsDB];
 }
 
 // ***** Aditional methods ***** //
