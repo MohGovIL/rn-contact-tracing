@@ -85,7 +85,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
         bleManager = BLEManager.getInstance(reactContext);
         bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
-        ParseUtils.loadDatabase(reactContext.getApplicationContext());//open this to load db for testing from raw...
+//        ParseUtils.loadDatabase(reactContext.getApplicationContext());//open this to load db for testing from raw...
 
         //  registerEventLiveData();
 
@@ -303,5 +303,11 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
             Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();
         }
         return ParseUtils.parseResultToJson(result);
+    }
+
+    @ReactMethod
+    public void writeContactsToDB()
+    {
+        ParseUtils.loadDatabase(reactContext.getApplicationContext());
     }
 }
