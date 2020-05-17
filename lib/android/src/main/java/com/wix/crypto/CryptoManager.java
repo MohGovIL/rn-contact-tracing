@@ -22,7 +22,6 @@ public class CryptoManager
         fetchUserOrCreate();
     }
 
-
     public User mySelf;
 
     public static CryptoManager getInstance(Context ctx) 
@@ -42,18 +41,21 @@ public class CryptoManager
         {
             // user exists
             // assure all runtime initiation phase
-
         }
         else
         {
-            Log.e("hagai", "fetchUserOrCreate: ");
-            SecureRandom random = new SecureRandom();
-            byte[] master_key = new byte[16];
-            random.nextBytes(master_key);
-            byte[] user_id = new byte[16];
-            random.nextBytes(master_key);
-            mySelf = new User(user_id, master_key, (int)(System.currentTimeMillis() / 1000), mCtx);
+            createNewUser();
         }
+    }
+
+    public void createNewUser()
+    {
+        SecureRandom random = new SecureRandom();
+        byte[] master_key = new byte[16];
+        random.nextBytes(master_key);
+        byte[] user_id = new byte[16];
+        random.nextBytes(master_key);
+        mySelf = new User(user_id, master_key, (int)(System.currentTimeMillis() / 1000), mCtx);
     }
 
     private User getUserFromDb()
