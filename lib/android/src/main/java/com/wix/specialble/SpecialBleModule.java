@@ -30,6 +30,13 @@ import com.wix.specialble.util.CSVUtil;
 import com.wix.specialble.util.DeviceUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -212,6 +219,16 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
             shareFile(CSVUtil.getScansCsvFile(reactContext));
         } catch (Exception e) {
             Log.e(TAG, "exportAllScansCsv: " + e.getMessage(), e); //handle exception
+        }
+    }
+
+    @ReactMethod
+    public void exportScansByKeyAsCSV(String key) {
+        try {
+            CSVUtil.saveScansByKeyAsCsv(reactContext, bleManager.getScansByKey(key), key);
+            shareFile(CSVUtil.getScanByKeyCsvFile(reactContext, key));
+        } catch (Exception e) {
+            Log.e(TAG, "exportScansByKeyCsv: " + e.getMessage(), e); //handle exception
         }
     }
 

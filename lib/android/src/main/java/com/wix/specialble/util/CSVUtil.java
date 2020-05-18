@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
 
@@ -32,6 +33,10 @@ public class CSVUtil {
 
     public static File getScansCsvFile(Context context) {
         return getCsvFile(context, FILE_NAME_SCANS);
+    }
+
+    public static File getScanByKeyCsvFile(Context context, String key ) {
+        return getCsvFile(context, key + "_scans");
     }
 
     private static File getCsvFile(Context context, String filename) {
@@ -64,6 +69,35 @@ public class CSVUtil {
             csvAppender.appendField(String.valueOf(scan.getRotationVectorScalar()));
             csvAppender.appendField(String.valueOf(scan.getBatteryLevel()));
             csvAppender.endLine();
+        }
+        csvAppender.close();
+    }
+
+    public static void saveScansByKeyAsCsv(final Context context, List<Scan> scans, String key) throws Exception {
+
+        CsvWriter csvWriter = new CsvWriter();
+        CsvAppender csvAppender = csvWriter.append(getScanByKeyCsvFile(context, key), StandardCharsets.UTF_8);
+        csvAppender.appendLine("timestamp", "publicKey", "deviceAddress", "deviceProtocol",
+                "rssi", "tx", "proximity", "acceleration_x", "acceleration_y", "acceleration_z",
+                "rotation_x", "rotation_y", "rotation_z", "rotation_scalar", "battery");
+        for(Scan scan : scans) {
+
+                csvAppender.appendField(String.valueOf(scan.getTimestamp()));
+                csvAppender.appendField(scan.getPublicKey());
+                csvAppender.appendField(scan.getScanAddress());
+                csvAppender.appendField(scan.getScanProtocol());
+                csvAppender.appendField(String.valueOf(scan.getRssi()));
+                csvAppender.appendField(String.valueOf(scan.getTx()));
+                csvAppender.appendField(String.valueOf(scan.getProximityValue()));
+                csvAppender.appendField(String.valueOf(scan.getAccelerationX()));
+                csvAppender.appendField(String.valueOf(scan.getAccelerationY()));
+                csvAppender.appendField(String.valueOf(scan.getAccelerationZ()));
+                csvAppender.appendField(String.valueOf(scan.getRotationVectorX()));
+                csvAppender.appendField(String.valueOf(scan.getRotationVectorY()));
+                csvAppender.appendField(String.valueOf(scan.getRotationVectorZ()));
+                csvAppender.appendField(String.valueOf(scan.getRotationVectorScalar()));
+                csvAppender.appendField(String.valueOf(scan.getBatteryLevel()));
+                csvAppender.endLine();
         }
         csvAppender.close();
     }
