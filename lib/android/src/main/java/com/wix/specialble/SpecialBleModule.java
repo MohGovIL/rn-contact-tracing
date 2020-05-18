@@ -286,10 +286,6 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void fetchInfectionDataByConsent(Callback callback)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> results = CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent();
-        if(results.size() > 0)
-        {
-            CryptoManager.getInstance(reactContext).createNewUser();
-        }
         callback.invoke(ParseUtils.infectedDbToJson(results));
     }
 
