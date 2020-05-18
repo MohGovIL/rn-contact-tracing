@@ -34,7 +34,7 @@ public class ParseUtils {
             Object[] keySetArray = infectedDb.keySet().toArray();
             Arrays.sort(keySetArray); // Make sure the keys are in ascending order
             int today = (int)keySetArray[keySetArray.length - 1];
-            int startDay = today - 13; // We subtract 13 from today, because we want to go 14 days back and today is the 14th day.
+            int startDay = today - NUM_OF_DAYS; // We subtract 14 from today, because we want to go 15 days back and today is the 15th day.
             root.put("startDay",startDay);
             for(int i = startDay; i <= today; i ++) {
 

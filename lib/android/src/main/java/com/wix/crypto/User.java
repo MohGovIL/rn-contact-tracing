@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.wix.crypto.Constants.NUM_OF_DAYS;
+import static com.wix.crypto.Constants.SECONDS_IN_DAY;
 
 /**
  * Created by hagai on 11/05/2020.
@@ -212,10 +214,9 @@ public class User {
         Time t = new Time(time, Constants.None); // TODO: check if correct
 
         EpochKey epochKey = null;
-        if(!mEpochKeys.containsKey(t) && mEpochKeys.get(t) != null)// "Epoch key is not present";
+        if(!mEpochKeys.containsKey(t) && mEpochKeys.get(t) == null)// "Epoch key is not present";
         {
-            int timeStamp = (int)(System.currentTimeMillis() / 1000);
-            this.updateKeyDatabase(timeStamp - 14 * 24 * 3600, timeStamp + 24*3600);
+            this.updateKeyDatabase(time - NUM_OF_DAYS * SECONDS_IN_DAY, time);
         }
 
         epochKey = mEpochKeys.get(t);

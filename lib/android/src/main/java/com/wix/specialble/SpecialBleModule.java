@@ -62,7 +62,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.wix.crypto.Constants.NUM_OF_DAYS;
 import static com.wix.crypto.Constants.NUM_OF_EPOCHS;
 
 public class SpecialBleModule extends ReactContextBaseJavaModule {
