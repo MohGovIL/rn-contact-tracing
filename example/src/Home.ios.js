@@ -26,8 +26,8 @@ function HomeScreen() {
     const [devices, setDevices] = useState([]);
     const config = {
         serviceUUID: SERVICE_UUID,
-        scanDuration: 60000,
-        scanInterval: 240000,
+        scanDuration: 50000,
+        scanInterval: 10000,
         advertiseInterval: 45000,
         advertiseDuration: 10000,
         token: 'default_token'
@@ -160,7 +160,7 @@ function HomeScreen() {
 
     // add contacts to DB
     function _writeContactsToDB() {
-        SpecialBle.writeContactsToDB();
+        SpecialBle.writeContactsToDB(null);
     }
 
     return (

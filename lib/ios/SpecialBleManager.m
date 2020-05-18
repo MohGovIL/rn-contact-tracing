@@ -28,6 +28,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 @property NSDictionary* config;
 @property BOOL advertisingIsOn;
+@property BOOL scanningIsOn;
 
 @end
 
@@ -62,7 +63,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 {
     // advertising state flag
     self.advertisingIsOn = YES;
-    
+    self.scanningIsOn = YES;
 //    // add contact to DB
 //    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
 //    NSArray* geo = @[@0, @0, @0, @0, @0];
@@ -91,6 +92,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
 {
     self.advertisingIsOn = NO;
+    self.scanningIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
 }
@@ -111,15 +113,28 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.scanUUIDString = serviceUUIDString;
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
     
-    NSLog(@"Start scanning for %@", UUID);
-    [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
-    [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+    NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
+    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+    if (self.scanningIsOn)
+    {
+        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self stopScan:self.eventEmitter];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+            });
+        });
+    }
+    else
+        NSLog(@"interval received but advertising is off!!!");
+    
 }
 
 - (void)stopScan:(RCTEventEmitter*)emitter {
     [self.cbCentral stopScan];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:NO]];
-    self.scanUUIDString = nil;
+//    self.scanUUIDString = nil;
 }
 
 #pragma mark Advertise tasks
@@ -142,7 +157,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 - (void)stopAdvertise:(RCTEventEmitter*)emitter {
     [self.cbPeripheral stopAdvertising];
     [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:NO]];
-    self.advertiseUUIDString = nil;
+//    self.advertiseUUIDString = nil;
 }
 
 #pragma mark - private methods

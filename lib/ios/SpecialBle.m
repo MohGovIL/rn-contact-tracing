@@ -22,9 +22,9 @@ RCT_EXPORT_MODULE();
   return @[@"scanningStatus", @"advertisingStatus", @"foundDevice", @"foundScan"];
 }
 
-#pragma mark - BLE services and tasks
-
 // *** API FOR HAMAGEN *** //
+
+#pragma mark - BLE services and tasks
 
 RCT_EXPORT_METHOD(startBLEService) {
     [[SpecialBleManager sharedManager] startBLEServicesWithEventEmitter:self];
@@ -51,6 +51,16 @@ RCT_EXPORT_METHOD(writeContactsToDB:(NSString *) jsonString) {
     [[SpecialBleManager sharedManager] writeContactsDB];
 }
 
+#pragma mark - Config
+
+RCT_EXPORT_METHOD(getConfig:(RCTResponseSenderBlock)callback) {
+    callback(@[[Config GetConfig]]);
+}
+
+RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
+    [Config SetConfig:config];
+}
+
 // ***** Aditional methods ***** //
 
 RCT_EXPORT_METHOD(startBLEScan:(NSString *) serviceUUID) {
@@ -74,15 +84,6 @@ RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
 //    [DBClient savePublicKeys:keys];
 }
 
-#pragma mark - Config
-
-RCT_EXPORT_METHOD(getConfig:(RCTResponseSenderBlock)callback) {
-    callback(@[[Config GetConfig]]);
-}
-
-RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
-    [Config SetConfig:config];
-}
 
 #pragma mark - Exports
 
