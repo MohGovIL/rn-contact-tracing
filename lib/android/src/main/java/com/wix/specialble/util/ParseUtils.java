@@ -64,6 +64,14 @@ public class ParseUtils {
                         rootInfectedEpochs.put(rootInfectedEpochsInnerLevel);
                     }
                 }
+                else
+                {
+                    for (int x = 0; x < NUM_OF_EPOCHS; x++)
+                    {
+                        JSONArray rootInfectedEpochsInnerLevel = new JSONArray();
+                        rootInfectedEpochs.put(rootInfectedEpochsInnerLevel);
+                    }
+                }
                 rootInfected.put(rootInfectedEpochs);
             }
             root.put("infected",rootInfected);
