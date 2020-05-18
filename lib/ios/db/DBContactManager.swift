@@ -18,9 +18,9 @@ class DBContactManager {
         
         var rawBundle: Bundle? {
 
-            if let bundle = Bundle(identifier: "com.rn-contact-tracing.Framework") {
-                return bundle
-            }
+//            if let bundle = Bundle(identifier: "com.rn-contact-tracing.Framework") {
+//                return bundle
+//            }
 
             guard
                 let resourceBundleURL = Bundle(for: type(of: self)).url(forResource: "FrameworkModel", withExtension: "bundle"),
