@@ -421,7 +421,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void) writeContactsDB
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts1" ofType:@"json"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
     if (!path)
     {
         NSLog(@"file not found");
