@@ -24,22 +24,22 @@ function HomeScreen() {
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
     const [devices, setDevices] = useState([]);
-    const config = {
-        serviceUUID: SERVICE_UUID,
-        scanDuration: 50000,
-        scanInterval: 10000,
-        advertiseInterval: 45000,
-        advertiseDuration: 10000,
-        token: 'default_token'
-      };
-    // const [config, setConfig] = useState({
-    //     serviceUUID: '00000000-0000-1000-8000-00805F9B34FB',
-    //     scanDuration: 60000,
-    //     scanInterval: 240000,
+    // const config = {
+    //     serviceUUID: SERVICE_UUID,
+    //     scanDuration: 50000,
+    //     scanInterval: 10000,
     //     advertiseInterval: 45000,
     //     advertiseDuration: 10000,
     //     token: 'default_token'
-    // });
+    //   };
+    const [config, setConfig] = useState({
+        serviceUUID: '00000000-0000-1000-8000-00805F9B34FB',
+        scanDuration: 60000,
+        scanInterval: 240000,
+        advertiseInterval: 45000,
+        advertiseDuration: 10000,
+        token: 'default_token'
+    });
 
     useEffect(() => {
         const eventEmitter = new NativeEventEmitter(SpecialBle);
@@ -93,9 +93,9 @@ function HomeScreen() {
 
     // get config
     function _getConfig() {
-        // SpecialBle.getConfig((config) => {
-        //     setConfig(config);
-        // })
+        SpecialBle.getConfig((config) => {
+            setConfig(config);
+        })
     }
 
     // set config
@@ -208,13 +208,14 @@ function HomeScreen() {
 
 
 
-            <View style = {{display: 'none'}}>
+            <View>
             
+            <View style = {{display: 'none'}}>
                 {_renderTextField("Advertised Token", config.token, val => setConfig({
                     ...config,
                     token: val
                 }))}
-            
+            </View>
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>scanDuration</Text>
@@ -246,19 +247,39 @@ function HomeScreen() {
                         advertiseInterval: parseInt(val)
                     }), "numeric")}
                 </View>
+
+                <Text text80BL>Config: </Text>
+
+
+                <View style={styles.subContainer}>
+                    
+                    {_renderButton('Get Config', _getConfig)}
+                    {_renderButton('Set Config', _setConfig)}
+                </View>
             </View>
 
-                
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
 
             <View style = {{display: 'none'}}>
                 <View style={styles.subContainer}>
                     {_renderButton('Set public Keys', _setPublicKeys)}
                 </View>
 
-                <View style={styles.subContainer}>
-                    {_renderButton('Get Config', _getConfig)}
-                    {_renderButton('Set Config', _setConfig)}
-                </View>
+                
 
                 <View style={[styles.subContainer, {display: Platform.OS === 'android' ? 'none' : 'flex'}]}>
                     {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}

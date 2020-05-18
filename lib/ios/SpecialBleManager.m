@@ -13,7 +13,7 @@ NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
 NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
 NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
-
+// [[UIDevice currentDevice] name];
 
 @interface SpecialBleManager ()
 
@@ -61,6 +61,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter
 {
+    self.config = [Config GetConfig];
+    
     // advertising state flag
     self.advertisingIsOn = YES;
     self.scanningIsOn = YES;
@@ -143,10 +145,9 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
         return;
     }
-    // TODO: Change to publicKey (crypto)!!!
-    self.publicKey = [[UIDevice currentDevice] name];
     self.eventEmitter = emitter;
     self.advertiseUUIDString = serviceUUIDString;
+    self.publicKey = [CryptoClient getEphemeralId];
     if (self.service && self.characteristic) {
         [self _advertise];
     } else {
@@ -399,48 +400,51 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 -(NSString*)findMatchForInfections
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
+    if (!path)
+    {
+        return @"file not found";
+    }
     NSData *data = [NSData dataWithContentsOfFile:path];
-    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    NSError* error;
+    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
+    if (error)
+    {
+        NSLog(@"Error parsing outputServerResponse: %@",error);
+        return @"Error parsing outputServerResponse";
+    }
     NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"infected"]];
-    NSLog(resJSON);
+    NSLog(@"%@",resJSON);
     return resJSON;
 }
 
 
 - (void) writeContactsDB
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    
-    int numberOfContactsAdded = 0;
-    for (NSDictionary* contactDict in contactsArray) {
-        [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
-        numberOfContactsAdded+=1;
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts1" ofType:@"json"];
+    if (!path)
+    {
+        NSLog(@"file not found");
+        return;
     }
-    NSLog(@"%d",numberOfContactsAdded);
-//    [self writeContactsArray:contactsArray fromIndex:0 toIndex:50];
+    
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError* error;
+    NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    
+    if (!error)
+    {
+        int numberOfContactsAdded = 0;
+        for (NSDictionary* contactDict in contactsArray) {
+            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
+            numberOfContactsAdded+=1;
+        }
+        NSLog(@"%d",numberOfContactsAdded);
+    }
+    else
+    {
+        NSLog(@"cannot parse json DB file: %@", error);
+    }
 }
-
-//- (void) writeContactsArray:(NSArray<NSDictionary*>*)array fromIndex:(int)from toIndex:(int)to
-//{
-//    int numberOfContactsAdded = from;
-//    for (int i = from; i<MIN(to, array.count); i++ )
-//    {
-//        NSDictionary* contactDict = array[i];
-//        [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
-//        numberOfContactsAdded+=1;
-//        NSLog(@"%d",numberOfContactsAdded);
-//    }
-//    if (numberOfContactsAdded<array.count)
-//    {
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            [self writeContactsArray:array fromIndex:numberOfContactsAdded toIndex:to+50];
-//        });
-//    }
-//    else
-//        NSLog(@"Finished adding %d contacts", numberOfContactsAdded);
-//}
 
 @end
