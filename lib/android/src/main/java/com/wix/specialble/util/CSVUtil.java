@@ -4,15 +4,18 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.core.content.ContextCompat;
+import androidx.room.util.StringUtil;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -22,6 +25,8 @@ import de.siegmar.fastcsv.writer.CsvAppender;
 import de.siegmar.fastcsv.writer.CsvWriter;
 
 public class CSVUtil {
+
+
     private static final String TAG = CSVUtil.class.getSimpleName();
     private static final String FILE_NAME_DEVICES = "allDevices";
     private static final String FILE_NAME_SCANS = "allScans";
@@ -47,74 +52,114 @@ public class CSVUtil {
     }
 
     public static void saveAllScansAsCSV(final Context context, List<Scan> allScans) throws Exception {
-        CsvWriter csvWriter = new CsvWriter();
-        CsvAppender csvAppender = csvWriter.append(getScansCsvFile(context), StandardCharsets.UTF_8);
-        csvAppender.appendLine("timestamp", "publicKey", "deviceAddress", "deviceProtocol",
+
+        FileOutputStream fos = new FileOutputStream(getScansCsvFile(context));
+
+        // write header line
+        appendHeaderLine(fos, "timestamp", "publicKey", "deviceAddress", "deviceProtocol",
                 "rssi", "tx", "proximity", "acceleration_x", "acceleration_y", "acceleration_z",
                 "rotation_x", "rotation_y", "rotation_z", "rotation_scalar", "battery");
-        for (Scan scan : allScans) {
-            csvAppender.appendField(String.valueOf(scan.getTimestamp()));
-            csvAppender.appendField(scan.getPublicKey());
-            csvAppender.appendField(scan.getScanAddress());
-            csvAppender.appendField(scan.getScanProtocol());
-            csvAppender.appendField(String.valueOf(scan.getRssi()));
-            csvAppender.appendField(String.valueOf(scan.getTx()));
-            csvAppender.appendField(String.valueOf(scan.getProximityValue()));
-            csvAppender.appendField(String.valueOf(scan.getAccelerationX()));
-            csvAppender.appendField(String.valueOf(scan.getAccelerationY()));
-            csvAppender.appendField(String.valueOf(scan.getAccelerationZ()));
-            csvAppender.appendField(String.valueOf(scan.getRotationVectorX()));
-            csvAppender.appendField(String.valueOf(scan.getRotationVectorY()));
-            csvAppender.appendField(String.valueOf(scan.getRotationVectorZ()));
-            csvAppender.appendField(String.valueOf(scan.getRotationVectorScalar()));
-            csvAppender.appendField(String.valueOf(scan.getBatteryLevel()));
-            csvAppender.endLine();
+
+        for (Scan scan : allScans)
+        {
+            writeScan(fos, scan);
         }
-        csvAppender.close();
+        fos.close();
+    }
+
+    private static void appendHeaderLine(OutputStream dos, String... headers) throws IOException
+    {
+        StringBuilder sb = new StringBuilder();
+        for (String header: headers)
+        {
+            sb.append(","); //we'll remove the 1st instance after the loop
+            sb.append(header);
+        }
+
+        dos.write(sb.substring(1).getBytes()); // write header line, remove extra initial ','
+        dos.write(System.lineSeparator().getBytes());
+    }
+
+    private static void writeScan(OutputStream dos, Scan scan) throws IOException
+    {
+        appendColumn(String.valueOf(scan.getTimestamp()), dos, false);
+        appendColumn(scan.getPublicKey(), dos, true);
+        appendColumn(scan.getScanAddress(), dos, true);
+        appendColumn(scan.getScanProtocol(), dos, true);
+        appendColumn(String.valueOf(scan.getRssi()), dos, true);
+        appendColumn(String.valueOf(scan.getTx()), dos, true);
+        appendColumn(String.valueOf(scan.getProximityValue()), dos, true);
+        appendColumn(String.valueOf(scan.getAccelerationX()), dos, true);
+        appendColumn(String.valueOf(scan.getAccelerationY()), dos, true);
+        appendColumn(String.valueOf(scan.getAccelerationZ()), dos, true);
+        appendColumn(String.valueOf(scan.getRotationVectorX()), dos, true);
+        appendColumn(String.valueOf(scan.getRotationVectorY()), dos, true);
+        appendColumn(String.valueOf(scan.getRotationVectorZ()), dos, true);
+        appendColumn(String.valueOf(scan.getRotationVectorScalar()), dos, true);
+        appendColumn(String.valueOf(scan.getBatteryLevel()), dos, true);
+        dos.write(System.lineSeparator().getBytes());
+    }
+
+
+    private static void appendColumn(String column, OutputStream dos, boolean delimit) throws IOException
+    {
+        // construct csv column value
+        if(column.matches("\\d+(?:\\.\\d+)?"))
+        {
+            // this is a number so we don't wrap
+        }
+        else
+        {
+            // this is text hence wrap
+            column = "\"" + column.replaceAll("\"", "\"\"") + "\"";
+        }
+
+
+        dos.write(column.getBytes());
+        if (delimit)
+        {
+            dos.write(",".getBytes());
+        }
+
     }
 
     public static void saveScansByKeyAsCsv(final Context context, List<Scan> scans, String key) throws Exception {
+        FileOutputStream fos = new FileOutputStream(getScanByKeyCsvFile(context, key));
 
-        CsvWriter csvWriter = new CsvWriter();
-        CsvAppender csvAppender = csvWriter.append(getScanByKeyCsvFile(context, key), StandardCharsets.UTF_8);
-        csvAppender.appendLine("timestamp", "publicKey", "deviceAddress", "deviceProtocol",
+        // write header line
+        appendHeaderLine(fos, "timestamp", "publicKey", "deviceAddress", "deviceProtocol",
                 "rssi", "tx", "proximity", "acceleration_x", "acceleration_y", "acceleration_z",
                 "rotation_x", "rotation_y", "rotation_z", "rotation_scalar", "battery");
-        for(Scan scan : scans) {
 
-                csvAppender.appendField(String.valueOf(scan.getTimestamp()));
-                csvAppender.appendField(scan.getPublicKey());
-                csvAppender.appendField(scan.getScanAddress());
-                csvAppender.appendField(scan.getScanProtocol());
-                csvAppender.appendField(String.valueOf(scan.getRssi()));
-                csvAppender.appendField(String.valueOf(scan.getTx()));
-                csvAppender.appendField(String.valueOf(scan.getProximityValue()));
-                csvAppender.appendField(String.valueOf(scan.getAccelerationX()));
-                csvAppender.appendField(String.valueOf(scan.getAccelerationY()));
-                csvAppender.appendField(String.valueOf(scan.getAccelerationZ()));
-                csvAppender.appendField(String.valueOf(scan.getRotationVectorX()));
-                csvAppender.appendField(String.valueOf(scan.getRotationVectorY()));
-                csvAppender.appendField(String.valueOf(scan.getRotationVectorZ()));
-                csvAppender.appendField(String.valueOf(scan.getRotationVectorScalar()));
-                csvAppender.appendField(String.valueOf(scan.getBatteryLevel()));
-                csvAppender.endLine();
+        for (Scan scan : scans)
+        {
+            writeScan(fos, scan);
         }
-        csvAppender.close();
+        fos.close();
     }
 
     public static void saveAllDevicesAsCSV(final Context context, List<Device> allDevices) throws Exception {
-        CsvWriter csvWriter = new CsvWriter();
-        CsvAppender csvAppender = csvWriter.append(getDevicesCsvFile(context), StandardCharsets.UTF_8);
-        csvAppender.appendLine("firstSeen", "lastSeen", "publicKey", "deviceAddress", "deviceProtocol", "rssi");
+        FileOutputStream fos = new FileOutputStream(getDevicesCsvFile(context));
+
+        // write header line
+        appendHeaderLine(fos, "firstSeen", "lastSeen", "publicKey", "deviceAddress", "deviceProtocol", "rssi");
+
         for (Device device : allDevices) {
-            csvAppender.appendField(String.valueOf(device.getFirstTimestamp()));
-            csvAppender.appendField(String.valueOf(device.getLastTimestamp()));
-            csvAppender.appendField(device.getPublicKey());
-            csvAppender.appendField(device.getDeviceAddress());
-            csvAppender.appendField(device.getDeviceProtocol());
-            csvAppender.appendField(String.valueOf(device.getRssi()));
-            csvAppender.endLine();
+            writeDevice(device, fos);
         }
-        csvAppender.close();
+
+        fos.close();
     }
+
+    private static void writeDevice(Device device, OutputStream dos) throws IOException
+    {
+        appendColumn(String.valueOf(device.getFirstTimestamp()), dos, false);
+        appendColumn(String.valueOf(device.getLastTimestamp()), dos, true);
+        appendColumn(device.getPublicKey(), dos, true);
+        appendColumn(device.getDeviceAddress(), dos, true);
+        appendColumn(device.getDeviceProtocol(), dos, true);
+        appendColumn(String.valueOf(device.getRssi()), dos, true);
+        dos.write(System.lineSeparator().getBytes());
+    }
+
 }
