@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,24 +30,15 @@ public class ParseUtils {
         JSONObject root = new JSONObject();
         JSONArray rootInfected = new JSONArray();
 
-        try
-        {
-            boolean first = true;
+        try {
             Object[] keySetArray = infectedDb.keySet().toArray();
-            for (int k = 0; k < NUM_OF_DAYS ; k++)
-            {
-                int day = -1;
-                if(k < keySetArray.length)
-                {
-                    day = (int) keySetArray[k];
-                }
-                if (first)
-                {
-                    root.put("startDay",day);
-                    first = false;
-                }
+            Arrays.sort(keySetArray); // Make sure the keys are in ascending order
+            int today = (int)keySetArray[keySetArray.length - 1];
+            int startDay = today - NUM_OF_DAYS; // We subtract 14 from today, because we want to go 15 days back and today is the 15th day.
+            root.put("startDay",startDay);
+            for(int i = startDay; i <= today; i ++) {
 
-                Map<Integer, ArrayList<byte[]>> epochs = infectedDb.get(day);
+                Map<Integer, ArrayList<byte[]>> epochs = infectedDb.get(i);
                 JSONArray rootInfectedEpochs = new JSONArray();
                 if(epochs != null)
                 {
@@ -62,9 +55,9 @@ public class ParseUtils {
 
                         if (ephs != null)
                         {
-                            for (int i = 0; i < ephs.size(); i++)
+                            for (int j = 0; j < ephs.size(); j++)
                             {
-                                String converted = Hex.toHexString(ephs.get(i), null);
+                                String converted = Hex.toHexString(ephs.get(j), null);
                                 rootInfectedEpochsInnerLevel.put(converted);
                             }
                         }
@@ -77,7 +70,6 @@ public class ParseUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return root.toString();
     }
 

@@ -62,7 +62,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.wix.crypto.Constants.NUM_OF_DAYS;
 import static com.wix.crypto.Constants.NUM_OF_EPOCHS;
 
 public class SpecialBleModule extends ReactContextBaseJavaModule {
@@ -286,10 +285,6 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void fetchInfectionDataByConsent(Callback callback)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> results = CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent();
-        if(results.size() > 0)
-        {
-            CryptoManager.getInstance(reactContext).createNewUser();
-        }
         callback.invoke(ParseUtils.infectedDbToJson(results));
     }
 
