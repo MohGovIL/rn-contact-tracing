@@ -136,29 +136,14 @@ function HomeScreen() {
         SpecialBle.deleteDatabase();
     }
 
-    // get Config
-    function _match(infected_db) {
-        //return SpecialBle.match(infected_db);
-
-        return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+    // get match results
+    function _match() {
+        SpecialBle.match(null, result => { return result; });
     }
 
-    // get Config
+    // get user contacts data
     function fetchInfectionDataByConsent() {
-        //return SpecialBle.fetchInfectionDataByConsent();
-        
-        
-        var json ={
-          BLE:
-          [
-            {
-              key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
-              epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
-            }
-          ]
-        };
-        alert(json);
-        return json;
+        SpecialBle.fetchInfectionDataByConsent( result => {return result;});
     }
 
   
@@ -220,10 +205,20 @@ function HomeScreen() {
                     {_renderButton('Fetch server infected keys', fetchInfectionDataByConsent)}
                 </View>
 
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+ 
+                    {_renderButton('Load Database', _loadDatabase)}
+
+                </View>
+
             </Fragment>
         )
     }
 
+    function _loadDatabase() {
+
+        SpecialBle.writeContactsToDB(null);
+    }
 
     function _renderPermissionSection() {
         return (

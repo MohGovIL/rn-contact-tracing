@@ -1,12 +1,17 @@
 package com.wix.specialble;
 
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Callback;
@@ -20,6 +25,16 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.wix.crypto.Contact;
+import com.wix.crypto.Crypto;
+import com.wix.crypto.CryptoManager;
+import com.wix.crypto.Match;
+import com.wix.crypto.User;
+import com.wix.crypto.utilities.BytesUtils;
+import com.wix.crypto.utilities.Hex;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
@@ -28,7 +43,13 @@ import com.wix.specialble.db.DBClient;
 import com.wix.specialble.kays.PublicKey;
 import com.wix.specialble.util.CSVUtil;
 import com.wix.specialble.util.DeviceUtil;
+import com.wix.specialble.util.ParseUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,10 +58,21 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.lang.reflect.Array;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.wix.crypto.Constants.NUM_OF_EPOCHS;
 
 public class SpecialBleModule extends ReactContextBaseJavaModule {
+
 
     private final ReactApplicationContext reactContext;
     private final BLEManager bleManager;
@@ -53,8 +85,14 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         super(reactContext);
         this.reactContext = reactContext;
         mEventToJSDispatcher = EventToJSDispatcher.getInstance(reactContext);
+        // init crypto lib //
+        /////////////////////
+        CryptoManager.getInstance(reactContext);
+
         bleManager = BLEManager.getInstance(reactContext);
         bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
+//        ParseUtils.loadDatabase(reactContext.getApplicationContext());//open this to load db for testing from raw...
+
         //  registerEventLiveData();
 
     }
@@ -256,17 +294,33 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public String fetchInfectionDataByConsent() {
-        return "";
+    public void deleteDatabase() {
+        bleManager.wipeDatabase();
     }
 
     @ReactMethod
-    public String match() {
-        return "";
+    public void fetchInfectionDataByConsent(Callback callback)
+    {
+        Map<Integer, Map<Integer, ArrayList<byte[]>>> results = CryptoManager.getInstance(reactContext).fetchInfectionDataByConsent();
+        callback.invoke(ParseUtils.infectedDbToJson(results));
     }
 
     @ReactMethod
-    public String deleteDatabase() {
-        return "";
+    public void match(String epochs, Callback callback)
+    {
+        Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = ParseUtils.extractInfectedDbFromJson(epochs, reactContext.getApplicationContext()); //TODO::pass epochs when ready
+        List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
+        if(result.size() > 0)
+        {
+            Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();
+        }
+//        return ParseUtils.parseResultToJson(result);/**/
+        callback.invoke(ParseUtils.parseResultToJson(result));
+    }
+
+    @ReactMethod
+    public void writeContactsToDB(String db)
+    {
+        ParseUtils.loadDatabase(reactContext.getApplicationContext(), db);
     }
 }

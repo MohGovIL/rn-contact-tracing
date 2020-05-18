@@ -19,6 +19,7 @@ import android.provider.Settings;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.wix.crypto.User;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.receivers.AlarmReceiver;

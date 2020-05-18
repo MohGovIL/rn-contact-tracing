@@ -43,8 +43,7 @@ function HomeScreen() {
 
     // Start scanning for a specific serviceUUID
     function _startScan() {
-//        alert(JSON.stringify(config))
-        SpecialBle.setConfig(config)
+        // SpecialBle.setConfig(config)
         SpecialBle.startBLEScan(SERVICE_UUID);
     }
 
@@ -55,7 +54,7 @@ function HomeScreen() {
 
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
-        SpecialBle.setConfig(config);
+        // SpecialBle.setConfig(config);
         SpecialBle.advertise(SERVICE_UUID, PUBLIC_KEY);
     }
 
@@ -64,19 +63,8 @@ function HomeScreen() {
         SpecialBle.stopAdvertise();
     }
 
-    // in IOS - starts the ble scan and peripheral services, sets the uuid and public keys and starts the scanning & advertising tasks
-    function _startBLEService() {
-        SpecialBle.setConfig(config);
-        SpecialBle.startBLEService(SERVICE_UUID, PUBLIC_KEY);
-    }
-
-    // stop background tasks
-    function _stopBLEService() {
-        SpecialBle.stopBLEService();
-    }
-
-    // get all devices from DB
-    async function _getAllDevicesFromDB() {
+     // get all devices from DB
+     async function _getAllDevicesFromDB() {
         SpecialBle.getAllDevices((err, devices) => {
             setDevices(devices)
         })
@@ -88,23 +76,11 @@ function HomeScreen() {
         _getAllDevicesFromDB();
     }
 
-    // clean all scans from DB
-    function _cleanAllScansFromDB() {
-        SpecialBle.cleanScansDB();
-        _getAllDevicesFromDB();
-    }
-    
-    // add demo device
-    function _scanDemoDevice() {
-      if (Platform.OS === 'ios')
-        SpecialBle.addDemoDevice();
-    }
-
-    // add list of public_keys
-    function _setPublicKeys() {
-        let publicKeys = ['12345', '12346', '12347', '12348', '12349']
-        SpecialBle.setPublicKeys(publicKeys);
-//        alert(config.scanInterval)
+   // add list of public_keys
+   function _setPublicKeys() {
+        // let publicKeys = ['12345', '12346', '12347', '12348', '12349']
+        // SpecialBle.setPublicKeys(publicKeys);
+        //        alert(config.scanInterval)
     }
 
     // get config
@@ -119,14 +95,69 @@ function HomeScreen() {
         SpecialBle.setConfig(config)
     }
 
+    // clean all scans from DB
+    function _cleanAllScansFromDB() {
+        SpecialBle.cleanScansDB();
+        _getAllDevicesFromDB();
+    }
+    
+    // add demo device
+    function _scanDemoDevice() {
+      if (Platform.OS === 'ios')
+        SpecialBle.addDemoDevice();
+    }
+
+    /////IGATES API For App
+
+    // in IOS - starts the ble scan and peripheral services, sets the uuid and public keys and starts the scanning & advertising tasks
+    function _startBLEService() {
+        // SpecialBle.setConfig(config);
+        SpecialBle.startBLEService(SERVICE_UUID);
+    }
+
+    // stop background tasks
+    function _stopBLEService() {
+        SpecialBle.stopBLEService();
+    }
+
+    // clean all devices from DB
+    function _wipe() {
+        SpecialBle.deleteDatabase();
+    }
+
+    // match
+    function _match(infected_db) {
+        return SpecialBle.match("infected_db");
+
+        // return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+    }
+
+    // fetch
+    function fetchInfectionDataByConsent() {
+        return SpecialBle.fetchInfectionDataByConsent();
+        
+        
+        // var json ={
+        //   BLE:
+        //   [
+        //     {
+        //       key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
+        //       epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
+        //     }
+        //   ]
+        // };
+        // alert(json);
+        // return json;
+    }
+
+    // add contacts to DB
+    function _writeContactsToDB() {
+        SpecialBle.writeContactsToDB();
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView>
-            
-            <View style={styles.subContainer}>
-                {_renderButton('Start BLE service', _startBLEService)}
-                {_renderButton('Stop BLE service', _stopBLEService)}
-            </View>
             
             <View style={styles.subContainer}>
                 {_statusBadge('Scanning', scanningStatus.toString() === 'true')}
@@ -135,25 +166,46 @@ function HomeScreen() {
             <Text text80BL>ServiceUUID: {config.serviceUUID}</Text>
 
             <View style={styles.subContainer}>
-                {_renderButton('Start Scan', _startScan)}
-                {_renderButton('Start Advertise', _startAdvertise)}
-
+                {_renderButton('Start BLE service', _startBLEService)}
+                {_renderButton('Stop BLE service', _stopBLEService)}
+            </View>
+            
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                {_renderButton('Wipe data', _wipe)}
+                {_renderButton('Match infected', _match)}
             </View>
 
-            <View style={styles.subContainer}>
-                {_renderButton('Stop Scan', _stoptScan)}
-                {_renderButton('Stop Advertise', _stopAdvertise)}
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+
+                {_renderButton('Fetch server infected keys', fetchInfectionDataByConsent)}
             </View>
 
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                {_renderButton('Add Contacts to DB', _writeContactsToDB)}
+            </View>
+
+            <View style = {{display: 'none'}}>
+
+                <View style={styles.subContainer}>
+                    {_renderButton('Start Scan', _startScan)}
+                    {_renderButton('Start Advertise', _startAdvertise)}
+
+                </View>
+
+                <View style={styles.subContainer}>
+                    {_renderButton('Stop Scan', _stoptScan)}
+                    {_renderButton('Stop Advertise', _stopAdvertise)}
+                </View>
+            </View>
 
 
 
             <View style = {{display: 'none'}}>
             
                 {_renderTextField("Advertised Token", config.token, val => setConfig({
-            ...config,
-        token: val
-        }))}
+                    ...config,
+                    token: val
+                }))}
             
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
@@ -190,7 +242,7 @@ function HomeScreen() {
 
                 
 
-
+            <View style = {{display: 'none'}}>
                 <View style={styles.subContainer}>
                     {_renderButton('Set public Keys', _setPublicKeys)}
                 </View>
@@ -206,8 +258,9 @@ function HomeScreen() {
                     {_renderButton('Remove Scans from DB', _cleanAllScansFromDB)}
                     {_renderButton('Demo Scan Device', _scanDemoDevice)}
                 </View>
-            </ScrollView>
-        </View>
+            </View>
+        </ScrollView>
+    </View>
 
     );
 

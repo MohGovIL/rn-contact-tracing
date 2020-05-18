@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Contact" representedClassName="Contact" syncable="YES" codeGenerationType="class">
+        <attribute name="ephemeral_id" optional="YES" attributeType="Binary"/>
+        <attribute name="geohash" optional="YES" attributeType="Binary"/>
+        <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="rssi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
     <entity name="Device" representedClassName="Device" syncable="YES" codeGenerationType="class">
         <attribute name="device_address" optional="YES" attributeType="String"/>
         <attribute name="device_first_timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -26,5 +33,6 @@
         <element name="Device" positionX="-54" positionY="-9" width="128" height="28"/>
         <element name="PublicKey" positionX="-36" positionY="9" width="128" height="73"/>
         <element name="Scan" positionX="-18" positionY="54" width="128" height="148"/>
+        <element name="Contact" positionX="-36" positionY="72" width="128" height="28"/>
     </elements>
 </model>
