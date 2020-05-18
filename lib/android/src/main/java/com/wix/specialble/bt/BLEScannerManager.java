@@ -129,7 +129,7 @@ public class BLEScannerManager {
             int tx = scanRecord.getTxPowerLevel();
 
             super.onScanResult(callbackType, result);
-            handleScanResults(result, ScannedToken, tx);
+            handleScanResults(result, ScannedToken, tx, byteScannedToken);
         }
 
         @Override
@@ -142,7 +142,7 @@ public class BLEScannerManager {
         }
     }
 
-    private void handleScanResults(final ScanResult result, final String scannedToken, final int tx) {
+    private void handleScanResults(final ScanResult result, final String scannedToken, final int tx, final byte[] byteScannedToken) {
         // handle devices
         AsyncTask.execute(new Runnable() {
             @Override
@@ -180,7 +180,7 @@ public class BLEScannerManager {
                 ///////////////////////////////////////////////
                 CryptoManager.getInstance(mContext).mySelf.storeContact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
 
-                Contact contact = new Contact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
+                Contact contact = new Contact(byteScannedToken, rssi, currentTime, sGeoHash);
                 dbClient.storeContact(contact);
 
 
