@@ -9,13 +9,11 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
-import com.wix.specialble.db.Event;
 import com.wix.specialble.listeners.IEventListener;
 import com.wix.specialble.sensor.AccelerometerManager;
 import com.wix.specialble.sensor.ProximityManager;
@@ -23,15 +21,8 @@ import com.wix.specialble.sensor.RotationVectorManager;
 import com.wix.specialble.sensor.SensorUtils;
 import com.wix.specialble.util.Constants;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 public class BLEScannerManager {
@@ -117,7 +108,7 @@ public class BLEScannerManager {
 
             String deviceName = scanRecord.getDeviceName() != null ? scanRecord.getDeviceName() : "NaN";
             String ScannedToken = byteScannedToken != null ? new String(byteScannedToken, Charset.forName("UTF-8")) : deviceName;
-            DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), ScannedToken, Constants.ACTION_SCAN, "success", ""));
+
             int tx = scanRecord.getTxPowerLevel();
 
             super.onScanResult(callbackType, result);
@@ -139,6 +130,9 @@ public class BLEScannerManager {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
+
+                DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", ""));
+
                 Device oldDevice = dbClient.getDeviceByKey(scannedToken); // get device from database
                 Device newDevice;
 

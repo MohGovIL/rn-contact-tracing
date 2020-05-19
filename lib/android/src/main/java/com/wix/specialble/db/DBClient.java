@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.room.Room;
 
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.bt.Event;
 import com.wix.specialble.bt.Scan;
 import com.wix.specialble.kays.PublicKey;
 

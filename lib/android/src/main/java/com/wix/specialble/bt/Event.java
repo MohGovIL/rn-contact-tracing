@@ -1,4 +1,4 @@
-package com.wix.specialble.db;
+package com.wix.specialble.bt;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

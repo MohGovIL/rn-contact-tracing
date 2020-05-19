@@ -8,7 +8,6 @@ import android.util.Log;
 import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
-import com.wix.specialble.db.Event;
 import com.wix.specialble.listeners.IEventListener;
 import com.wix.specialble.util.Constants;
 
