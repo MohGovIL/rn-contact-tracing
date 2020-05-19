@@ -115,22 +115,34 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.scanUUIDString = serviceUUIDString;
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
     
-    NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
-    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
-    if (self.scanningIsOn)
-    {
-        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
-        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self stopScan:self.eventEmitter];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
-            });
-        });
-    }
-    else
-        NSLog(@"interval received but advertising is off!!!");
+    // Note: *******
+    /*
+     We're using scan without durations and intervals since if we go to background when scanning is off the the interval task will not start when in background and scanning will be off until the application returns to foreground. When scan is linear and not turning off there is still chance to receive scans in the backgroung although by apple's documentation when in background, the scan rate will slow down dramatically and CBCentralManagerScanOptionAllowDuplicatesKey is ignored (each perfipheral should be found only once when in BG)
+     */
     
+    // *********** scan linear witout duration / interval ********** //
+    NSLog(@"Start scanning for %@", UUID);
+    [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+    [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+    // ******** end of scan interval ********** //
+    
+    // **** scnning with intervals and duration ****** //
+//    NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
+//    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+//    if (self.scanningIsOn)
+//    {
+//        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self stopScan:self.eventEmitter];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+//            });
+//        });
+//    }
+//    else
+//        NSLog(@"interval received but advertising is off!!!");
+    // ******** end of scan with duration ********** //
 }
 
 - (void)stopScan:(RCTEventEmitter*)emitter {
