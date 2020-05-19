@@ -138,12 +138,12 @@ function HomeScreen() {
 
     // get match results
     function _match() {
-        return SpecialBle.match("this will be the infected map");
+        SpecialBle.match(null, result => { return result; });
     }
 
     // get user contacts data
     function fetchInfectionDataByConsent() {
-        return SpecialBle.fetchInfectionDataByConsent();
+        SpecialBle.fetchInfectionDataByConsent( result => {return result;});
     }
 
   
@@ -205,10 +205,20 @@ function HomeScreen() {
                     {_renderButton('Fetch server infected keys', fetchInfectionDataByConsent)}
                 </View>
 
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+ 
+                    {_renderButton('Load Database', _loadDatabase)}
+
+                </View>
+
             </Fragment>
         )
     }
 
+    function _loadDatabase() {
+
+        SpecialBle.writeContactsToDB(null);
+    }
 
     function _renderPermissionSection() {
         return (

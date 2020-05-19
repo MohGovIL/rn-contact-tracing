@@ -151,18 +151,6 @@ function HomeScreen() {
         SpecialBle.fetchInfectionDataByConsent((res) => {
             alert(res);
         });
-        
-        // var json ={
-        //   BLE:
-        //   [
-        //     {
-        //       key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
-        //       epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
-        //     }
-        //   ]
-        // };
-        // alert(json);
-        // return json;
     }
 
     // add contacts to DB

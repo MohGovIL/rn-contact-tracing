@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.wix.crypto.Constants.NUM_OF_DAYS;
+import static com.wix.crypto.Constants.SECONDS_IN_DAY;
 
 /**
  * Created by hagai on 11/05/2020.
@@ -212,17 +214,13 @@ public class User {
         Time t = new Time(time, Constants.None); // TODO: check if correct
 
         EpochKey epochKey = null;
-        if(!mEpochKeys.containsKey(t) && mEpochKeys.get(t) != null)// "Epoch key is not present";
+        if(!mEpochKeys.containsKey(t) && mEpochKeys.get(t) == null)// "Epoch key is not present";
         {
-            int timeStamp = (int)(System.currentTimeMillis() / 1000);
-            this.updateKeyDatabase(timeStamp - 14 * 24 * 3600, timeStamp + 24*3600);
+            this.updateKeyDatabase(time - NUM_OF_DAYS * SECONDS_IN_DAY, time);
         }
 
         epochKey = mEpochKeys.get(t);
-
         int tUnitS = t.getUnits();
-
-
 
         byte[] mask = Crypto.AES(epochKey.getEpochEncKey(), BytesUtils.numToBytes(tUnitS, Constants.MESSAGE_LEN));
         byte[] userRand = Arrays.copyOf(epochKey.getEpochVerKey(), Constants.USER_RAND_LEN);
@@ -256,16 +254,11 @@ public class User {
 //            }
 //        });
 
-
-
-
-
-
         // domain is a time up to units (actually a string "day-epoch-unit")
         // and its range is a list of (mask, epochMAC)
         Map<String, ArrayList<Pair<byte[], byte[]>>> mapUnitKeys = new HashMap<>();
 
-        int earlierTime = Constants.None; // TODO: if there is a better way, in python that's null
+        int earlierTime = Constants.None;
 
         Cursor c = dbClient.getCursorAll();
         while (c.moveToNext())
@@ -439,11 +432,9 @@ public class User {
      *
      * Note -  deleting all keys and contacts.
      */
-    public void deleteHistory(int dTime) {
-
-        //TODO:: check if correct
-
-        Time t = new Time(dTime, Constants.None); //TODO: fix this
+    public void deleteHistory(int dTime)
+    {
+        Time t = new Time(dTime, Constants.None);
         Map<Time, EpochKey> dictEpochKeys = new HashMap<>();
 
         for(Map.Entry<Time, EpochKey> entry : mEpochKeys.entrySet()) {

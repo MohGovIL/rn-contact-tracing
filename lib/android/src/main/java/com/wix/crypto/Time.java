@@ -1,12 +1,9 @@
 package com.wix.crypto;
 
 import androidx.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.Objects;
 
 /**
@@ -72,36 +69,33 @@ public class Time implements Comparable<Time> {
     }
 
 
-    public int getUnits() {
-
+    public int getUnits()
+    {
         return (this.mTime - this.mDay*DAY - this.mEpoch*EPOCH) / UNIT;
-
     }
 
-    public Time getNext() {
-
+    public Time getNext()
+    {
         if (this.mEpoch == EPOCHS_IN_DAY-1) {
             return new Time(this.mDay + 1, 0);
         }
         return new Time(this.mDay, this.mEpoch+1);
     }
 
-    public String getStrWithUnits() {
-
+    public String getStrWithUnits()
+    {
         return this.mDay + " " + this.mEpoch + " " + getUnits();
     }
 
     @Override
-    public int hashCode() {
-
+    public int hashCode()
+    {
         return Objects.hash(mDay, mEpoch);
     }
 
     @Override
-    public int compareTo(Time other) {
-
-        //TODO: check if enough
-
+    public int compareTo(Time other)
+    {
         if(this.mDay == other.mDay && this.mEpoch == other.mEpoch)
             return 0;
         else if(EPOCHS_IN_DAY*this.mDay + this.mEpoch < EPOCHS_IN_DAY*other.mDay + other.mEpoch)
@@ -111,9 +105,10 @@ public class Time implements Comparable<Time> {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
-        //return this.mDay == obj. && this.mEpoch == other.epoch
-        if (obj == null) {
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj == null)
+        {
             return false;
         }
 
@@ -134,8 +129,8 @@ public class Time implements Comparable<Time> {
 
     public int getEpoch() { return mEpoch; }
 
-    public boolean largerEqualThan(Time start) {
-//        EPOCHS_IN_DAY*self.day + self.epoch <= EPOCHS_IN_DAY*other.day + other.epoch
+    public boolean largerEqualThan(Time start)
+    {
         return EPOCHS_IN_DAY*this.mDay + this.mEpoch >= EPOCHS_IN_DAY*start.mDay + start.mEpoch;
     }
 }
