@@ -86,4 +86,23 @@ public class DBClient {
     public void clearAllScans() {
         bleDevicesDB.scanDao().clearAll();
     }
+
+    /***********
+     *  Events  *
+     ***********/
+
+    public List<Event> getAllEvents() { return  bleDevicesDB.eventDao().getAllEvents(); }
+
+    public List<Event> getEventsByActionType(String actionType) { return  bleDevicesDB.eventDao().getEventsByActionType(actionType); }
+
+    public void insertAll(Event... events) { bleDevicesDB.eventDao().insertAll(events); }
+
+    public void insert(Event event) { bleDevicesDB.eventDao().insert(event); }
+
+    public void update(Event event) { bleDevicesDB.eventDao().update(event); }
+
+    public void delete(Event event) { bleDevicesDB.eventDao().delete(event); }
+
+    public void clearAllEvents() { bleDevicesDB.eventDao().clearAll(); }
+    
 }

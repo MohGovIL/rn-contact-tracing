@@ -15,11 +15,13 @@ import android.util.Log;
 
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
+import com.wix.specialble.db.Event;
 import com.wix.specialble.listeners.IEventListener;
 import com.wix.specialble.sensor.AccelerometerManager;
 import com.wix.specialble.sensor.ProximityManager;
 import com.wix.specialble.sensor.RotationVectorManager;
 import com.wix.specialble.sensor.SensorUtils;
+import com.wix.specialble.util.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -115,7 +117,7 @@ public class BLEScannerManager {
 
             String deviceName = scanRecord.getDeviceName() != null ? scanRecord.getDeviceName() : "NaN";
             String ScannedToken = byteScannedToken != null ? new String(byteScannedToken, Charset.forName("UTF-8")) : deviceName;
-
+            DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), ScannedToken, Constants.ACTION_SCAN, "success", ""));
             int tx = scanRecord.getTxPowerLevel();
 
             super.onScanResult(callbackType, result);

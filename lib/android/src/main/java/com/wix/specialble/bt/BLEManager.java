@@ -8,7 +8,9 @@ import android.util.Log;
 import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
+import com.wix.specialble.db.Event;
 import com.wix.specialble.listeners.IEventListener;
+import com.wix.specialble.util.Constants;
 
 import java.util.List;
 
@@ -95,6 +97,14 @@ public class BLEManager implements IEventListener {
 
     public void setEventToJSDispatcher(EventToJSDispatcher eventToJSDispatcher) {
         mEventToJSDispatcher = eventToJSDispatcher;
+    }
+
+    public List<Event> getAllAdvertiseData() {
+        return DBClient.getInstance(context).getEventsByActionType(Constants.ACTION_ADVERTISE);
+    }
+
+    public List<Event> getAllScansData() {
+        return DBClient.getInstance(context).getEventsByActionType(Constants.ACTION_SCAN);
     }
 
     @Override

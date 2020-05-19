@@ -220,8 +220,26 @@ function HomeScreen() {
                     {_renderButton('Fetch server infected keys', fetchInfectionDataByConsent)}
                 </View>
 
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+ 
+                    {_renderButton('Export Scans data', _exportScansData)}
+                </View>
+
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+ 
+                    {_renderButton('Export Advertise data', _exportAdvertiseData)}
+                </View>
+
             </Fragment>
         )
+    }
+
+    function _exportAdvertiseData() {
+        SpecialBle.eexportAdvertiseAsCSV();
+    }
+
+    function _exportScansData() {
+        SpecialBle.exportScansDataAsCSV();
     }
 
 

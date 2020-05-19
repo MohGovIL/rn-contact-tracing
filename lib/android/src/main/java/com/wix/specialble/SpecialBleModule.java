@@ -1,6 +1,8 @@
 package com.wix.specialble;
 
 
+import android.bluetooth.BluetoothAdapter;
+import android.widget.Toast;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -93,7 +95,13 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startBLEScan() {
-        bleManager.startScan();
+        if(BluetoothAdapter.getDefaultAdapter().isMultipleAdvertisementSupported()) {
+            bleManager.startScan();
+        }
+        else {
+            Toast.makeText(reactContext.getApplicationContext(),"BLE is not supported",Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @ReactMethod
@@ -104,7 +112,14 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     private void startBLEService() {
-        BLEForegroundService.startThisService(this.reactContext);
+
+        if(BluetoothAdapter.getDefaultAdapter().isMultipleAdvertisementSupported()) {
+
+            BLEForegroundService.startThisService(this.reactContext);
+        }
+        else {
+            Toast.makeText(reactContext.getApplicationContext(),"BLE is not supported",Toast.LENGTH_LONG).show();
+        }
     }
 
     @ReactMethod
@@ -210,6 +225,30 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             Log.e(TAG, "exportAllDevicesCsv: " + e.getMessage(), e); //handle exception
         }
+    }
+
+    @ReactMethod
+    public void exportAdvertiseAsCSV() {
+
+        try {
+            CSVUtil.saveAllAdvertiseAsCSV(reactContext, bleManager.getAllAdvertiseData());
+            shareFile(CSVUtil.getAdvertiseCsvFile(reactContext));
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exportAdvertiseAsCSV" + e.getMessage(), e );
+        }
+
+    }
+
+    @ReactMethod
+    public void exportScansDataAsCSV() {
+        try {
+            CSVUtil.saveAllScansDataAsCSV(reactContext, bleManager.getAllScansData());
+            shareFile(CSVUtil.getScansDataCsvFile(reactContext));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @ReactMethod

@@ -9,6 +9,7 @@ import androidx.room.util.StringUtil;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
+import com.wix.specialble.db.Event;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -34,6 +35,16 @@ public class CSVUtil {
 
     public static File getDevicesCsvFile(Context context) {
         return getCsvFile(context, FILE_NAME_DEVICES);
+    }
+
+    public static File getAdvertiseCsvFile(Context context) {
+
+        return getCsvFile(context, "Advertise");
+    }
+
+    public static File getScansDataCsvFile(Context context) {
+
+        return getCsvFile(context, "Scan");
     }
 
     public static File getScansCsvFile(Context context) {
@@ -149,6 +160,33 @@ public class CSVUtil {
         }
 
         fos.close();
+    }
+
+    public static void saveAllAdvertiseAsCSV(final Context context, List<Event> advertiseEvents) throws Exception {
+        FileOutputStream fos = new FileOutputStream(getAdvertiseCsvFile(context));
+        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage");
+
+        for(Event event : advertiseEvents) {
+            writeEvent(event, fos);
+        }
+    }
+
+    public static void saveAllScansDataAsCSV(final Context context, List<Event> scansEvents) throws Exception {
+        FileOutputStream fos = new FileOutputStream(getScansDataCsvFile(context));
+        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage");
+        for(Event event : scansEvents) {
+            writeEvent(event, fos);
+        }
+    }
+
+    private static void writeEvent(Event event, OutputStream dos) throws IOException {
+
+        appendColumn(String.valueOf(event.getTimestamp()), dos, false);
+        appendColumn(String.valueOf(event.getDeviceName()), dos, false);
+        appendColumn(String.valueOf(event.getActionType()), dos, false);
+        appendColumn(String.valueOf(event.getSuccess()), dos, false);
+        appendColumn(String.valueOf(event.getErrorMessage()), dos, false);
+        dos.write(System.lineSeparator().getBytes());
     }
 
     private static void writeDevice(Device device, OutputStream dos) throws IOException

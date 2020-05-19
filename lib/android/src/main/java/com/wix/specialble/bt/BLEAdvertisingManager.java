@@ -10,7 +10,10 @@ import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.wix.specialble.config.Config;
+import com.wix.specialble.db.DBClient;
+import com.wix.specialble.db.Event;
 import com.wix.specialble.listeners.IEventListener;
+import com.wix.specialble.util.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,17 +32,18 @@ public class BLEAdvertisingManager {
     private String TAG = "BLEAdvertisingManager";
     private IEventListener mEventListenerCallback;
 
-
     AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             super.onStartSuccess(settingsInEffect);
+            DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERITSE_SUCCESS, ""));
             mEventListenerCallback.onEvent(BLEAdvertisingManager.ADVERTISING_STATUS, true);
         }
 
         @Override
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
+            DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERITSE_FAIL, "error code: " + errorCode));
             mEventListenerCallback.onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);
             Log.d(TAG, "onAdvertiseStartFailed - ErrorCode: " + errorCode);
         }
