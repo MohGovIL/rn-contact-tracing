@@ -13,7 +13,7 @@ NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
 NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
 NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
-
+// [[UIDevice currentDevice] name];
 
 @interface SpecialBleManager ()
 
@@ -28,6 +28,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 @property NSDictionary* config;
 @property BOOL advertisingIsOn;
+@property BOOL scanningIsOn;
 
 @end
 
@@ -58,11 +59,13 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 #pragma mark BLE Services
 
-- (void)startBLEServices:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter
+- (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter
 {
+    self.config = [Config GetConfig];
+    
     // advertising state flag
     self.advertisingIsOn = YES;
-    
+    self.scanningIsOn = YES;
 //    // add contact to DB
 //    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
 //    NSArray* geo = @[@0, @0, @0, @0, @0];
@@ -72,25 +75,26 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     // set singleton's data
     self.publicKey = [CryptoClient getEphemeralId];
     self.eventEmitter = emitter;
-    self.scanUUIDString = serviceUUIDString;
-    self.advertiseUUIDString = serviceUUIDString;
+    self.scanUUIDString = self.config[KEY_SERVICE_UUID] ;
+    self.advertiseUUIDString = self.config[KEY_SERVICE_UUID];
     
     // init and start the scan Central
     if (!self.cbCentral)
         self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self scan:serviceUUIDString withEventEmitter:emitter];
+        [self scan:self.scanUUIDString withEventEmitter:emitter];
     
     // init and start the advertise Peropheral
     if (!self.cbPeripheral)
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self advertise:serviceUUIDString publicKey:self.publicKey withEventEmitter:emitter];
+        [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
 {
     self.advertisingIsOn = NO;
+    self.scanningIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
 }
@@ -111,15 +115,40 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.scanUUIDString = serviceUUIDString;
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
     
+    // Note: *******
+    /*
+     We're using scan without durations and intervals since if we go to background when scanning is off the the interval task will not start when in background and scanning will be off until the application returns to foreground. When scan is linear and not turning off there is still chance to receive scans in the backgroung although by apple's documentation when in background, the scan rate will slow down dramatically and CBCentralManagerScanOptionAllowDuplicatesKey is ignored (each perfipheral should be found only once when in BG)
+     */
+    
+    // *********** scan linear witout duration / interval ********** //
     NSLog(@"Start scanning for %@", UUID);
     [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+    // ******** end of scan interval ********** //
+    
+    // **** scnning with intervals and duration ****** //
+//    NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
+//    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+//    if (self.scanningIsOn)
+//    {
+//        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self stopScan:self.eventEmitter];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+//            });
+//        });
+//    }
+//    else
+//        NSLog(@"interval received but advertising is off!!!");
+    // ******** end of scan with duration ********** //
 }
 
 - (void)stopScan:(RCTEventEmitter*)emitter {
     [self.cbCentral stopScan];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:NO]];
-    self.scanUUIDString = nil;
+//    self.scanUUIDString = nil;
 }
 
 #pragma mark Advertise tasks
@@ -128,10 +157,9 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     if (self.cbPeripheral.state != CBManagerStatePoweredOn) {
         return;
     }
-    // TODO: Change to publicKey (crypto)!!!
-    self.publicKey = [[UIDevice currentDevice] name];
     self.eventEmitter = emitter;
     self.advertiseUUIDString = serviceUUIDString;
+    self.publicKey = [CryptoClient getEphemeralId];
     if (self.service && self.characteristic) {
         [self _advertise];
     } else {
@@ -142,7 +170,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 - (void)stopAdvertise:(RCTEventEmitter*)emitter {
     [self.cbPeripheral stopAdvertising];
     [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:NO]];
-    self.advertiseUUIDString = nil;
+//    self.advertiseUUIDString = nil;
 }
 
 #pragma mark - private methods
@@ -204,33 +232,37 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
  didDiscoverPeripheral:(CBPeripheral *)peripheral
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI {
-//    NSString* name = @"";
-    //    NSNumber* device_first_timestamp = @0;
     NSString* public_key = @"";
     NSNumber *tx = @0;
     int64_t unixtime = [[NSDate date] timeIntervalSince1970]*1000;
 
     if (peripheral && peripheral.name != nil) {
         NSLog(@"Discovered device with name: %@", peripheral.name);
-//        name = peripheral.name;
     }
     
     // get private_key
-    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) { // Androids device...
-//        NSLog(@"Android device");
-//        NSLog(@"AdvertisementData: %@", advertisementData);
+    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
+        // Androids device...
         NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
         CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
         
         NSData *data = dataService[serviceUUID];
 
-        public_key = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"";
-        
-    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) { // IOS device...
-//        NSLog(@"iPhone device");
-//        NSLog(@"AdvertisementData: %@", advertisementData);
+        if (data.length == 16) {
+            public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
+            [CryptoClient printDecodedKey:public_key];
+        } else {
+            public_key = @"";
+        }
+    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
+        // IOS device...
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
-        [CryptoClient decodeKey:public_key];
+        if (public_key.length == 16)
+        {
+            [CryptoClient printDecodedKey:public_key];
+        }
+        else
+            public_key = @"";
     } else {
         NSLog(@"UNKnown device");
         NSLog(@"*** empty publicKey received");
@@ -241,27 +273,17 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     
     if (public_key.length == 0)
     {
-//        NSLog(@"*** empty publicKey received");
-//        NSLog(@"AdvertisementData: %@", advertisementData);
         return;
     }
-    
-//    if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
-//        device_first_timestamp = advertisementData[@"kCBAdvDataTimestamp"];
-//    }
-    
     // get TX
     if (advertisementData && advertisementData[CBAdvertisementDataTxPowerLevelKey]) {
         tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
     }
     
     // add contact to DB
-//    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
     NSArray* geo = @[@0, @0, @0, @0, @0];
-//    NSData* data = [public_key dataUsingEncoding:NSUTF8StringEncoding];
-//    uint8_t *bytes = (uint8_t *)[data bytes];
 
-    [DBClient addContact:public_key :[RSSI integerValue] :unixtime :geo :1];
+    [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :unixtime :geo];
     
     // get current device from DB
     NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
@@ -363,10 +385,11 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
-    NSLog(@"didStartAdvertising, duration:%@ , interval:%@",self.config[KEY_ADVERTISE_DURATION], self.config[KEY_ADVERTISE_INTERVAL] );
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_DURATION] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    NSLog(@"didStartAdvertising, duration:%d , interval:%d",
+    [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self stopAdvertise:self.eventEmitter];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self.config[KEY_ADVERTISE_INTERVAL] intValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (self.advertisingIsOn)
                 [self _advertise];
             else
@@ -379,52 +402,75 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSLog(@"Peripheral name:%@", peripheral.name);
 }
 
-
--(NSString*)findMatchForInfections
+- (NSString*)fetchInfectionData
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    return @"";
+}
+
+-(NSString*)findMatchForInfections:(NSString*)jsonString
+{
+    NSData *data;
+    if (jsonString.length > 0)
+    {
+        data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    else // TODO: only to tests!!! getting hardCoded file
+    {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
+        if (!path)
+        {
+            return @"file not found";
+        }
+        data = [NSData dataWithContentsOfFile:path];
+    }
+    NSError* error;
+    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     
+    if (error)
+    {
+        NSLog(@"Error parsing JSON: %@",error);
+        return @"Error parsing JSON";
+    }
     NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"infected"]];
-    NSLog(resJSON);
+    NSLog(@"%@",resJSON);
     return resJSON;
 }
 
 
-- (void) writeContactsDB
+- (void) writeContactsDB:(NSString*)jsonString
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    
-    int numberOfContactsAdded = 0;
-    for (NSDictionary* contactDict in contactsArray) {
-        [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
-        numberOfContactsAdded+=1;
+    NSData *data;
+    if (jsonString.length > 0)
+    {
+        data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     }
-    NSLog(@"%d",numberOfContactsAdded);
-//    [self writeContactsArray:contactsArray fromIndex:0 toIndex:50];
+    else // TODO: only to tests!!! getting hardCoded file
+    {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
+        if (!path)
+        {
+            NSLog(@"file not found");
+            return;
+        }
+        
+        data = [NSData dataWithContentsOfFile:path];
+    }
+    NSError* error;
+    NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    
+    if (!error)
+    {
+        int numberOfContactsAdded = 0;
+        for (NSDictionary* contactDict in contactsArray) {
+            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]];
+            numberOfContactsAdded+=1;
+        }
+        NSLog(@"%d",numberOfContactsAdded);
+    }
+    else
+    {
+        NSLog(@"cannot parse json DB file: %@", error);
+    }
 }
-
-//- (void) writeContactsArray:(NSArray<NSDictionary*>*)array fromIndex:(int)from toIndex:(int)to
-//{
-//    int numberOfContactsAdded = from;
-//    for (int i = from; i<MIN(to, array.count); i++ )
-//    {
-//        NSDictionary* contactDict = array[i];
-//        [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
-//        numberOfContactsAdded+=1;
-//        NSLog(@"%d",numberOfContactsAdded);
-//    }
-//    if (numberOfContactsAdded<array.count)
-//    {
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            [self writeContactsArray:array fromIndex:numberOfContactsAdded toIndex:to+50];
-//        });
-//    }
-//    else
-//        NSLog(@"Finished adding %d contacts", numberOfContactsAdded);
-//}
 
 @end

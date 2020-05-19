@@ -24,12 +24,20 @@ function HomeScreen() {
     const [scanningStatus, setScanningStatus] = useState(false);
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
     const [devices, setDevices] = useState([]);
+    // const config = {
+    //     serviceUUID: SERVICE_UUID,
+    //     scanDuration: 50000,
+    //     scanInterval: 10000,
+    //     advertiseInterval: 45000,
+    //     advertiseDuration: 10000,
+    //     token: 'default_token'
+    //   };
     const [config, setConfig] = useState({
-        serviceUUID: '',
-        scanDuration: 0,
-        scanInterval: 0,
-        advertiseInterval: 0,
-        advertiseDuration: 0,
+        serviceUUID: '00000000-0000-1000-8000-00805F9B34FB',
+        scanDuration: 60000,
+        scanInterval: 240000,
+        advertiseInterval: 45000,
+        advertiseDuration: 10000,
         token: 'default_token'
     });
 
@@ -43,7 +51,7 @@ function HomeScreen() {
 
     // Start scanning for a specific serviceUUID
     function _startScan() {
-        // SpecialBle.setConfig(config)
+        SpecialBle.setConfig(config)
         SpecialBle.startBLEScan(SERVICE_UUID);
     }
 
@@ -54,7 +62,7 @@ function HomeScreen() {
 
     // Start advertising with SERVICE_UUID & PUBLIC_KEY
     function _startAdvertise() {
-        // SpecialBle.setConfig(config);
+        SpecialBle.setConfig(config);
         SpecialBle.advertise(SERVICE_UUID, PUBLIC_KEY);
     }
 
@@ -111,8 +119,8 @@ function HomeScreen() {
 
     // in IOS - starts the ble scan and peripheral services, sets the uuid and public keys and starts the scanning & advertising tasks
     function _startBLEService() {
-        // SpecialBle.setConfig(config);
-        SpecialBle.startBLEService(SERVICE_UUID);
+        SpecialBle.setConfig(config);
+        SpecialBle.startBLEService();
     }
 
     // stop background tasks
@@ -127,32 +135,27 @@ function HomeScreen() {
 
     // match
     function _match(infected_db) {
-        return SpecialBle.match("infected_db");
-
-        // return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+        SpecialBle.match("", (res) => {
+            alert(res);
+          });
     }
+    // function _match(infected_db) {
+    //     return SpecialBle.match("infected_db");
+
+    //     // return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+    // }
 
     // fetch
     function fetchInfectionDataByConsent() {
-        return SpecialBle.fetchInfectionDataByConsent();
-        
-        
-        // var json ={
-        //   BLE:
-        //   [
-        //     {
-        //       key_master_ver: [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1],
-        //       epochs: [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]]
-        //     }
-        //   ]
-        // };
-        // alert(json);
-        // return json;
+        // return SpecialBle.fetchInfectionDataByConsent();
+        SpecialBle.fetchInfectionDataByConsent((res) => {
+            alert(res);
+        });
     }
 
     // add contacts to DB
     function _writeContactsToDB() {
-        SpecialBle.writeContactsToDB();
+        SpecialBle.writeContactsToDB(null);
     }
 
     return (
@@ -164,12 +167,12 @@ function HomeScreen() {
                 {_statusBadge('Advertising', advertisingStatus.toString() === 'true')}
             </View>
             <Text text80BL>ServiceUUID: {config.serviceUUID}</Text>
-
-            <View style={styles.subContainer}>
-                {_renderButton('Start BLE service', _startBLEService)}
-                {_renderButton('Stop BLE service', _stopBLEService)}
+            <Text text80BL>  </Text>
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                    {_renderButton('Start BLE service', _startBLEService)}
+                    {_renderButton('Stop BLE service', _stopBLEService)}
             </View>
-            
+
             <View style={[styles.subContainer, {justifyContent: 'center'}]}>
                 {_renderButton('Wipe data', _wipe)}
                 {_renderButton('Match infected', _match)}
@@ -200,13 +203,14 @@ function HomeScreen() {
 
 
 
-            <View style = {{display: 'none'}}>
+            <View>
             
+            <View style = {{display: 'none'}}>
                 {_renderTextField("Advertised Token", config.token, val => setConfig({
                     ...config,
                     token: val
                 }))}
-            
+            </View>
                 <Text style={{fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Scan</Text>
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     <Text style={{fontSize: 18, fontWeight: 'normal', marginVertical: 5}}>scanDuration</Text>
@@ -238,19 +242,40 @@ function HomeScreen() {
                         advertiseInterval: parseInt(val)
                     }), "numeric")}
                 </View>
+
+                <Text text80BL>  </Text>
+                <Text text80BL>Config: </Text>
+                <Text text80BL>  </Text>
+
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                    
+                    {_renderButton('Get Config', _getConfig)}
+                    {_renderButton('Set Config', _setConfig)}
+                </View>
             </View>
 
-                
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
+            <Text text80BL>  </Text>
 
             <View style = {{display: 'none'}}>
                 <View style={styles.subContainer}>
                     {_renderButton('Set public Keys', _setPublicKeys)}
                 </View>
 
-                <View style={styles.subContainer}>
-                    {_renderButton('Get Config', _getConfig)}
-                    {_renderButton('Set Config', _setConfig)}
-                </View>
+                
 
                 <View style={[styles.subContainer, {display: Platform.OS === 'android' ? 'none' : 'flex'}]}>
                     {_renderButton('Get all devices from DB', _getAllDevicesFromDB)}
@@ -316,16 +341,20 @@ const styles = StyleSheet.create({
         marginTop: 20,
         flex: 1,
         marginHorizontal: 5,
+        paddingLeft: 10
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginVertical: 10
     },
     statusContainer: {
-        flex: 1,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 10
     },
     subContainer: {
-        flexWrap: 'wrap',
         flexDirection: 'row',
-        alignItems: 'center'
     },
     subContainerTextFields: {
         justifyContent: 'space-between',
@@ -335,13 +364,6 @@ const styles = StyleSheet.create({
     picker: {
         marginHorizontal: 10,
         width: 300
-    },
-    btn: {
-        marginHorizontal: 5,
-        marginVertical: 10,
-        padding: 10,
-        alignItems: 'center',
-        backgroundColor: 'orange'
     },
     item: {
         padding: 10,

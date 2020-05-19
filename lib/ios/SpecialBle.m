@@ -22,12 +22,12 @@ RCT_EXPORT_MODULE();
   return @[@"scanningStatus", @"advertisingStatus", @"foundDevice", @"foundScan"];
 }
 
-#pragma mark - BLE services and tasks
-
 // *** API FOR HAMAGEN *** //
 
-RCT_EXPORT_METHOD(startBLEService:(NSString *) serviceUUID) {
-    [[SpecialBleManager sharedManager] startBLEServices:serviceUUID withEventEmitter:self];
+#pragma mark - BLE services and tasks
+
+RCT_EXPORT_METHOD(startBLEService) {
+    [[SpecialBleManager sharedManager] startBLEServicesWithEventEmitter:self];
 }
 
 RCT_EXPORT_METHOD(stopBLEService) {
@@ -37,18 +37,29 @@ RCT_EXPORT_METHOD(stopBLEService) {
 RCT_EXPORT_METHOD(deleteDatabase) {
     [DBClient clearAllDevices];
     [DBClient clearAllScans];
+    [DBClient clearAllContacts];
 }
 
-RCT_EXPORT_METHOD(match:(NSString *) jsonString) {
-    [[SpecialBleManager sharedManager] findMatchForInfections];
+RCT_EXPORT_METHOD(match:(NSString *)jsonString callback:(RCTResponseSenderBlock)callback) {
+    callback(@[[[SpecialBleManager sharedManager] findMatchForInfections:jsonString]]);
 }
 
-RCT_EXPORT_METHOD(fetchInfectionDataByConsent) {
-    // TBD
+RCT_EXPORT_METHOD(fetchInfectionDataByConsent:(RCTResponseSenderBlock)callback) {
+    callback(@[[CryptoClient fetchInfectionDataByConsent]]);
 }
 
-RCT_EXPORT_METHOD(writeContactsToDB) {
-    [[SpecialBleManager sharedManager] writeContactsDB];
+RCT_EXPORT_METHOD(writeContactsToDB:(NSString *)jsonString) {
+    [[SpecialBleManager sharedManager] writeContactsDB:jsonString];
+}
+
+#pragma mark - Config
+
+RCT_EXPORT_METHOD(getConfig:(RCTResponseSenderBlock)callback) {
+    callback(@[[Config GetConfig]]);
+}
+
+RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
+    [Config SetConfig:config];
 }
 
 // ***** Aditional methods ***** //
@@ -74,15 +85,6 @@ RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
 //    [DBClient savePublicKeys:keys];
 }
 
-#pragma mark - Config
-
-RCT_EXPORT_METHOD(getConfig:(RCTResponseSenderBlock)callback) {
-    callback(@[[Config GetConfig]]);
-}
-
-RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
-    [Config SetConfig:config];
-}
 
 #pragma mark - Exports
 

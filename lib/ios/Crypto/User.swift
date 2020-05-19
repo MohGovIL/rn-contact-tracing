@@ -121,7 +121,7 @@ public class User : NSObject, Codable {
         // check that time key exists...
         if self.epoch_keys[t] == nil {
             let timestamp = Int(Date().timeIntervalSince1970)
-            update_key_databases(past_time: timestamp - 14 * 24 * 3600, future_time: timestamp + 24 * 3600)
+            update_key_databases(past_time: timestamp - 14 * 24 * 3600, future_time: timestamp)
             if self.epoch_keys[t] == nil {
                 return [UInt8]()
             }

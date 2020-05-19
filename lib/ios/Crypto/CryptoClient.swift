@@ -26,14 +26,21 @@ public class CryptoClient : NSObject {
         CryptoManager.shared.saveMyUserToDisk()
     }
     
-    @objc(decodeKey:)
-    static public func decodeKey(_ k: String) {
+    @objc(printDecodedKey:)
+    static public func printDecodedKey(_ k: String) {
         let a = k.asciiToUInt8Bytes()
-        print(a)
+        print("decoded publicKey received: \(a)")
     }
     
     @objc(findMatch::)
     static public func findMatch(startDay: Int, infectedArray: [[[String]]]) -> String  {
         return CryptoManager.shared.findMatch(startDay: startDay, infectedArray: infectedArray)
     }
+    
+    @objc(fetchInfectionDataByConsent)
+    static public func fetchInfectionDataByConsent() -> String {
+        
+        return CryptoManager.shared.fetchInfectionDataByConsent()
+    }
+
 }
