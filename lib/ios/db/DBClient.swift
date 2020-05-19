@@ -24,34 +24,27 @@ public class DBClient: NSObject {
         return res
     }
     
-    @objc(addContact:::::)
-    public static func addContact(ephemeral_id: String, rssi: Int, time: Int, location: [UInt8], id: Int){
+    @objc(addContactWithAsciiEphemeral::::)
+    public static func addContactWithAsciiEphemeral(ephemeral_id: String, rssi: Int, time: Int, location: [UInt8]){
         let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
 
         DBContactManager.shared.addNewContact(ephemeral_id: ephemeral_id.asciiToUInt8Bytes(), rssi: rssi, time: time, location: location, id: contactsCount+1)
-        
-//        if let contacts = DBClient.getContacts().fetchedObjects {
-//            print("Contacts DB:")
-//            for contact in contacts {
-//                print(contact)
-//            }
-//        }
     }
     
-    @objc(addJsonContact:::::)
-        public static func addJsonContact(ephemeral_id: String, rssi: Int, time: Int, location: String, id: Int){
+    @objc(addJsonContact::::) // this one is with hex string ephemeral
+        public static func addJsonContact(ephemeral_id: String, rssi: Int, time: Int, location: String){
             let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
 
             DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id)!, rssi: rssi, time: time, location: stringToBytes(location)!, id: contactsCount+1)
-            
-    //        if let contacts = DBClient.getContacts().fetchedObjects {
-    //            print("Contacts DB:")
-    //            for contact in contacts {
-    //                print(contact)
-    //            }
-    //        }
         }
     
+    @objc(clearAllContacts)
+    public static func clearAllContacts() {
+        DBContactManager.shared.deleteAllContacts()
+    }
+    
+    
+    // Hex string to bytes array
     static func stringToBytes(_ string: String) -> [UInt8]? {
         let length = string.count
         if length & 1 != 0 {
@@ -79,7 +72,8 @@ public class DBClient: NSObject {
     public static func deleteContactsHistory(dtime: Int) {
         DBContactManager.shared.deleteContactsHistory(dtime: dtime)
     }
-
+    
+    
     //MARK:- Devices
     /***********
      * Devices *

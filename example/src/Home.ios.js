@@ -135,15 +135,22 @@ function HomeScreen() {
 
     // match
     function _match(infected_db) {
-        return SpecialBle.match("infected_db");
-
-        // return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+        SpecialBle.match("", (res) => {
+            alert(res);
+          });
     }
+    // function _match(infected_db) {
+    //     return SpecialBle.match("infected_db");
+
+    //     // return [[0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1], [0,1,12,255,1,1,1,1,1,1,1,1,1,1,1,1]];
+    // }
 
     // fetch
     function fetchInfectionDataByConsent() {
-        return SpecialBle.fetchInfectionDataByConsent();
-        
+        // return SpecialBle.fetchInfectionDataByConsent();
+        SpecialBle.fetchInfectionDataByConsent((res) => {
+            alert(res);
+        });
         
         // var json ={
         //   BLE:
@@ -172,7 +179,7 @@ function HomeScreen() {
                 {_statusBadge('Advertising', advertisingStatus.toString() === 'true')}
             </View>
             <Text text80BL>ServiceUUID: {config.serviceUUID}</Text>
-
+            <Text text80BL>  </Text>
             <View style={[styles.subContainer, {justifyContent: 'center'}]}>
                     {_renderButton('Start BLE service', _startBLEService)}
                     {_renderButton('Stop BLE service', _stopBLEService)}
@@ -248,10 +255,11 @@ function HomeScreen() {
                     }), "numeric")}
                 </View>
 
+                <Text text80BL>  </Text>
                 <Text text80BL>Config: </Text>
+                <Text text80BL>  </Text>
 
-
-                <View style={styles.subContainer}>
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
                     
                     {_renderButton('Get Config', _getConfig)}
                     {_renderButton('Set Config', _setConfig)}

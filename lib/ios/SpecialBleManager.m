@@ -220,33 +220,37 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
  didDiscoverPeripheral:(CBPeripheral *)peripheral
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI {
-//    NSString* name = @"";
-    //    NSNumber* device_first_timestamp = @0;
     NSString* public_key = @"";
     NSNumber *tx = @0;
     int64_t unixtime = [[NSDate date] timeIntervalSince1970]*1000;
 
     if (peripheral && peripheral.name != nil) {
         NSLog(@"Discovered device with name: %@", peripheral.name);
-//        name = peripheral.name;
     }
     
     // get private_key
-    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) { // Androids device...
-//        NSLog(@"Android device");
-//        NSLog(@"AdvertisementData: %@", advertisementData);
+    if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
+        // Androids device...
         NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
         CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
         
         NSData *data = dataService[serviceUUID];
 
-        public_key = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"";
-        
-    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) { // IOS device...
-//        NSLog(@"iPhone device");
-//        NSLog(@"AdvertisementData: %@", advertisementData);
+        if (data.length == 16) {
+            public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
+            [CryptoClient printDecodedKey:public_key];
+        } else {
+            public_key = @"";
+        }
+    } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
+        // IOS device...
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
-        [CryptoClient decodeKey:public_key];
+        if (public_key.length == 16)
+        {
+            [CryptoClient printDecodedKey:public_key];
+        }
+        else
+            public_key = @"";
     } else {
         NSLog(@"UNKnown device");
         NSLog(@"*** empty publicKey received");
@@ -257,27 +261,17 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     
     if (public_key.length == 0)
     {
-//        NSLog(@"*** empty publicKey received");
-//        NSLog(@"AdvertisementData: %@", advertisementData);
         return;
     }
-    
-//    if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
-//        device_first_timestamp = advertisementData[@"kCBAdvDataTimestamp"];
-//    }
-    
     // get TX
     if (advertisementData && advertisementData[CBAdvertisementDataTxPowerLevelKey]) {
         tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
     }
     
     // add contact to DB
-//    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
     NSArray* geo = @[@0, @0, @0, @0, @0];
-//    NSData* data = [public_key dataUsingEncoding:NSUTF8StringEncoding];
-//    uint8_t *bytes = (uint8_t *)[data bytes];
 
-    [DBClient addContact:public_key :[RSSI integerValue] :unixtime :geo :1];
+    [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :unixtime :geo];
     
     // get current device from DB
     NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
@@ -396,22 +390,34 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSLog(@"Peripheral name:%@", peripheral.name);
 }
 
-
--(NSString*)findMatchForInfections
+- (NSString*)fetchInfectionData
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
-    if (!path)
+    return @"";
+}
+
+-(NSString*)findMatchForInfections:(NSString*)jsonString
+{
+    NSData *data;
+    if (jsonString.length > 0)
     {
-        return @"file not found";
+        data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     }
-    NSData *data = [NSData dataWithContentsOfFile:path];
+    else // TODO: only to tests!!! getting hardCoded file
+    {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
+        if (!path)
+        {
+            return @"file not found";
+        }
+        data = [NSData dataWithContentsOfFile:path];
+    }
     NSError* error;
-    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     
     if (error)
     {
-        NSLog(@"Error parsing outputServerResponse: %@",error);
-        return @"Error parsing outputServerResponse";
+        NSLog(@"Error parsing JSON: %@",error);
+        return @"Error parsing JSON";
     }
     NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"infected"]];
     NSLog(@"%@",resJSON);
@@ -419,16 +425,24 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 }
 
 
-- (void) writeContactsDB
+- (void) writeContactsDB:(NSString*)jsonString
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
-    if (!path)
+    NSData *data;
+    if (jsonString.length > 0)
     {
-        NSLog(@"file not found");
-        return;
+        data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     }
-    
-    NSData *data = [NSData dataWithContentsOfFile:path];
+    else // TODO: only to tests!!! getting hardCoded file
+    {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
+        if (!path)
+        {
+            NSLog(@"file not found");
+            return;
+        }
+        
+        data = [NSData dataWithContentsOfFile:path];
+    }
     NSError* error;
     NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
@@ -436,7 +450,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     {
         int numberOfContactsAdded = 0;
         for (NSDictionary* contactDict in contactsArray) {
-            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]:0];
+            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]];
             numberOfContactsAdded+=1;
         }
         NSLog(@"%d",numberOfContactsAdded);

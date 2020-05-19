@@ -61,27 +61,23 @@ public class CryptoManager {
             let char = Character(u)
             ephemeralString.append(char)
         }
-        
-        // decode the string key back to [UInt8], use:
-//        let decodedEphemeral = ephemeralString.asciiToUInt8Bytes()
-        
-//        print("Ephemeral: \(ephemeralUInt8)")
-//        print("String:    \(ephemeralString)")
-//        print("Decoded:   \(decodedEphemeral)")
-//        print("bytes r ==:\(ephemeralUInt8 == decodedEphemeral)")
-        
         return ephemeralString
     }
     
-    func fetchInfectionDataByConsent() -> [Int: [Int : [[UInt8]]]] {
+    func fetchInfectionDataByConsent() -> String { // -> [Int: [Int : [[UInt8]]]] {
         let server = Server()
         
         let server_keys_a = mySelf!.get_keys_for_server()
         server.receive_user_key(user_key: server_keys_a)
         let server_msg = server.send_keys()
-        return server_msg;
+//        if server_msg.count == 0 {
+//            return "{}"
+//        }
+        if server_msg.count > 0 {
+            createNewUserAndSave()
+        }
+        return parseInfectedDbToJSONString(infetedDB: server_msg);
     }
-    
     
     func findMatch(startDay: Int, infectedArray: [[[String]]]) -> String {
         var infectedEpochs:[Int: [Int : [[UInt8]]]] = [:]
@@ -91,12 +87,13 @@ public class CryptoManager {
             for j in 0..<24 {
                 let currentEpochsHex = infectedArray[i][j]
                 
-                let currentEpochsBinary : [[UInt8]] = currentEpochsHex.map { DBClient.stringToBytes($0)! }
-                
-                
-                
-                infectedEpochs[i+startDay]![j] = currentEpochsBinary
-                
+                if currentEpochsHex.count > 0 {
+                    let currentEpochsBinary : [[UInt8]] = currentEpochsHex.map { DBClient.stringToBytes($0)! }
+                    
+                    infectedEpochs[i+startDay]![j] = currentEpochsBinary
+                } else {
+                    infectedEpochs[i+startDay]![j] = []
+                }
             }
         }
         
@@ -113,12 +110,66 @@ public class CryptoManager {
             matchesResults.append(currentMatch)
         }
         let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
-//        do{
-//            d = try JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
-//        } catch {
-//            
-//        }
+
         return String(data: d, encoding: .utf8) ?? ""
+    }
+    
+    func createNewUserAndSave() {
+        let masterKey = [UInt8](Data(randomOfLength: 16))
+        let userKey = [UInt8](Data(randomOfLength: 16))
+        let init_time = Int(Date().timeIntervalSince1970)
+        print("masterKey: \(masterKey)")
+        print("userKey: \(userKey)")
+        print("init_time: \(init_time)")
+        let user = User(user_id: userKey, master_key: masterKey, init_time: init_time)
+        writeUserToDefaults(user: user, key: "mySelf")
+        mySelf = user
+    }
+    
+    fileprivate func parseInfectedDbToJSONString (infetedDB: [Int: [Int : [[UInt8]]]]) -> String {
+        var root:[String:Any] = [:]
+        var rootInfected:[Any] = []
+        var resultJson = "{}"
+        
+        if infetedDB.keys.count > 0 {
+            let keySetArray = infetedDB.keys.sorted { $0 < $1 }
+            let today = keySetArray.last
+            let startDay = today! - 14 // We subtract 14 from today, because we want to go 15 days back and today is the 15th day.
+            root["startDay"] = startDay
+            
+            for i in startDay...today! {
+                var rootInfectedEpochs:[[String]] = []
+                if let epochs = infetedDB[i] {
+                    let epochKeySetArray:[Int] = Array(epochs.keys)
+                    
+                    for x in 0..<24 {
+                        var rootInfectedEpochsInnerLevel:[String] = []
+                        let epocKey = x < epochKeySetArray.count ? epochKeySetArray[x] : -1
+                        if epocKey != -1 {
+                            if let ephs = epochs[epocKey] {
+                                for j in 0..<ephs.count {
+                                    let converted = Data(ephs[j]).hex()
+                                    rootInfectedEpochsInnerLevel.append(converted)
+                                }
+                            }
+                        }
+                        rootInfectedEpochs.append(rootInfectedEpochsInnerLevel)
+                    }
+                } else {
+                    for _ in 0..<24 {
+                        let rootInfectedEpochsInnerLevel:[String] = []
+                        rootInfectedEpochs.append(rootInfectedEpochsInnerLevel)
+                    }
+                }
+                rootInfected.append(rootInfectedEpochs)
+            }
+            root["infected"] = rootInfected
+        }
+        
+        let dataJson = try! JSONSerialization.data(withJSONObject: root, options: .prettyPrinted)
+        resultJson = String(data: dataJson, encoding: .utf8) ?? "{}"
+        print(resultJson)
+        return resultJson
     }
 }
 

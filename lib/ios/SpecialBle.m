@@ -37,18 +37,19 @@ RCT_EXPORT_METHOD(stopBLEService) {
 RCT_EXPORT_METHOD(deleteDatabase) {
     [DBClient clearAllDevices];
     [DBClient clearAllScans];
+    [DBClient clearAllContacts];
 }
 
-RCT_EXPORT_METHOD(match:(NSString *) jsonString) {
-    [[SpecialBleManager sharedManager] findMatchForInfections];
+RCT_EXPORT_METHOD(match:(NSString *)jsonString callback:(RCTResponseSenderBlock)callback) {
+    callback(@[[[SpecialBleManager sharedManager] findMatchForInfections:jsonString]]);
 }
 
-RCT_EXPORT_METHOD(fetchInfectionDataByConsent) {
-    // TBD
+RCT_EXPORT_METHOD(fetchInfectionDataByConsent:(RCTResponseSenderBlock)callback) {
+    callback(@[[CryptoClient fetchInfectionDataByConsent]]);
 }
 
-RCT_EXPORT_METHOD(writeContactsToDB:(NSString *) jsonString) {
-    [[SpecialBleManager sharedManager] writeContactsDB];
+RCT_EXPORT_METHOD(writeContactsToDB:(NSString *)jsonString) {
+    [[SpecialBleManager sharedManager] writeContactsDB:jsonString];
 }
 
 #pragma mark - Config
