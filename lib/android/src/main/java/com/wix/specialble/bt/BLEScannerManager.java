@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import com.wix.crypto.Constants;
 import com.wix.crypto.Contact;
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.utilities.BytesUtils;
@@ -176,15 +177,12 @@ public class BLEScannerManager {
 
                 byte[] rssi = BytesUtils.numToBytes(result.getRssi(), 4);
 
-                // todo transport runtime db to sqlite based //
-                ///////////////////////////////////////////////
-                CryptoManager.getInstance(mContext).mySelf.storeContact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
+//                CryptoManager.getInstance(mContext).mySelf.storeContact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
 
-                Contact contact = new Contact(byteScannedToken, rssi, currentTime, sGeoHash);
-                dbClient.storeContact(contact);
-
-
-
+                if(byteScannedToken.length == Constants.KEY_LEN) {
+                    Contact contact = new Contact(byteScannedToken, rssi, currentTime, sGeoHash);
+                    dbClient.storeContact(contact);
+                }
 
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
