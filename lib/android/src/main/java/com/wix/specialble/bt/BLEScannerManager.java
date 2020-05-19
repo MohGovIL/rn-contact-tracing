@@ -177,11 +177,10 @@ public class BLEScannerManager {
 
                 byte[] rssi = BytesUtils.numToBytes(result.getRssi(), 4);
 
-//                CryptoManager.getInstance(mContext).mySelf.storeContact(scannedToken.getBytes(), rssi, currentTime, sGeoHash);
+
 
                 if(byteScannedToken.length == Constants.KEY_LEN) {
-                    Contact contact = new Contact(byteScannedToken, rssi, currentTime, sGeoHash);
-                    dbClient.storeContact(contact);
+                    CryptoManager.getInstance(mContext).mySelf.storeContact(byteScannedToken, rssi, currentTime, sGeoHash);
                 }
 
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
