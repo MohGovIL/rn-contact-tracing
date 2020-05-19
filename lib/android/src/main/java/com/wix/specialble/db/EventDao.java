@@ -16,7 +16,7 @@ public interface EventDao {
     @Query("SELECT * FROM events")
     List<Event> getAllEvents();
 
-    @Query("SELECT * FROM events WHERE action_type = :actionType ORDER BY timestamp desc")
+    @Query("SELECT * FROM events WHERE action_type = :actionType ORDER BY device_name,timestamp desc")
     List<Event> getEventsByActionType(String actionType);
 
     @Insert

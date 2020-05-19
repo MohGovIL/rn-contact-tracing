@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -50,11 +52,19 @@ public class BLEForegroundService extends Service {
      * Utility for starting this Service the same way from multiple places.
      */
     public static void startThisService(Context context) {
-        Intent sIntent = new Intent(context, BLEForegroundService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(sIntent);
-        } else {
-            context.startService(sIntent);
+
+        if(BluetoothAdapter.getDefaultAdapter().isMultipleAdvertisementSupported()) {
+
+            Intent sIntent = new Intent(context, BLEForegroundService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(sIntent);
+            } else {
+                context.startService(sIntent);
+            }
+        }
+        else
+        {
+            Toast.makeText(context,"BLE is not supported on this device",Toast.LENGTH_LONG).show();
         }
     }
 

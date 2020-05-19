@@ -95,13 +95,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startBLEScan() {
-        if(BluetoothAdapter.getDefaultAdapter().isMultipleAdvertisementSupported()) {
-            bleManager.startScan();
-        }
-        else {
-            Toast.makeText(reactContext.getApplicationContext(),"BLE is not supported",Toast.LENGTH_LONG).show();
-        }
-
+        bleManager.startScan();
     }
 
     @ReactMethod

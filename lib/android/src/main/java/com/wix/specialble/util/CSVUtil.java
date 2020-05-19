@@ -82,7 +82,7 @@ public class CSVUtil {
 
     private static void writeScan(OutputStream dos, Scan scan) throws IOException
     {
-        appendColumn(String.valueOf(scan.getTimestamp()), dos, false);
+        appendColumn(String.valueOf(scan.getTimestamp()), dos, true);
         appendColumn(scan.getPublicKey(), dos, true);
         appendColumn(scan.getScanAddress(), dos, true);
         appendColumn(scan.getScanProtocol(), dos, true);
@@ -170,17 +170,17 @@ public class CSVUtil {
 
     private static void writeEvent(Event event, OutputStream dos) throws IOException {
 
-        appendColumn(String.valueOf(event.getTimestamp()), dos, false);
-        appendColumn(String.valueOf(event.getDeviceName()), dos, false);
-        appendColumn(String.valueOf(event.getActionType()), dos, false);
-        appendColumn(String.valueOf(event.getSuccess()), dos, false);
-        appendColumn(String.valueOf(event.getErrorMessage()), dos, false);
+        appendColumn(String.valueOf(event.getTimestamp()), dos, true);
+        appendColumn(String.valueOf(event.getDeviceName()), dos, true);
+        appendColumn(String.valueOf(event.getActionType()), dos, true);
+        appendColumn(String.valueOf(event.getSuccess()), dos, true);
+        appendColumn(String.valueOf(event.getErrorMessage()), dos, true);
         dos.write(System.lineSeparator().getBytes());
     }
 
     private static void writeDevice(Device device, OutputStream dos) throws IOException
     {
-        appendColumn(String.valueOf(device.getFirstTimestamp()), dos, false);
+        appendColumn(String.valueOf(device.getFirstTimestamp()), dos, true);
         appendColumn(String.valueOf(device.getLastTimestamp()), dos, true);
         appendColumn(device.getPublicKey(), dos, true);
         appendColumn(device.getDeviceAddress(), dos, true);

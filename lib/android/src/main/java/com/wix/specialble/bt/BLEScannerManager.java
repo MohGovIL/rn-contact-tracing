@@ -1,6 +1,7 @@
 package com.wix.specialble.bt;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanRecord;
@@ -30,6 +31,7 @@ public class BLEScannerManager {
     private static final String SCANNING_STATUS = "scanningStatus";
     private static final String FOUND_DEVICE = "foundDevice";
     private static final String FOUND_SCAN = "foundScan";
+    private final BluetoothLeScanner leScanner;
     private RotationVectorManager mRotationVectorManager;
     private AccelerometerManager mAccelerometerManager;
     private ProximityManager mProximityManager;
@@ -54,7 +56,7 @@ public class BLEScannerManager {
         mProximityManager = new ProximityManager(sensorManager);
         mAccelerometerManager = new AccelerometerManager(sensorManager);
         mRotationVectorManager = new RotationVectorManager(sensorManager);
-
+        leScanner = bluetoothAdapter.getBluetoothLeScanner();
     }
 
     public void startScan(String serviceUUID) {
@@ -77,13 +79,13 @@ public class BLEScannerManager {
                 settings = new ScanSettings.Builder().build();
             }
 
-            bluetoothAdapter.getBluetoothLeScanner().startScan(filters, settings, bleScanCallback);
+            leScanner.startScan(filters, settings, bleScanCallback);
             mEventListenerCallback.onEvent(SCANNING_STATUS, true);
         }
     }
 
     public void stopScan() {
-        bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback);
+        leScanner.stopScan(bleScanCallback);
         mEventListenerCallback.onEvent(SCANNING_STATUS, false);
         unregisterSensors();
 

@@ -235,7 +235,7 @@ function HomeScreen() {
     }
 
     function _exportAdvertiseData() {
-        SpecialBle.eexportAdvertiseAsCSV();
+        SpecialBle.exportAdvertiseAsCSV();
     }
 
     function _exportScansData() {
