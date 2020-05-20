@@ -124,5 +124,7 @@ public class DBClient {
 
     public void deleteDatabase() {
         bleDevicesDB.contactDao().clearAll();
+        bleDevicesDB.deviceDao().clearAll();
+        bleDevicesDB.scanDao().clearAll();
     }
 }
