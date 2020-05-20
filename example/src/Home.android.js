@@ -114,7 +114,11 @@ function HomeScreen() {
     // get Config
     function _getConfig() {
         SpecialBle.getConfig((config) => {
-            setConfig(config);
+            setConfig({
+                ...config,
+                notificationLargeIconPath: 'large_icon.png',
+                notificationSmallIconPath: 'small_icon'
+            })
         })
     }
 
