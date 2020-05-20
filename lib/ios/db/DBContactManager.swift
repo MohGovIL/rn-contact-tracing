@@ -18,9 +18,9 @@ class DBContactManager {
         
         var rawBundle: Bundle? {
 
-            if let bundle = Bundle(identifier: "com.rn-contact-tracing.Framework") {
-                return bundle
-            }
+//            if let bundle = Bundle(identifier: "com.rn-contact-tracing.Framework") {
+//                return bundle
+//            }
 
             guard
                 let resourceBundleURL = Bundle(for: type(of: self)).url(forResource: "FrameworkModel", withExtension: "bundle"),
@@ -57,9 +57,7 @@ class DBContactManager {
     
     func getContacts() -> NSFetchedResultsController<Contact> {
         let fetchRequest = NSFetchRequest<Contact>(entityName: "Contact")
-//        let predicate = NSPredicate(format: "%@ == %@", arg)
         let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: true)
-////        fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
@@ -69,13 +67,10 @@ class DBContactManager {
            print("Could not fetch. \(error), \(error.userInfo)")
        }
         return frc
-
-//        return DBManager.shared.getFetchedResults("Contact")
     }
     
     func addNewContact(ephemeral_id: [UInt8], rssi: Int, time: Int, location: [UInt8], id: Int) {
         let managedContext = self.persistentContainer.newBackgroundContext()
-        
         let entity = NSEntityDescription.entity(forEntityName: "Contact", in: managedContext)!
 
         let data = NSManagedObject(entity: entity, insertInto: managedContext)
@@ -109,7 +104,7 @@ class DBContactManager {
     func deleteContactsHistory(dtime: Int) {
         let managedContext = self.persistentContainer.newBackgroundContext()
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Contact")
-        let predicate = NSPredicate(format: "timestamp < %@", dtime)
+        let predicate = NSPredicate(format: "timestamp < \(dtime)")
         fetchRequest.predicate = predicate
 
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
@@ -119,4 +114,16 @@ class DBContactManager {
             print("Detele contact error :", error)
         }
     }
+    
+    func deleteAllContacts() {
+        let managedContext = self.persistentContainer.newBackgroundContext()
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Contact")
+        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        do {
+            try managedContext.execute(batchDeleteRequest)
+        } catch let error as NSError {
+            print("Detele all contacts error :", error)
+        }
+    }
+    
 }
