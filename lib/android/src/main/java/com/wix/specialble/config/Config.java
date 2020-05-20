@@ -41,12 +41,15 @@ public class Config  {
     private static final String DEFAULT_TOKEN = "default_public_key";
     private static final String DEFAULT_NOTIFICATION_TITLE = "BLE Contact Tracing";
     private static final String DEFAULT_NOTIFICATION_CONTENT = "Be Safe";
+    private static final String DEFAULT_NOTIFICATION_ICON_PATH = "";
 
     // General Config - Keys
     private static final String PREF_SERVICEUUID = "serviceUUID";
     private static final String PREF_TOKEN = "token";
     private static final String PREF_NOTIFICATION_TITLE = "notification_title";
     private static final String PREF_NOTIFICATION_CONTENT = "notification_content";
+    private static final String PREF_LARGE_NOTIFICATION_ICON_PATH = "large_notification_icon_path";
+    private static final String PREF_SMALL_NOTIFICATION_ICON_PATH = "small_notification_icon_path";
 
 
 
@@ -163,4 +166,20 @@ public class Config  {
         return sharedPrefs.getString(PREF_NOTIFICATION_CONTENT, DEFAULT_NOTIFICATION_CONTENT);
     }
 
+    public void setLargeNotificationIconPath(String content) {
+        sharedPrefs.edit().putString(PREF_LARGE_NOTIFICATION_ICON_PATH, content).apply();
+    }
+
+    public String getLargeNotificationIconPath() {
+        return sharedPrefs.getString(PREF_LARGE_NOTIFICATION_ICON_PATH, DEFAULT_NOTIFICATION_ICON_PATH);
+    }
+
+
+    public void setSmallNotificationIconPath(String content) {
+        sharedPrefs.edit().putString(PREF_SMALL_NOTIFICATION_ICON_PATH, content).apply();
+    }
+
+    public String getSmallNotificationIconPath() {
+        return sharedPrefs.getString(PREF_SMALL_NOTIFICATION_ICON_PATH, DEFAULT_NOTIFICATION_ICON_PATH);
+    }
 }

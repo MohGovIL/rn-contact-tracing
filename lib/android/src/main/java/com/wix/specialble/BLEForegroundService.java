@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -15,6 +17,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -24,6 +27,8 @@ import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.receivers.AlarmReceiver;
 
+import java.io.IOException;
+import java.io.InputStream;
 import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP;
 import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP_AFTER_10;
 import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP_AFTER_5;
@@ -33,6 +38,7 @@ import static com.wix.specialble.receivers.AlarmReceiver.alarmInterval_after_5;
 
 public class BLEForegroundService extends Service {
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
+    private static final String TAG = "BLEForegroundService";
 
     BLEManager bleManager;
     private PowerManager.WakeLock wakeLock;
@@ -138,12 +144,46 @@ public class BLEForegroundService extends Service {
         Intent notificationIntent = new Intent(this, BLEForegroundService.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        ////////////////////////////////////////////////////////////////////////////
+        //                  Prepare icons for notification display
+        //
+        //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()
+        //  Large icon comes from the field notificationLargeIconPath.
+        //  Small icon comes from the field notificationSmallIconPath.
+        //
+        ////////////////////////////////////////////////////////////////////////////
+        int resId = 0;
+        if(config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0)
+        {
+            try {
+                resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", "com.rncontacttracing.demo");
+            }
+            catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+        Bitmap bitmap = null;
+        if(config.getLargeNotificationIconPath() != null && config.getLargeNotificationIconPath().length()  > 0)
+        {
+
+            try {
+                InputStream ims = getAssets().open(config.getLargeNotificationIconPath());
+                bitmap = BitmapFactory.decodeStream(ims);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(config.getNotificationTitle())
                 .setContentText(config.getNotificationContent())
-                .setSmallIcon(R.drawable.virus)
-                .setContentIntent(mainActivityIntent)
-                .build();
+                .setSmallIcon(resId)
+                .setContentIntent(mainActivityIntent);
+        if(bitmap != null) {
+            notificationBuilder.setLargeIcon(bitmap);
+        }
+        Notification notification = notificationBuilder.build();
+
         startForeground(1, notification);
         // initialize if needed
         if (bleManager == null) {
