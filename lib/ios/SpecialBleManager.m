@@ -234,7 +234,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
                   RSSI:(NSNumber *)RSSI {
     NSString* public_key = @"";
     NSNumber *tx = @0;
-    int64_t unixtime = [[NSDate date] timeIntervalSince1970]*1000;
+    int64_t unixtime = [[NSDate date] timeIntervalSince1970];
 
     if (peripheral && peripheral.name != nil) {
         NSLog(@"Discovered device with name: %@", peripheral.name);
@@ -248,21 +248,24 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         
         NSData *data = dataService[serviceUUID];
 
-        if (data.length == 16) {
-            public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
-            [CryptoClient printDecodedKey:public_key];
-        } else {
-            public_key = @"";
-        }
+        public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
+        [CryptoClient printDecodedKey:public_key];
+//        if (data.length == 16) {
+//            public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
+//            [CryptoClient printDecodedKey:public_key];
+//        } else {
+//            public_key = @"";
+//        }
     } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
         // IOS device...
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
-        if (public_key.length == 16)
-        {
-            [CryptoClient printDecodedKey:public_key];
-        }
-        else
-            public_key = @"";
+        [CryptoClient printDecodedKey:public_key];
+//        if (public_key.length == 16)
+//        {
+//            [CryptoClient printDecodedKey:public_key];
+//        }
+//        else
+//            public_key = @"";
     } else {
         NSLog(@"UNKnown device");
         NSLog(@"*** empty publicKey received");
@@ -294,8 +297,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         device = [NSMutableDictionary dictionaryWithDictionary:@{
             @"public_key": public_key,
             @"device_rssi": RSSI,
-            @"device_first_timestamp": @(unixtime),
-            @"device_last_timestamp": @(unixtime),
+            @"device_first_timestamp": @(unixtime*1000),
+            @"device_last_timestamp": @(unixtime*1000),
             @"device_tx": tx,
             @"device_address": @"", //TODO: not used may remove
             @"device_protocol": @"GAP" //TODO: not used may remove
@@ -307,7 +310,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     { // old device found, just update
         device = [NSMutableDictionary dictionaryWithDictionary:[devicesArray firstObject]];
         // update device
-        [device setValue:@(unixtime) forKey:@"device_last_timestamp"];
+        [device setValue:@(unixtime*1000) forKey:@"device_last_timestamp"];
         [device setValue:RSSI forKey:@"device_rssi"];
         [DBClient updateDevice:device];
     }
@@ -321,7 +324,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         @"scan_id": @(scansArray.count),
         @"public_key": public_key,
         @"scan_rssi": RSSI,
-        @"scan_timestamp": @(unixtime),
+        @"scan_timestamp": @(unixtime*1000),
         @"scan_tx": tx,
         @"scan_address": @"", //TODO: not used maybe remove
         @"scan_protocol": @"GAP" //TODO: not used maybe remove
@@ -465,7 +468,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
             [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]];
             numberOfContactsAdded+=1;
         }
-        NSLog(@"%d",numberOfContactsAdded);
+        NSLog(@"number of contacts added: %d",numberOfContactsAdded);
     }
     else
     {

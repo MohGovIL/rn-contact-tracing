@@ -179,9 +179,9 @@ public class BLEScannerManager {
 
 
 
-                if(byteScannedToken.length == Constants.KEY_LEN) {
+//                if(byteScannedToken.length == Constants.KEY_LEN) {
                     CryptoManager.getInstance(mContext).mySelf.storeContact(byteScannedToken, rssi, currentTime, sGeoHash);
-                }
+//                }
 
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
