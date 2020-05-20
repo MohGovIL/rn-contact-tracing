@@ -489,32 +489,38 @@ public class User {
 
     private Triplet<Boolean, byte[], byte[]> isMatch (byte[] mask, byte[] epochMac, Contact contact) {
 
-        byte[] ephId = contact.getEphemeral_id();
-        byte[] plain = BytesUtils.xor(mask, ephId);
-        byte[] zeros = Arrays.copyOf(plain, 3);
-        byte[] ephidGeohash = Arrays.copyOfRange(plain, 3, 3 + Constants.GEOHASH_LEN);
-        byte[] ephIdUserRand = Arrays.copyOfRange(plain, 3 + Constants.GEOHASH_LEN, 3 + Constants.GEOHASH_LEN + Constants.USER_RAND_LEN);
+        try {
+            byte[] ephId = contact.getEphemeral_id();
+            byte[] plain = BytesUtils.xor(mask, ephId);
+            byte[] zeros = Arrays.copyOf(plain, 3);
+            byte[] ephidGeohash = Arrays.copyOfRange(plain, 3, 3 + Constants.GEOHASH_LEN);
+            byte[] ephIdUserRand = Arrays.copyOfRange(plain, 3 + Constants.GEOHASH_LEN, 3 + Constants.GEOHASH_LEN + Constants.USER_RAND_LEN);
 
-        // First three bytes of plaintext are zero
-        for(byte b : zeros) {
+            // First three bytes of plaintext are zero
+            for (byte b : zeros) {
 
-            if ( b != 0x00 ) {
+                if (b != 0x00) {
 
-                return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
+                    return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
+                }
             }
+
+            // The application check the part of EphID which corresponds to the MAC (Matched Occured)
+
+            byte[] x = BytesUtils.byteConcatenation(Arrays.copyOf(ephId, ephId.length - 4), Arrays.copyOfRange(mask, mask.length - 4, mask.length));
+            byte[] y = Arrays.copyOfRange(ephId, ephId.length - 4, ephId.length);
+
+            if (Arrays.equals(y, Arrays.copyOf(Crypto.AES(epochMac, x), 4))) {
+                return new Triplet<>(true, ephidGeohash, ephIdUserRand);
+            }
+
+            return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
         }
-
-        // The application check the part of EphID which corresponds to the MAC (Matched Occured)
-
-        byte[] x = BytesUtils.byteConcatenation(Arrays.copyOf(ephId, ephId.length - 4), Arrays.copyOfRange(mask,mask.length-4,mask.length));
-        byte[] y = Arrays.copyOfRange(ephId, ephId.length - 4,ephId.length);
-
-        if(Arrays.equals(y,Arrays.copyOf(Crypto.AES(epochMac, x), 4)))
+        catch (Exception ex)
         {
-            return new Triplet<>(true, ephidGeohash, ephIdUserRand);
+            ex.printStackTrace();
+            return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
         }
-
-        return new Triplet<>(false, new byte[]{0x00}, new byte[]{0x00});
     }
 
     public byte[] getUserId() { return mUserId; }
