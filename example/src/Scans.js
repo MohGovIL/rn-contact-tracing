@@ -18,7 +18,7 @@ function ResultsScreen({route, navigation}) {
         navigation.setOptions({
             headerRight: () => (
             <View spread style={styles.topContainer}>
-                <Button text90 link green10 iconSource={shareIcon} onPress={_exportAllScansToCsv}
+                <Button text90 link green10 iconSource={shareIcon} onPress={_exportScansByKeyAsCsv}
                         style={{paddingHorizontal: 10}}/>
                 <Button text90 link red10 iconSource={deleteIcon} onPress={_cleanAllScansFromDB}
                         style={{paddingHorizontal: 10}}/>
@@ -52,6 +52,11 @@ function ResultsScreen({route, navigation}) {
         SpecialBle.exportAllScansCsv();
     }
 
+    // export only specific scans of selected device
+    function _exportScansByKeyAsCsv() {
+        SpecialBle.exportScansByKeyAsCSV(pubKey);	
+    }
+	
     return (
         <View style={styles.container}>
             <FlatList

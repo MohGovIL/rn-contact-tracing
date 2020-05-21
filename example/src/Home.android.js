@@ -215,8 +215,19 @@ function HomeScreen() {
 
                 </View>
 
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+ 
+                    {_renderButton('Export contatcs', _exportContacts)}
+
+                </View>
+
             </Fragment>
         )
+    }
+
+    function _exportContacts() {
+
+        SpecialBle.exportAllContactsAsCsv();
     }
 
     function _loadDatabase() {
