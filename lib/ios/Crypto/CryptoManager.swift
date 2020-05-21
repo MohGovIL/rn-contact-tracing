@@ -99,14 +99,27 @@ public class CryptoManager {
         
         let matches =  Array(mySelf.find_crypto_matches(infected_key_database: infectedEpochs).reversed())
         
-        for i  in 0 ..< matches.count-1 {
-            for j in i+1..<matches.count {
-                if matches[i].contact.timestamp - matches[j].contact.timestamp > 1200 {
+        for i  in 0 ..< matches.count-1
+        {
+            for j in i+1..<matches.count
+            {
+                if matches[i].contact.timestamp - matches[j].contact.timestamp > 1200
+                {
                     break
                 }
-                if 600...1200 ~= matches[i].contact.timestamp - matches[j].contact.timestamp && (matches[j].matchEpoc == matches[i].matchEpoc ||
-                    isSuccessiveEpoch(mainEpoch: matches[i].matchEpoc, secondMatch: matches[j], infectedEpochs: infectedEpochs)) {
-                    return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                if 600...1200 ~= matches[i].contact.timestamp - matches[j].contact.timestamp
+                {
+                    if (matches[j].matchEpoc == matches[i].matchEpoc)
+                    {
+                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                    }
+                    else if isSuccessiveEpoch(anchorMatch: matches[i],
+                                              targetEpoch: matches[j].matchEpoc,
+                                              infectedEpochs: infectedEpochs,
+                                              reportStartDay: startDay)
+                    {
+                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                    }
                 }
             }
         }
@@ -115,12 +128,12 @@ public class CryptoManager {
 //        var matchesResults:[[String:Any]] = []
 //        for match in matches {
 //            var currentMatch:[String:Any] = [:]
-//            
+//
 //            currentMatch["ephemeral_id"] =  match.contact.ephemeral_id.hex()
 //            currentMatch["timestamp"] = match.contact.timestamp
 //            currentMatch["geohash"] = match.contact.geohash.hex()
 //            currentMatch["rssi"] = match.contact.rssi
-//            
+//
 //            matchesResults.append(currentMatch)
 //        }
 //        let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
@@ -140,10 +153,10 @@ public class CryptoManager {
         mySelf = user
     }
     
-    fileprivate func isSuccessiveEpoch(mainEpoch: [UInt8], secondMatch: Match, infectedEpochs:[Int: [Int : [[UInt8]]]] ) -> Bool {
-        let t = Time(secondMatch.contact.timestamp)
+    fileprivate func isSuccessiveEpoch(anchorMatch: Match, targetEpoch: [UInt8],  infectedEpochs:[Int: [Int : [[UInt8]]]], reportStartDay: Int ) -> Bool {
+        let t = Time(anchorMatch.contact.timestamp)
         var hour = t.epoch
-        var day = t.day
+        var day = t.day - reportStartDay // we need to know the relative location of the exmined day as sent from MOH
         if hour == 0 {
             hour = 23
             day -= 1
@@ -155,7 +168,7 @@ public class CryptoManager {
         }
         
         if let prevEpoch = infectedEpochs[day]![hour] {
-            return prevEpoch.contains(mainEpoch)
+            return prevEpoch.contains(targetEpoch)
         }
         return false
     }
