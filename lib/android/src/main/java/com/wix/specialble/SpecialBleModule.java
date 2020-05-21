@@ -106,14 +106,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     private void startBLEService() {
-
-        if(BluetoothAdapter.getDefaultAdapter().isMultipleAdvertisementSupported()) {
-
-            BLEForegroundService.startThisService(this.reactContext);
-        }
-        else {
-            Toast.makeText(reactContext.getApplicationContext(),"BLE is not supported",Toast.LENGTH_LONG).show();
-        }
+        BLEForegroundService.startThisService(this.reactContext);
     }
 
     @ReactMethod
