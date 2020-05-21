@@ -13,6 +13,7 @@ class Match : Codable
     var infected_geohash: [UInt8];
     var proof: [UInt8];
     var infected_time: Int;
+    var matchEpoc: [UInt8];
     init(contact: Contact, ephid_geohash: [UInt8], ephid_user_rand: [UInt8], other_time: Time, other_unit: Int)
     {
         //        :param contact:             Contact with the other user.
@@ -26,6 +27,7 @@ class Match : Codable
         self.proof = ephid_user_rand
         // Up to T_UNIT
         self.infected_time = other_time.day * Constants.T_DAY + other_time.epoch * Constants.T_EPOCH + other_unit * Constants.T_UNIT
+        self.matchEpoc = [UInt8]()
     }
 }
 

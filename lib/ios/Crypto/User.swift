@@ -147,7 +147,7 @@ public class User : NSObject, Codable {
         // Make sure the contacts are sorted so as to make the sliding window work properly
         // domain is a time up to units (actually a string "day-epoch-unit")
         // and its range is a list of (mask, epochMAC)
-        var unit_keys:[String:[([UInt8],[UInt8])]] = [:]
+        var unit_keys:[String:[([UInt8],[UInt8],[UInt8])]] = [:]
         var earliest_time = 0
         if let fetchedObjects = DBClient.getContacts().fetchedObjects {
             for contact in fetchedObjects {
@@ -176,22 +176,24 @@ public class User : NSObject, Codable {
                     time += Constants.T_UNIT
                     
                     if unit_keys[t_key] == nil {
-                        unit_keys[t_key] = [([UInt8], [UInt8])]()
+                        unit_keys[t_key] = [([UInt8], [UInt8], [UInt8])]()
                         if infected_key_database[t.day] != nil && (infected_key_database[t.day]![t.epoch] != nil) {
                             for epoch_key in infected_key_database[t.day]![t.epoch]! {
                                 let epoch_enc = DerivationUtils.get_epoch_keys(epoch_key: epoch_key, day: t.day, epoch: t.epoch).0
                                 let epoch_mac = DerivationUtils.get_epoch_keys(epoch_key: epoch_key, day: t.day, epoch: t.epoch).1
                                 let mask = Crypto.encrypt(key: epoch_enc, plain: BytesUtils.numToBytes(num: unit, numBytes: const_MESSAGE_LEN))
-                                let newTuple = (mask, epoch_mac)
+                                let newTuple = (mask, epoch_mac, epoch_key)
                                 unit_keys[t_key]!.append(newTuple)
                             }
                         }
                     }
                     
-                    for (mask, epoch_mac) in unit_keys[t_key]! {
+                    for (mask, epoch_mac, epoch_key) in unit_keys[t_key]! {
                         let match = self._is_match(mask: mask, epoch_mac: epoch_mac, contact: contact)
                         if match.0 == true {
-                            matches.append(Match(contact: contact, ephid_geohash: match.1, ephid_user_rand: match.2, other_time: t, other_unit: unit))
+                            let matchFound = Match(contact: contact, ephid_geohash: match.1, ephid_user_rand: match.2, other_time: t, other_unit: unit)
+                            matchFound.matchEpoc = epoch_key
+                            matches.append(matchFound)
                         }
                     }
                 }

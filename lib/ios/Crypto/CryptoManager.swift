@@ -97,21 +97,35 @@ public class CryptoManager {
             }
         }
         
-        let matches =  mySelf.find_crypto_matches(infected_key_database: infectedEpochs)
-        var matchesResults:[[String:Any]] = []
-        for match in matches {
-            var currentMatch:[String:Any] = [:]
-            
-            currentMatch["ephemeral_id"] =  match.contact.ephemeral_id.hex()
-            currentMatch["timestamp"] = match.contact.timestamp
-            currentMatch["geohash"] = match.contact.geohash.hex()
-            currentMatch["rssi"] = match.contact.rssi
-            
-            matchesResults.append(currentMatch)
+        let matches =  Array(mySelf.find_crypto_matches(infected_key_database: infectedEpochs).reversed())
+        
+        for i  in 0 ..< matches.count-1 {
+            for j in i+1..<matches.count {
+                if matches[i].contact.timestamp - matches[j].contact.timestamp > 1200 {
+                    break
+                }
+                if 600...1200 ~= matches[i].contact.timestamp - matches[j].contact.timestamp && (matches[j].matchEpoc == matches[i].matchEpoc ||
+                    isSuccessiveEpoch(mainEpoch: matches[i].matchEpoc, secondMatch: matches[j], infectedEpochs: infectedEpochs)) {
+                    return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                }
+            }
         }
-        let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
 
-        return String(data: d, encoding: .utf8) ?? ""
+        return ""
+//        var matchesResults:[[String:Any]] = []
+//        for match in matches {
+//            var currentMatch:[String:Any] = [:]
+//            
+//            currentMatch["ephemeral_id"] =  match.contact.ephemeral_id.hex()
+//            currentMatch["timestamp"] = match.contact.timestamp
+//            currentMatch["geohash"] = match.contact.geohash.hex()
+//            currentMatch["rssi"] = match.contact.rssi
+//            
+//            matchesResults.append(currentMatch)
+//        }
+//        let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
+//
+//        return String(data: d, encoding: .utf8) ?? ""
     }
     
     func createNewUserAndSave() {
@@ -124,6 +138,26 @@ public class CryptoManager {
         let user = User(user_id: userKey, master_key: masterKey, init_time: init_time)
         writeUserToDefaults(user: user, key: "mySelf")
         mySelf = user
+    }
+    
+    fileprivate func isSuccessiveEpoch(mainEpoch: [UInt8], secondMatch: Match, infectedEpochs:[Int: [Int : [[UInt8]]]] ) -> Bool {
+        let t = Time(secondMatch.contact.timestamp)
+        var hour = t.epoch
+        var day = t.day
+        if hour == 0 {
+            hour = 23
+            day -= 1
+            if day < 0 {
+                return false
+            }
+        } else {
+            hour -= 1
+        }
+        
+        if let prevEpoch = infectedEpochs[day]![hour] {
+            return prevEpoch.contains(mainEpoch)
+        }
+        return false
     }
     
     fileprivate func parseInfectedDbToJSONString (infetedDB: [Int: [Int : [[UInt8]]]]) -> String {
