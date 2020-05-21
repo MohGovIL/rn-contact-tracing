@@ -38,6 +38,8 @@ function HomeScreen() {
         scanInterval: 240000,
         advertiseInterval: 45000,
         advertiseDuration: 10000,
+        large_icon: 'notificationLargeIconPath',
+        small_icon: 'notificationSmallIconPath',
         token: 'default_token'
     });
 
@@ -208,6 +210,8 @@ function HomeScreen() {
             <View style = {{display: 'none'}}>
                 {_renderTextField("Advertised Token", config.token, val => setConfig({
                     ...config,
+                    large_icon: 'notificationLargeIconPath',
+                    small_icon: 'notificationSmallIconPath',
                     token: val
                 }))}
             </View>
@@ -219,10 +223,14 @@ function HomeScreen() {
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.scanDuration.toString(), val => setConfig({
                         ...config,
+                        large_icon: 'notificationLargeIconPath',
+                        small_icon: 'notificationSmallIconPath',
                         scanDuration: parseInt(val)
                     }), "numeric")}
                     {_renderTextField("Interval in ms", config.scanInterval.toString(), val => setConfig({
                         ...config,
+                        large_icon: 'notificationLargeIconPath',
+                        small_icon: 'notificationSmallIconPath',
                         scanInterval: parseInt(val)
                     }), "numeric")}
                 </View>
@@ -235,10 +243,14 @@ function HomeScreen() {
                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                     {_renderTextField("Duration in ms", config.advertiseDuration.toString(), val => setConfig({
                         ...config,
+                        large_icon: 'notificationLargeIconPath',
+                        small_icon: 'notificationSmallIconPath',
                         advertiseDuration: parseInt(val)
                     }), "numeric")}
                     {_renderTextField("Interval in ms", config.advertiseInterval.toString(), val => setConfig({
                         ...config,
+                        large_icon: 'notificationLargeIconPath',
+                        small_icon: 'notificationSmallIconPath',
                         advertiseInterval: parseInt(val)
                     }), "numeric")}
                 </View>
