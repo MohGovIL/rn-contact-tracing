@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.util.Log;
 
+import com.wix.crypto.Contact;
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.specialble.EventToJSDispatcher;
@@ -94,6 +95,8 @@ public class BLEManager implements IEventListener {
     public List<Scan> getScansByKey(String pubKey) {
         return DBClient.getInstance(context).getScansByKey(pubKey);
     }
+
+    public List<Contact> getAllContacts() { return DBClient.getInstance(context).getAllContacts(); }
 
     public void wipeDatabase() {
         DBClient.getInstance(context).deleteDatabase();

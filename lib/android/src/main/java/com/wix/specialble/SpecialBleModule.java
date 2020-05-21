@@ -256,6 +256,27 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void exportScansByKeyAsCSV(String key) {
+        try {
+            CSVUtil.saveScansByKeyAsCsv(reactContext, bleManager.getScansByKey(key), key);
+            shareFile(CSVUtil.getScanByKeyCsvFile(reactContext, key));
+        } catch (Exception e) {
+            Log.e(TAG, "exportScansByKeyCsv: " + e.getMessage(), e); //handle exception
+        }
+    }
+
+    @ReactMethod
+    public void exportAllContactsAsCsv() {
+        try {
+            CSVUtil.saveAllContactsAsCSV(reactContext, bleManager.getAllContacts());
+            shareFile(CSVUtil.getContactsCsvFile(reactContext));
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exportAllContactsAsCsv: " + e.getMessage(), e );
+        }
+    }
+
     private void shareFile(File file) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
