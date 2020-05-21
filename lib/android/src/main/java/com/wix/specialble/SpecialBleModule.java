@@ -212,7 +212,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putInt("advertiseTXPowerLevel", config.getAdvertiseTXPowerLevel());
         configMap.putString("notificationTitle", config.getNotificationTitle());
         configMap.putString("notificationContent", config.getNotificationContent());
-
+        configMap.putString("notificationLargeIconPath", config.getLargeNotificationIconPath());
+        configMap.putString("notificationSmallIconPath", config.getSmallNotificationIconPath());
         callback.invoke(configMap);
     }
 
@@ -231,6 +232,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setAdvertiseTXPowerLevel(configMap.getInt("advertiseTXPowerLevel"));
         config.setNotificationTitle(configMap.getString("notificationTitle"));
         config.setNotificationContent(configMap.getString("notificationContent"));
+        config.setLargeNotificationIconPath(configMap.getString("notificationLargeIconPath"));
+        config.setSmallNotificationIconPath(configMap.getString("notificationSmallIconPath"));
     }
 
     @ReactMethod
