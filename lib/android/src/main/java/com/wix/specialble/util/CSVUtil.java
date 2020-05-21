@@ -166,7 +166,7 @@ public class CSVUtil {
     public static void saveAllContactsAsCSV(final Context context, List<Contact> contacts) throws Exception {
         FileOutputStream fos = new FileOutputStream(getContactsCsvFile(context));
 
-        appendHeaderLine(fos,"ephemeral_id", "rssi", "timestamp", "geohash");
+        appendHeaderLine(fos,"ephemeral_id", "rssi", "timestamp", "geohash", "lat", "lon");
 
         for(Contact contact : contacts) {
             writeContact(contact, fos);
@@ -180,6 +180,8 @@ public class CSVUtil {
         appendColumn(Hex.encodeHex(contact.getRssi(), false), dos, true);
         appendColumn(String.valueOf(contact.getTimestamp()), dos, true);
         appendColumn(Hex.encodeHex(contact.getGeohash(), false), dos, true);
+        appendColumn(String.valueOf(contact.getLat()), dos,true);
+        appendColumn(String.valueOf(contact.getLon()), dos,true);
         dos.write(System.lineSeparator().getBytes());
     }
 }

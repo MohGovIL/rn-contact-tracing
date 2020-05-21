@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,6 +245,13 @@ public class User {
 
         List<Match> matches = new ArrayList<>();
 
+
+        List<Integer> daysList = new ArrayList<>();
+        daysList.addAll(infectedKeyDatabase.keySet());
+        Collections.sort(daysList);
+        int startDay = daysList.get(0);
+
+
         // Make sure the contacts are sorted so as to make the sliding window work properly
 //        Collections.sort(mContacts, new Comparator<Contact>() {
 //
@@ -256,7 +264,7 @@ public class User {
 
         // domain is a time up to units (actually a string "day-epoch-unit")
         // and its range is a list of (mask, epochMAC)
-        Map<String, ArrayList<Pair<byte[], byte[]>>> mapUnitKeys = new HashMap<>();
+        Map<String, ArrayList<Triplet<byte[], byte[], byte[]>>> mapUnitKeys = new HashMap<>();
 
         int earlierTime = Constants.None;
 
@@ -268,7 +276,9 @@ public class User {
                     c.getBlob(c.getColumnIndex("ephemeral_id")),
                     c.getBlob(c.getColumnIndex("rssi")),
                     c.getInt(c.getColumnIndex("timestamp")),
-                    c.getBlob(c.getColumnIndex("geohash"))
+                    c.getBlob(c.getColumnIndex("geohash")),
+                    c.getDouble(c.getColumnIndex("lat")),
+                    c.getDouble(c.getColumnIndex("lon"))
             );
 
             int time = contact.getTimestamp() - Time.JITTER_THRESHOLD;
@@ -303,7 +313,7 @@ public class User {
 
                 if(!mapUnitKeys.containsKey(timeKey)) {
 
-                    mapUnitKeys.put(timeKey, new ArrayList<Pair<byte[], byte[]>>());
+                    mapUnitKeys.put(timeKey, new ArrayList<Triplet<byte[], byte[], byte[]>>());
                     if(infectedKeyDatabase.get(t.getDay()) != null && infectedKeyDatabase.get(t.getDay()).get(t.getEpoch()) != null )
                     {
                         for (int i = 0; i < infectedKeyDatabase.get(t.getDay()).get(t.getEpoch()).size(); i++) {
@@ -311,22 +321,85 @@ public class User {
 
                             Pair<byte[], byte[]> epochEncAndMac = DerivationUtils.getEpochKeys(epochKey, t.getDay(), t.getEpoch());
                             byte[] mask = Crypto.AES(epochEncAndMac.getFirst(), BytesUtils.numToBytes(unit, Constants.MESSAGE_LEN));
-                            mapUnitKeys.get(timeKey).add(new Pair<>(mask, epochEncAndMac.getSecond()));
+                            mapUnitKeys.get(timeKey).add(new Triplet<>(mask, epochEncAndMac.getSecond(), epochKey));
                         }
                     }
                 }
 
-                for ( Pair<byte[], byte[]> entry : mapUnitKeys.get(timeKey)) {
+                for ( Triplet<byte[], byte[], byte[]> entry : mapUnitKeys.get(timeKey)) {
                     Triplet<Boolean, byte[],byte[]> match = isMatch(entry.getFirst(), entry.getSecond(),contact);
                     if(match.getFirst())
                     {
-                        matches.add(new Match(contact,match.getSecond(),match.getThird(),t,unit));
+                        matches.add(new Match(contact,match.getSecond(),match.getThird(),t,unit, entry.getThird()));
                     }
                 }
             }
-
         }
-        return matches;
+
+        List<Match> timeRangeMatch = new ArrayList<>();
+
+        for(int i = matches.size() - 1; i > 1; i --) {
+
+            for(int j = i - 1; j > 0; j --) {
+
+                long timeDiff = matches.get(i).getContact().getTimestamp() - matches.get(j).getContact().getTimestamp();
+
+                if(timeDiff > 1200)
+                {
+                    break;
+                }
+
+                if(timeDiff >= 600 && timeDiff <= 1200)
+                {
+
+                    if(Arrays.equals(matches.get(i).getmEpochKey(), matches.get(j).getmEpochKey()) )
+                    {
+
+                        timeRangeMatch.add(matches.get(i));
+
+                    }
+                    else
+                    {
+                        int timestamp = matches.get(i).getContact().getTimestamp();
+                        Time t = new Time(timestamp, Constants.None);
+                        int day = t.getDay() - startDay;
+                        int hour = t.getEpoch();
+
+                        if(hour == 0) {
+                            hour = 23;
+                            day -=1 ;
+                            if(day < 0) {
+
+                                continue;
+                            }
+                        }
+                        else {
+                            hour -=1 ;
+                        }
+                        Time newTime = new Time(day, hour);
+
+                        //EpochKey epochKey = mEpochKeys.get(newTime);
+
+                        if(infectedKeyDatabase.get(newTime.getDay()) != null && infectedKeyDatabase.get(newTime.getDay()).get(newTime.getEpoch()) != null )
+                        {
+
+                            ArrayList<byte[]> ep = infectedKeyDatabase.get(newTime.getDay()).get(newTime.getEpoch());
+
+                            if(ep.contains(matches.get(i).getmEpochKey()))
+                            {
+                                //found...
+                                timeRangeMatch.add(matches.get(i));
+                            }
+                        }
+                    }
+                }
+            }
+            if(timeRangeMatch.size() > 0) {
+                break;
+            }
+        }
+
+        return timeRangeMatch;
     }
 
     /**
@@ -385,7 +458,7 @@ public class User {
      * @param ownLocation - current location
      * @return
      */
-    public boolean storeContact(byte[] otherEphemeralId, byte[] rssi, int time, byte[] ownLocation) {
+    public boolean storeContact(byte[] otherEphemeralId, byte[] rssi, int time, byte[] ownLocation, double lat, double lon) {
 
 //        if (mContacts.size() >= Time.MAX_CONTACTS_IN_WINDOW) {
 //            int pastContactTime = mContacts.get(mContacts.size() - Time.MAX_CONTACTS_IN_WINDOW).getTimestamp();
@@ -396,7 +469,7 @@ public class User {
 //        }
 //
 //
-        dbClient.storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation));
+        dbClient.storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
         return true;
     }
 
