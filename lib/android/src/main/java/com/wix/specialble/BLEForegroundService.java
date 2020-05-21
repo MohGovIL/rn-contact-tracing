@@ -106,7 +106,7 @@ public class BLEForegroundService extends Service {
             bleManager.stopScan();
             bleManager.stopAdvertise();
         }
-        this.handler.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null);
 
 
         //release wake lock
@@ -117,21 +117,31 @@ public class BLEForegroundService extends Service {
         }
 
         //clear any pending wake up's
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        alarmIntent.setAction(WAKE_ME_UP);
+//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+//        alarmIntent.setAction(WAKE_ME_UP);
+//
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        alarmManager.cancel(pendingIntent);
+//
+//        alarmIntent.setAction(WAKE_ME_UP_AFTER_5);
+//        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        alarmManager.cancel(pendingIntent);
+//
+//        alarmIntent.setAction(WAKE_ME_UP_AFTER_10);
+//        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        alarmManager.cancel(pendingIntent);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pendingIntent);
 
-        alarmIntent.setAction(WAKE_ME_UP_AFTER_5);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pendingIntent);
-
-        alarmIntent.setAction(WAKE_ME_UP_AFTER_10);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pendingIntent);
+        ServiceRestartBroadcastReceiver.sendBroadcast(this);
     }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        ServiceRestartBroadcastReceiver.sendBroadcast(this);
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -163,15 +173,15 @@ public class BLEForegroundService extends Service {
 
         //schedule wake locks every 5,10,15 minutes to make sure were awake
         //the minimum time is 15 min but the wake lock and foreground service will help in regard to this limitation
-        scheduleAlarms();
+//        scheduleAlarms();
 
         //acquire partial wake lock to hold the cpu awake
-        if(wakeLock == null) {
-            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "RnContactTracing::MyWakelockTag");
-            wakeLock.acquire();
-        }
+//        if(wakeLock == null) {
+//            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+//                    "RnContactTracing::MyWakelockTag");
+//            wakeLock.acquire();
+//        }
 
         return START_STICKY;
     }
