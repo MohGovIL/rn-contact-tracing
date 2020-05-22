@@ -22,6 +22,7 @@
 		26E9DD0F244F40E600E8CD92 /* DBDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCF9244F40E600E8CD92 /* DBDeviceManager.swift */; };
 		26E9DD10244F40E600E8CD92 /* SpecialBle.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCFA244F40E600E8CD92 /* SpecialBle.m */; };
 		26E9DD11244F40E600E8CD92 /* SpecialBleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */; };
+		3695AD4D247751DF00143D1A /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 3695AD4C247751DF00143D1A /* Config.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,6 +56,8 @@
 		26E9DCFB244F40E600E8CD92 /* SpecialBleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBleManager.h; sourceTree = "<group>"; };
 		26E9DCFC244F40E600E8CD92 /* SpecialBle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialBle.h; sourceTree = "<group>"; };
 		26E9DCFD244F40E600E8CD92 /* SpecialBleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialBleManager.m; sourceTree = "<group>"; };
+		3695AD4B247751DF00143D1A /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		3695AD4C247751DF00143D1A /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,9 +107,19 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		3695AD4A247751DF00143D1A /* config */ = {
+			isa = PBXGroup;
+			children = (
+				3695AD4B247751DF00143D1A /* Config.h */,
+				3695AD4C247751DF00143D1A /* Config.m */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				3695AD4A247751DF00143D1A /* config */,
 				26E9DCEA244F40E600E8CD92 /* db */,
 				26E9DCFC244F40E600E8CD92 /* SpecialBle.h */,
 				26E9DCFA244F40E600E8CD92 /* SpecialBle.m */,
@@ -182,6 +195,7 @@
 				26E9DD07244F40E600E8CD92 /* Device+CoreDataProperties.swift in Sources */,
 				26E9DD0D244F40E600E8CD92 /* DBScanManager.swift in Sources */,
 				26E9DD0C244F40E600E8CD92 /* DBManager.swift in Sources */,
+				3695AD4D247751DF00143D1A /* Config.m in Sources */,
 				26E9DD0B244F40E600E8CD92 /* Model.xcdatamodeld in Sources */,
 				26E9DD10244F40E600E8CD92 /* SpecialBle.m in Sources */,
 				26E9DD09244F40E600E8CD92 /* Model+CoreDataModel.swift in Sources */,

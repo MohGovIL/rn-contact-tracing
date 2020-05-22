@@ -8,12 +8,14 @@
 #import "SpecialBleManager.h"
 #import "rn_contact_tracing-Swift.h"
 #import "Config.h"
+#import <React/RCTEventEmitter.h>
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
 NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
 NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
-
+NSString *lastServiceUUIDString = @"";
+int resetBleStack = 0;
 
 @interface SpecialBleManager ()
 
@@ -84,6 +86,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     else
         [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
+    lastServiceUUIDString = serviceUUIDString;
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
@@ -374,12 +377,29 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSLog(@"didStartAdvertising, duration:%d , interval:%d",
     [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self stopAdvertise:self.eventEmitter];
+        if(resetBleStack == 2)
+        {
+            [self stopBLEServicesWithEmitter:self.eventEmitter];
+        }
+        else
+        {
+            [self stopAdvertise:self.eventEmitter];
+        }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (self.advertisingIsOn)
-                [self _advertise];
+            if(resetBleStack == 2)
+            {
+                [self startBLEServices:lastServiceUUIDString withPublicKey:self.publicKey andEventEmitter:self.eventEmitter];
+                resetBleStack = 0;
+            }
             else
-                NSLog(@"interval received but advertising is off!!!");
+            {
+                if (self.advertisingIsOn)
+                    [self _advertise];
+                else
+                    NSLog(@"interval received but advertising is off!!!");
+                resetBleStack++;
+            }
+
         });
     });
 }

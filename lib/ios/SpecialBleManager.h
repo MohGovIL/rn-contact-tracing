@@ -7,7 +7,7 @@
 //
 
 #import <CoreBluetooth/CoreBluetooth.h>
-#import <React/RCTEventEmitter.h>
+@class RCTEventEmitter;
 
 
 
