@@ -25,11 +25,11 @@ function HomeScreen() {
     const [advertisingStatus, setAdvertisingStatus] = useState(false);
     const [devices, setDevices] = useState([]);
     const [config, setConfig] = useState({
-        serviceUUID: '',
-        scanDuration: 0,
-        scanInterval: 0,
-        advertiseInterval: 0,
-        advertiseDuration: 0,
+        serviceUUID: SERVICE_UUID,
+        scanDuration: 5000,
+        scanInterval: 1000,
+        advertiseInterval: 1000,
+        advertiseDuration: 10000,
         token: 'default_token'
     });
 

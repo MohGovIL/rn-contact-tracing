@@ -7,7 +7,7 @@
 //
 #import "SpecialBleManager.h"
 #import "rn_contact_tracing-Swift.h"
-
+#import "Config.h"
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
@@ -26,6 +26,9 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 @property (nonatomic, strong) NSString* advertiseUUIDString;
 @property (nonatomic, strong) NSString* publicKey;
 
+@property NSDictionary* config;
+@property BOOL advertisingIsOn;
+@property BOOL scanningIsOn;
 
 @end
 
@@ -45,6 +48,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (instancetype)init {
     if (self = [super init]) {
+        self.config = [Config GetConfig];
 //        self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 //        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     }
@@ -57,28 +61,35 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 
 - (void)startBLEServices:(NSString *)serviceUUIDString withPublicKey:(NSString *)publicKey andEventEmitter:(RCTEventEmitter*)emitter
 {
+    self.config = [Config GetConfig];
+    
+    // advertising state flag
+    self.advertisingIsOn = YES;
+    self.scanningIsOn = YES;
     // set singleton's data
     // TODO: Change to publicKey (crypto)!!!
     self.publicKey = [[UIDevice currentDevice] name];
     self.eventEmitter = emitter;
-    self.scanUUIDString = serviceUUIDString;
-    self.advertiseUUIDString = serviceUUIDString;
+    self.scanUUIDString = self.config[KEY_SERVICE_UUID] ;
+    self.advertiseUUIDString = self.config[KEY_SERVICE_UUID];
     
     // init and start the scan Central
     if (!self.cbCentral)
         self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self scan:serviceUUIDString withEventEmitter:emitter];
+        [self scan:self.scanUUIDString withEventEmitter:emitter];
     
     // init and start the advertise Peropheral
     if (!self.cbPeripheral)
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     else
-        [self advertise:serviceUUIDString publicKey:publicKey withEventEmitter:emitter];
+        [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
 {
+    self.advertisingIsOn = NO;
+    self.scanningIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
 }
@@ -99,15 +110,37 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.scanUUIDString = serviceUUIDString;
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
     
+    // Note: 
+    //**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+	//     We're using scan without durations and intervals since if we go to background when scanning is off the the interval task will not start when in background and scanning will be off until the application returns to foreground. When scan is linear and not turning off there is still chance to receive scans in the backgroung although by apple's documentation when in background, the scan rate will slow down dramatically and CBCentralManagerScanOptionAllowDuplicatesKey is ignored (each perfipheral should be found only once when in BG)
+    //**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+    // *********** scan linear witout duration / interval ********** //
     NSLog(@"Start scanning for %@", UUID);
     [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+    // ******** end of scan interval ********** //    
+    // **** scnning with intervals and duration ****** //
+//    NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
+//    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+//    if (self.scanningIsOn)
+//    {
+//        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self stopScan:self.eventEmitter];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+//            });
+//        });
+//    }
+//    else
+//        NSLog(@"interval received but advertising is off!!!");
+    // ******** end of scan with duration ********** //
 }
 
 - (void)stopScan:(RCTEventEmitter*)emitter {
     [self.cbCentral stopScan];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:NO]];
-    self.scanUUIDString = nil;
 }
 
 #pragma mark Advertise tasks
@@ -130,7 +163,6 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 - (void)stopAdvertise:(RCTEventEmitter*)emitter {
     [self.cbPeripheral stopAdvertising];
     [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:NO]];
-    self.advertiseUUIDString = nil;
 }
 
 #pragma mark - private methods
@@ -192,16 +224,18 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
  didDiscoverPeripheral:(CBPeripheral *)peripheral
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI {
-//    NSString* name = @"";
-    //    NSNumber* device_first_timestamp = @0;
+    
+    
+    NSLog(@"Discover\n----------\nperipheral %@", peripheral);
+    if (peripheral && peripheral.name != nil)
+    {
+        NSLog(@"name: %@", peripheral.name);
+    }
+    
     NSString* public_key = @"";
     NSNumber *tx = @0;
-    int64_t unixtime = [[NSDate date] timeIntervalSince1970]*1000;
+    int64_t unixtime = [[NSDate date] timeIntervalSince1970];
 
-    if (peripheral && peripheral.name != nil) {
-        NSLog(@"Discovered device with name: %@", peripheral.name);
-//        name = peripheral.name;
-    }
     
     // get private_key
     if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) { // Androids device...
@@ -251,8 +285,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         device = [NSMutableDictionary dictionaryWithDictionary:@{
             @"public_key": public_key,
             @"device_rssi": RSSI,
-            @"device_first_timestamp": @(unixtime),
-            @"device_last_timestamp": @(unixtime),
+            @"device_first_timestamp": @(unixtime*1000),
+            @"device_last_timestamp": @(unixtime*1000),
             @"device_tx": tx,
             @"device_address": @"", //TODO: not used may remove
             @"device_protocol": @"GAP" //TODO: not used may remove
@@ -263,7 +297,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     { // old device found, just update
         device = [NSMutableDictionary dictionaryWithDictionary:[devicesArray firstObject]];
         // update device
-        [device setValue:@(unixtime) forKey:@"device_last_timestamp"];
+        [device setValue:@(unixtime*1000) forKey:@"device_last_timestamp"];
         [device setValue:RSSI forKey:@"device_rssi"];
         [DBClient updateDevice:device];
     }
@@ -337,7 +371,17 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
-    NSLog(@"didStartAdvertising");
+    NSLog(@"didStartAdvertising, duration:%d , interval:%d",
+    [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self stopAdvertise:self.eventEmitter];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (self.advertisingIsOn)
+                [self _advertise];
+            else
+                NSLog(@"interval received but advertising is off!!!");
+        });
+    });
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral {
