@@ -99,7 +99,9 @@ public class CryptoManager {
         
         let matches =  Array(mySelf.find_crypto_matches(infected_key_database: infectedEpochs).reversed())
         
-        for i  in 0 ..< matches.count-1
+        var matchesResultArray : [[String:Any]] = []
+        
+        for i in 0 ..< matches.count-1
         {
             for j in i+1..<matches.count
             {
@@ -111,20 +113,41 @@ public class CryptoManager {
                 {
                     if (matches[j].matchEpoc == matches[i].matchEpoc)
                     {
-                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                        var matchObject : [String:Any] = [:]
+                        matchObject["startContactTimestamp"] = matches[i].contact.timestamp
+                        matchObject["endContactTimestamp"] = matches[j].contact.timestamp
+                        matchObject["verifiedEphemerals"] = [ Data(matches[i].matchEpoc).hex(), Data(matches[j].matchEpoc).hex() ]
+                        matchObject["lat"] = matches[i].contact.lat
+                        matchObject["lon"] = matches[i].contact.lon
+                        matchObject["contactIntegrityLevel"] = "high"
+                        
+                        matchesResultArray.append(matchObject)
+//                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
                     }
                     else if isSuccessiveEpoch(anchorMatch: matches[i],
                                               targetEpoch: matches[j].matchEpoc,
                                               infectedEpochs: infectedEpochs,
                                               reportStartDay: startDay)
                     {
-                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                        var matchObject : [String:Any] = [:]
+                        matchObject["startContactTimestamp"] = matches[i].contact.timestamp
+                        matchObject["endContactTimestamp"] = matches[j].contact.timestamp
+                        matchObject["verifiedEphemerals"] = [ Data(matches[i].matchEpoc).hex(), Data(matches[j].matchEpoc).hex() ]
+                        matchObject["lat"] = matches[i].contact.lat
+                        matchObject["lon"] = matches[i].contact.lon
+
+                        matchObject["contactIntegrityLevel"] = "low"
+                        
+                        matchesResultArray.append(matchObject)
+//                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
                     }
                 }
             }
         }
 
-        return ""
+        let jsonData = try! JSONSerialization.data(withJSONObject: matchesResultArray, options: .prettyPrinted)
+
+        return String(data: jsonData, encoding: .utf8) ?? ""
 //        var matchesResults:[[String:Any]] = []
 //        for match in matches {
 //            var currentMatch:[String:Any] = [:]
@@ -156,11 +179,12 @@ public class CryptoManager {
     fileprivate func isSuccessiveEpoch(anchorMatch: Match, targetEpoch: [UInt8],  infectedEpochs:[Int: [Int : [[UInt8]]]], reportStartDay: Int ) -> Bool {
         let t = Time(anchorMatch.contact.timestamp)
         var hour = t.epoch
-        var day = t.day - reportStartDay // we need to know the relative location of the exmined day as sent from MOH
+        var day = t.day
+//        var day = t.day - reportStartDay // we need to know the relative location of the exmined day as sent from MOH
         if hour == 0 {
             hour = 23
             day -= 1
-            if day < 0 {
+            if day - reportStartDay < 0 {
                 return false
             }
         } else {

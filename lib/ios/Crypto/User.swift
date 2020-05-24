@@ -248,7 +248,7 @@ public class User : NSObject, Codable {
     // :param rssi:                ?
     // :param time:                current time.
     // :param own_location:        current location
-    func  store_contact(other_ephemeral_id: [UInt8], rssi: Int, time: Int, own_location: [UInt8]) -> Bool {
+    func  store_contact(other_ephemeral_id: [UInt8], rssi: Int, time: Int, own_location: [UInt8],lat: Double, lon: Double) -> Bool {
         let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
         if contactsCount > 0 && time < (DBClient.getContacts().fetchedObjects!.last!).timestamp - Constants.JITTER_THRESHOLD {
             // We expect contacts to come in chronological order
@@ -263,7 +263,7 @@ public class User : NSObject, Codable {
 //            }
 //        }
         
-        DBContactManager.shared.addNewContact(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location, id: contactsCount+1)
+        DBContactManager.shared.addNewContact(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location, id: contactsCount+1,lat: lat, lon: lon)
 //        let contact = Contact()
 //        contact.setContactData(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location)
 //        self.contacts.append(contact)

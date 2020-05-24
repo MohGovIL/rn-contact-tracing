@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-static long DEFAULT_SCAN_INTERVAL = 10 * 1000; // seconds
-static long DEFAULT_SCAN_DURATION = 50 * 1000; // seconds
-static long DEFAULT_ADVERTISE_INTERVAL = 10 * 1000; // seconds
-static long DEFAULT_ADVERTISE_DURATION = 30 * 1000; // seconds
+static long DEFAULT_SCAN_INTERVAL = 2 * 1000; // seconds
+static long DEFAULT_SCAN_DURATION = 5 * 1000; // seconds
+static long DEFAULT_ADVERTISE_INTERVAL = 3 * 1000; // seconds
+static long DEFAULT_ADVERTISE_DURATION = 7 * 1000; // seconds
 static NSString* _Nonnull DEFAULT_SERVICE_UUID = @"00000000-0000-1000-8000-00805F9B34FB";
 static NSString* _Nonnull DEFAULT_TOKEN = @"1234-ios-token";
 static NSString* _Nonnull DEFAULT_NOTIFICATION_LARGE_ICON = @"large_icon";

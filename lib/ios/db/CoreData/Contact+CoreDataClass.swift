@@ -18,6 +18,8 @@ public class Contact: CoreDataCodable
         case id
         case rssi
         case timestamp
+        case lat
+        case lon
     }
     
     // MARK: - Encodable
@@ -28,6 +30,8 @@ public class Contact: CoreDataCodable
         try container.encode(id, forKey: .id)
         try container.encode(rssi, forKey: .rssi)
         try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(lat, forKey: .lat)
+        try container.encode(lon, forKey: .lon)
     }
     
     // *** Class *** //
