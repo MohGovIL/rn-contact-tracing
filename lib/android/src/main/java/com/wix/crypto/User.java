@@ -40,6 +40,9 @@ public class User {
     public static final String PREFS_KEY = "user_data";
     private static final String TAG = "User";
 
+    private static final int MIN_TIME_FOR_MATCH = 600;
+    private static final int MAX_TIME_FOR_MATCH = 1200;
+
     @SerializedName("UserId")
     private byte[] mUserId;
     @SerializedName("KeyId")
@@ -241,7 +244,7 @@ public class User {
      * @param infectedKeyDatabase
      * @return -  List of matches with the infected user.
      */
-    public List<Match> findCryptoMatches(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedKeyDatabase) {
+    public List<MatchResponse> findCryptoMatches(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedKeyDatabase) {
 
         List<Match> matches = new ArrayList<>();
 
@@ -336,72 +339,74 @@ public class User {
             }
         }
 
-        List<Match> timeRangeMatch = new ArrayList<>();
+        List<MatchResponse> timeRangeMatch = new ArrayList<>();
 
-        for(int i = matches.size() - 1; i > 1; i --) {
+        for(int i = matches.size() - 1; i >= 1; i --) {
 
-            for(int j = i - 1; j > 0; j --) {
+            for(int j = i - 1; j >= 0; j --) {
 
-                long timeDiff = matches.get(i).getContact().getTimestamp() - matches.get(j).getContact().getTimestamp();
+                long matchesTimeDifference = matches.get(i).getContact().getTimestamp() - matches.get(j).getContact().getTimestamp();
 
-                if(timeDiff > 1200)
+                if(matchesTimeDifference > MAX_TIME_FOR_MATCH) { break; }
+
+                if(matchesTimeDifference >= MIN_TIME_FOR_MATCH)
                 {
-                    break;
-                }
-
-                if(timeDiff >= 600 && timeDiff <= 1200)
-                {
-
                     if(Arrays.equals(matches.get(i).getmEpochKey(), matches.get(j).getmEpochKey()) )
                     {
-
-                        timeRangeMatch.add(matches.get(i));
-
+                        String contactIntegrityLevel = "High";
+                        createMatchResponse(matches.get(i), matches.get(j), contactIntegrityLevel, timeRangeMatch);
                     }
                     else
                     {
-                        int timestamp = matches.get(i).getContact().getTimestamp();
-                        Time t = new Time(timestamp, Constants.None);
-                        int day = t.getDay() - startDay;
-                        int hour = t.getEpoch();
+                        int currentContactTimestamp = matches.get(i).getContact().getTimestamp();
+                        Time contactTime = new Time(currentContactTimestamp, Constants.None);
+                        int contactDay = contactTime.getDay() - startDay;
+                        int contactHour = contactTime.getEpoch();
 
-                        if(hour == 0) {
-                            hour = 23;
-                            day -=1 ;
-                            if(day < 0) {
+                        if ( contactDay < 0 ) { continue; }
+                        else { contactDay = contactTime.getDay(); }
 
-                                continue;
-                            }
+                        if(contactHour == 0) {
+                            contactHour = 23;
+                            contactDay -=1 ;
+
+                            if ( contactDay < 0 ) { continue; }
                         }
-                        else {
-                            hour -=1 ;
-                        }
-                        Time newTime = new Time(day, hour);
+                        else { contactHour -= 1; }
 
-                        //EpochKey epochKey = mEpochKeys.get(newTime);
+                        Time newTime = new Time(contactDay, contactHour);
 
                         if(infectedKeyDatabase.get(newTime.getDay()) != null && infectedKeyDatabase.get(newTime.getDay()).get(newTime.getEpoch()) != null )
                         {
+                            ArrayList<byte[]> epochKeys = infectedKeyDatabase.get(newTime.getDay()).get(newTime.getEpoch());
 
-                            ArrayList<byte[]> ep = infectedKeyDatabase.get(newTime.getDay()).get(newTime.getEpoch());
-
-                            if(ep.contains(matches.get(i).getmEpochKey()))
+                            if(epochKeys.contains(matches.get(j).getmEpochKey()))
                             {
                                 //found...
-                                timeRangeMatch.add(matches.get(i));
+                                String contactIntegrityLevel = "Low";
+                                createMatchResponse(matches.get(i), matches.get(j), contactIntegrityLevel, timeRangeMatch);
                             }
                         }
                     }
                 }
             }
-            if(timeRangeMatch.size() > 0) {
-                break;
-            }
         }
-
         return timeRangeMatch;
     }
 
+    private void createMatchResponse(Match anchor, Match compareable, String contactIntegrityLevel, List<MatchResponse> responseMatches) {
+
+        List<String> verifiedEphemerals  = new ArrayList<>();
+        verifiedEphemerals.add(Hex.toHexString(compareable.getContact().getEphemeral_id()));
+        verifiedEphemerals.add(Hex.toHexString(anchor.getContact().getEphemeral_id()));
+
+        MatchResponse matchResponse = new MatchResponse(compareable.getContact().getTimestamp(),
+                anchor.getContact().getTimestamp(), verifiedEphemerals,
+                anchor.getContact().getLat(), anchor.getContact().getLon(),
+                contactIntegrityLevel);
+
+        responseMatches.add(matchResponse);
+    }
     /**
      * Delete my keys in a time period.
      * @param startTime - start time of period to delete.

@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.wix.crypto.Contact;
 import com.wix.crypto.Match;
+import com.wix.crypto.MatchResponse;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.Hex;
 import com.wix.specialble.R;
@@ -169,12 +170,12 @@ public class ParseUtils {
         }
     }
 
-    public static String parseResultToJson(List<Match> matches)
+    public static String parseResultToJson(List<MatchResponse> matches)
     {
         JSONArray result = new JSONArray();
         try
         {
-            for (Match match : matches)
+            for (MatchResponse match : matches)
             {
                 result.put(match.toJsonObject());
             }
