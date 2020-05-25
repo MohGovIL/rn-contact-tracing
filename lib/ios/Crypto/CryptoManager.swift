@@ -97,21 +97,75 @@ public class CryptoManager {
             }
         }
         
-        let matches =  mySelf.find_crypto_matches(infected_key_database: infectedEpochs)
-        var matchesResults:[[String:Any]] = []
-        for match in matches {
-            var currentMatch:[String:Any] = [:]
-            
-            currentMatch["ephemeral_id"] =  match.contact.ephemeral_id.hex()
-            currentMatch["timestamp"] = match.contact.timestamp
-            currentMatch["geohash"] = match.contact.geohash.hex()
-            currentMatch["rssi"] = match.contact.rssi
-            
-            matchesResults.append(currentMatch)
+        let matches =  Array(mySelf.find_crypto_matches(infected_key_database: infectedEpochs).reversed())
+        
+//        var matchesResults:[[String:Any]] = []
+//        for match in matches {
+//            var currentMatch:[String:Any] = [:]
+//
+//            currentMatch["ephemeral_id"] =  match.contact.ephemeral_id.hex()
+//            currentMatch["timestamp"] = match.contact.timestamp
+//            currentMatch["geohash"] = match.contact.geohash.hex()
+//            currentMatch["rssi"] = match.contact.rssi
+//
+//            matchesResults.append(currentMatch)
+//        }
+//        let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
+//
+//        let s = String(data: d, encoding: .utf8) ?? ""
+//        print(s)
+        
+        var matchesResultArray : [[String:Any]] = []
+        
+        if matches.count > 0 {
+            for i in 0 ..< matches.count-1
+            {
+                for j in i+1..<matches.count
+                {
+                    if matches[i].contact.timestamp - matches[j].contact.timestamp > 1200
+                    {
+                        break
+                    }
+                    if 600...1200 ~= matches[i].contact.timestamp - matches[j].contact.timestamp
+                    {
+                        if (matches[j].matchEpoc == matches[i].matchEpoc)
+                        {
+                            var matchObject : [String:Any] = [:]
+                            matchObject["startContactTimestamp"] = matches[i].contact.timestamp
+                            matchObject["endContactTimestamp"] = matches[j].contact.timestamp
+                            matchObject["verifiedEphemerals"] = [ Data(matches[i].matchEpoc).hex(), Data(matches[j].matchEpoc).hex() ]
+                            matchObject["lat"] = matches[i].contact.lat
+                            matchObject["lon"] = matches[i].contact.lon
+                            matchObject["contactIntegrityLevel"] = "high"
+                            
+                            matchesResultArray.append(matchObject)
+                            //                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                        }
+                        else if isSuccessiveEpoch(anchorMatch: matches[i],
+                                                  targetEpoch: matches[j].matchEpoc,
+                                                  infectedEpochs: infectedEpochs,
+                                                  reportStartDay: startDay)
+                        {
+                            var matchObject : [String:Any] = [:]
+                            matchObject["startContactTimestamp"] = matches[i].contact.timestamp
+                            matchObject["endContactTimestamp"] = matches[j].contact.timestamp
+                            matchObject["verifiedEphemerals"] = [ Data(matches[i].matchEpoc).hex(), Data(matches[j].matchEpoc).hex() ]
+                            matchObject["lat"] = matches[i].contact.lat
+                            matchObject["lon"] = matches[i].contact.lon
+                            
+                            matchObject["contactIntegrityLevel"] = "low"
+                            
+                            matchesResultArray.append(matchObject)
+                            //                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                        }
+                    }
+                }
+            }
         }
-        let d = try! JSONSerialization.data(withJSONObject: matchesResults, options: .prettyPrinted)
 
-        return String(data: d, encoding: .utf8) ?? ""
+        let jsonData = try! JSONSerialization.data(withJSONObject: matchesResultArray, options: .prettyPrinted)
+
+        return String(data: jsonData, encoding: .utf8) ?? ""
     }
     
     func createNewUserAndSave() {
@@ -124,6 +178,27 @@ public class CryptoManager {
         let user = User(user_id: userKey, master_key: masterKey, init_time: init_time)
         writeUserToDefaults(user: user, key: "mySelf")
         mySelf = user
+    }
+    
+    fileprivate func isSuccessiveEpoch(anchorMatch: Match, targetEpoch: [UInt8],  infectedEpochs:[Int: [Int : [[UInt8]]]], reportStartDay: Int ) -> Bool {
+        let t = Time(anchorMatch.contact.timestamp)
+        var hour = t.epoch
+        var day = t.day
+//        var day = t.day - reportStartDay // we need to know the relative location of the exmined day as sent from MOH
+        if hour == 0 {
+            hour = 23
+            day -= 1
+            if day - reportStartDay < 0 {
+                return false
+            }
+        } else {
+            hour -= 1
+        }
+        
+        if let prevEpoch = infectedEpochs[day]![hour] {
+            return prevEpoch.contains(targetEpoch)
+        }
+        return false
     }
     
     fileprivate func parseInfectedDbToJSONString (infetedDB: [Int: [Int : [[UInt8]]]]) -> String {

@@ -20,4 +20,6 @@ extension Contact {
     @NSManaged public var id: Int32
     @NSManaged public var rssi: Int16
     @NSManaged public var timestamp: Int
+    @NSManaged public var lat: Double
+    @NSManaged public var lon: Double
 }

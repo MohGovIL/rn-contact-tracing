@@ -69,7 +69,7 @@ class DBContactManager {
         return frc
     }
     
-    func addNewContact(ephemeral_id: [UInt8], rssi: Int, time: Int, location: [UInt8], id: Int) {
+    func addNewContact(ephemeral_id: [UInt8], rssi: Int, time: Int, location: [UInt8], id: Int, lat: Double, lon: Double) {
         let managedContext = self.persistentContainer.newBackgroundContext()
         let entity = NSEntityDescription.entity(forEntityName: "Contact", in: managedContext)!
 
@@ -80,6 +80,8 @@ class DBContactManager {
         data.setValue(time, forKey: "timestamp")
         data.setValue(Data(location), forKey: "geohash")
         data.setValue(id, forKey: "id")
+        data.setValue(lat, forKey: "lat")
+        data.setValue(lon, forKey: "lon")
         do {
             try managedContext.save()
         } catch let error as NSError {

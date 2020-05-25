@@ -41,6 +41,12 @@ public class Contact{
     @ColumnInfo(name = "user_id")
     private byte[] user_id;
 
+    @ColumnInfo(name = "lat")
+    private double lat;
+
+    @ColumnInfo(name = "lon")
+    private double lon;
+
     /**
      * A contact which was sent the user a BLE message.
      *
@@ -48,8 +54,10 @@ public class Contact{
      * @param rssi - Good question. my name contains covid but I don't know everything(covid6Pi).
      * @param time - Time of contact as recorded by the receiving user.
      * @param location - Location of user contact when BLE message received.
+     * @param lat - latitude value
+     * @param lon - longitude value
      */
-    public Contact(byte[] ephemeralId, byte[] rssi, int time, byte[] location) {
+    public Contact(byte[] ephemeralId, byte[] rssi, int time, byte[] location, double lat, double lon) {
 
         assert ephemeralId.length == Constants.MESSAGE_LEN;
 
@@ -58,6 +66,8 @@ public class Contact{
         this.timestamp = time;
         this.geohash = location;
 //        this.user_id = user_id;
+        this.lat = lat;
+        this.lon = lon;
     }
 
     public Contact(){}
@@ -112,6 +122,22 @@ public class Contact{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 
     public JSONObject toJson()

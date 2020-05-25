@@ -10,8 +10,8 @@ public class Match {
     private Contact mContact;
     private byte[] mInfectedGeohash;
     private byte[] mProof;
+    private byte[] mEpochKey;
     private int mInfectedTime;
-
     /**
      *
      * @param contact - Contact with the other user.
@@ -20,11 +20,12 @@ public class Match {
      * @param otherTime - Other user epoch time of contact.
      * @param otherUnit - Other user time unit.
      */
-    public Match(Contact contact, byte[] ephidGeohash, byte[] ephidUserRand, Time otherTime, int otherUnit ) {
+    public Match(Contact contact, byte[] ephidGeohash, byte[] ephidUserRand, Time otherTime, int otherUnit, byte[] epochKey ) {
 
         this.mContact = contact;
         this.mInfectedGeohash = ephidGeohash;
         this.mProof = ephidUserRand;
+        this.mEpochKey = epochKey;
         // Up to T_UNIT
         this.mInfectedTime = otherTime.getDay() * Time.DAY + otherTime.getEpoch() * Time.EPOCH + otherUnit * Time.UNIT;
 
@@ -41,5 +42,9 @@ public class Match {
     public JSONObject toJsonObject()
     {
         return mContact.toJson();
+    }
+
+    public byte[] getmEpochKey() {
+        return mEpochKey;
     }
 }

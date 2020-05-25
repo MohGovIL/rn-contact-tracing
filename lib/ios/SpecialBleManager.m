@@ -8,14 +8,17 @@
 #import "SpecialBleManager.h"
 #import "rn_contact_tracing-Swift.h"
 #import "Config.h"
+#import <React/RCTEventEmitter.h>
+#import <CoreLocation/CoreLocation.h>
 
 NSString *const EVENTS_FOUND_DEVICE         = @"foundDevice";
 NSString *const EVENTS_FOUND_SCAN           = @"foundScan";
 NSString *const EVENTS_SCAN_STATUS          = @"scanningStatus";
 NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
-// [[UIDevice currentDevice] name];
+//NSString *lastServiceUUIDString = @"";
+int resetBleStack = 0;
 
-@interface SpecialBleManager ()
+@interface SpecialBleManager () <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CBCentralManager* cbCentral;
 @property (nonatomic, strong) CBPeripheralManager* cbPeripheral;
@@ -25,6 +28,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 @property (nonatomic, strong) NSString* scanUUIDString;
 @property (nonatomic, strong) NSString* advertiseUUIDString;
 @property (nonatomic, strong) NSString* publicKey;
+
+@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @property NSDictionary* config;
 @property BOOL advertisingIsOn;
@@ -63,15 +68,12 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 {
     self.config = [Config GetConfig];
     
+    if (self.locationManager == nil)
+        self.locationManager = [[CLLocationManager alloc] init];
+        
     // advertising state flag
     self.advertisingIsOn = YES;
     self.scanningIsOn = YES;
-//    // add contact to DB
-//    NSArray* eph = @[@1, @2, @3, @4, @5, @6, @7, @8, @9, @1, @2, @3, @4, @5, @6, @7];
-//    NSArray* geo = @[@0, @0, @0, @0, @0];
-//    [DBClient addContact:eph :11 :123456789 :geo :1];
-//
-    
     // set singleton's data
     self.publicKey = [CryptoClient getEphemeralId];
     self.eventEmitter = emitter;
@@ -89,6 +91,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
     else
         [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
+//    lastServiceUUIDString = self.config[KEY_SERVICE_UUID] ;
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
@@ -115,17 +118,15 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     self.scanUUIDString = serviceUUIDString;
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
     
-    // Note: *******
-    /*
-     We're using scan without durations and intervals since if we go to background when scanning is off the the interval task will not start when in background and scanning will be off until the application returns to foreground. When scan is linear and not turning off there is still chance to receive scans in the backgroung although by apple's documentation when in background, the scan rate will slow down dramatically and CBCentralManagerScanOptionAllowDuplicatesKey is ignored (each perfipheral should be found only once when in BG)
-     */
-    
+    // Note: 
+    //**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+	//     We're using scan without durations and intervals since if we go to background when scanning is off the the interval task will not start when in background and scanning will be off until the application returns to foreground. When scan is linear and not turning off there is still chance to receive scans in the backgroung although by apple's documentation when in background, the scan rate will slow down dramatically and CBCentralManagerScanOptionAllowDuplicatesKey is ignored (each perfipheral should be found only once when in BG)
+    //**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
     // *********** scan linear witout duration / interval ********** //
     NSLog(@"Start scanning for %@", UUID);
     [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
     [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
-    // ******** end of scan interval ********** //
-    
+    // ******** end of scan interval ********** //    
     // **** scnning with intervals and duration ****** //
 //    NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
 //    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
@@ -180,11 +181,18 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
         return;
     }
     CBUUID* UUID = [CBUUID UUIDWithString:serviceUUIDString];
+    
+//    CBMutableCharacteristic* myCharacteristic = [[CBMutableCharacteristic alloc]
+//                                                 initWithType:UUID
+//                                                 properties:CBCharacteristicPropertyRead
+//                                                 value:[[[UIDevice currentDevice] name] dataUsingEncoding:NSUTF8StringEncoding]
+//                                                 permissions:0];
     CBMutableCharacteristic* myCharacteristic = [[CBMutableCharacteristic alloc]
                                                  initWithType:UUID
                                                  properties:CBCharacteristicPropertyRead
                                                  value:[self.publicKey dataUsingEncoding:NSUTF8StringEncoding]
                                                  permissions:0];
+    
     CBMutableService* myService = [[CBMutableService alloc] initWithType:UUID primary:YES];
     myService.characteristics = [NSArray arrayWithObject:myCharacteristic];
     self.service = myService;
@@ -195,7 +203,10 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 -(void) _advertise {
     if (self.cbPeripheral.state == CBManagerStatePoweredOn){
         self.publicKey = [CryptoClient getEphemeralId];
+        
+//        [self.cbPeripheral startAdvertising:@{CBAdvertisementDataLocalNameKey: [[UIDevice currentDevice] name], CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
         [self.cbPeripheral startAdvertising:@{CBAdvertisementDataLocalNameKey: self.publicKey, CBAdvertisementDataServiceUUIDsKey: @[self.service.UUID]}];
+        
         [self.eventEmitter sendEventWithName:EVENTS_ADVERTISE_STATUS body:[NSNumber numberWithBool:YES]];
     }
 }
@@ -208,7 +219,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
                 NSLog(@"cntral.state is Unknown");
                 break;
             case CBManagerStateResetting:
-                NSLog(@"cntral.state is Resseting");
+                NSLog(@"cntral.state is Reseting");
                 break;
             case CBManagerStateUnsupported:
                 NSLog(@"cntral.state is Unsupported");
@@ -232,17 +243,24 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
  didDiscoverPeripheral:(CBPeripheral *)peripheral
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI {
+    
+    
+    NSLog(@"Discover ---------- peripheral: \n%@", peripheral);
+    if (peripheral && peripheral.name != nil)
+    {
+        NSLog(@"peripheral name: %@", peripheral.name);
+    }
+    
     NSString* public_key = @"";
     NSNumber *tx = @0;
     int64_t unixtime = [[NSDate date] timeIntervalSince1970];
 
-    if (peripheral && peripheral.name != nil) {
-        NSLog(@"Discovered device with name: %@", peripheral.name);
-    }
     
     // get private_key
     if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
         // Androids device...
+        NSLog(@"ANDROID AdvertisementData: %@", advertisementData);
+        
         NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
         CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
         
@@ -258,6 +276,8 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 //        }
     } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
         // IOS device...
+        NSLog(@"IPHONE AdvertisementData: %@", advertisementData);
+        
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
         [CryptoClient printDecodedKey:public_key];
 //        if (public_key.length == 16)
@@ -276,8 +296,15 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     
     if (public_key.length == 0)
     {
+//        NSLog(@"*** empty publicKey received");
+//        NSLog(@"AdvertisementData: %@", advertisementData);
         return;
     }
+    
+//    if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
+//        device_first_timestamp = advertisementData[@"kCBAdvDataTimestamp"];
+//    }
+    
     // get TX
     if (advertisementData && advertisementData[CBAdvertisementDataTxPowerLevelKey]) {
         tx = advertisementData[CBAdvertisementDataTxPowerLevelKey];
@@ -286,7 +313,11 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     // add contact to DB
     NSArray* geo = @[@0, @0, @0, @0, @0];
 
-    [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :unixtime :geo];
+    CLLocation* lastKnownLocation = [self.locationManager location];
+    double lat = lastKnownLocation ? lastKnownLocation.coordinate.latitude : 0;
+    double lon = lastKnownLocation ? lastKnownLocation.coordinate.longitude : 0;
+    
+    [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :unixtime :geo :lat :lon];
     
     // get current device from DB
     NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
@@ -391,24 +422,66 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     NSLog(@"didStartAdvertising, duration:%d , interval:%d",
     [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self stopAdvertise:self.eventEmitter];
+//        [self stopAdvertise:self.eventEmitter];
+        if(resetBleStack == 2)
+        {
+            [self stopBLEServicesWithEmitter:self.eventEmitter];
+        }
+        else
+        {
+            [self stopAdvertise:self.eventEmitter];
+        }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (self.advertisingIsOn)
-                [self _advertise];
+//            if (self.advertisingIsOn)
+//                [self _advertise];
+//            else
+//                NSLog(@"interval received but advertising is off!!!");
+            if(resetBleStack == 2)
+            {
+                [self startBLEServicesWithEventEmitter:self.eventEmitter];
+                resetBleStack = 0;
+            }
             else
-                NSLog(@"interval received but advertising is off!!!");
+            {
+                if (self.advertisingIsOn)
+                    [self _advertise];
+                else
+                    NSLog(@"interval received but advertising is off!!!");
+                resetBleStack++;
+            }
         });
     });
+    
+    // ********** SCAN ************ //
+//    NSLog(@"Start scanning for %@, duration:%d , interval:%d", self.scanUUIDString,
+//    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+//    if (self.scanningIsOn)
+//    {
+//        CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
+//        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self stopScan:self.eventEmitter];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
+//                [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//                [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//            });
+//        });
+//    }
+//    else
+//        NSLog(@"interval received but advertising is off!!!");
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral {
     NSLog(@"Peripheral name:%@", peripheral.name);
 }
 
-- (NSString*)fetchInfectionData
-{
-    return @"";
-}
+#pragma mark - Match API methods
+//- (NSString*)fetchInfectionData
+//{
+//    return @"";
+//}
 
 -(NSString*)findMatchForInfections:(NSString*)jsonString
 {
@@ -419,7 +492,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"serverReponse_two-user-data" ofType:@"json"];
         if (!path)
         {
             return @"file not found";
@@ -449,7 +522,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"contacts_two-user-data" ofType:@"json"];
         if (!path)
         {
             NSLog(@"file not found");
@@ -465,7 +538,9 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
     {
         int numberOfContactsAdded = 0;
         for (NSDictionary* contactDict in contactsArray) {
-            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"]];
+            double lat = contactDict[@"lat"] ? [contactDict[@"lat"] doubleValue] : 0;
+            double lon = contactDict[@"lon"] ? [contactDict[@"lon"] doubleValue] : 0;
+            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"] :lat :lon];
             numberOfContactsAdded+=1;
         }
         NSLog(@"number of contacts added: %d",numberOfContactsAdded);

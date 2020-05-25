@@ -32,6 +32,7 @@ import com.wix.crypto.Contact;
 import com.wix.crypto.Crypto;
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.Match;
+import com.wix.crypto.MatchResponse;
 import com.wix.crypto.User;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.Hex;
@@ -316,7 +317,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void match(String epochs, Callback callback)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = ParseUtils.extractInfectedDbFromJson(epochs, reactContext.getApplicationContext()); //TODO::pass epochs when ready
-        List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
+        List<MatchResponse> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
         if(result.size() > 0)
         {
             Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();

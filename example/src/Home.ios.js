@@ -34,10 +34,10 @@ function HomeScreen() {
     //   };
     const [config, setConfig] = useState({
         serviceUUID: '00000000-0000-1000-8000-00805F9B34FB',
-        scanDuration: 60000,
-        scanInterval: 240000,
-        advertiseInterval: 45000,
-        advertiseDuration: 10000,
+        scanDuration: 5000,
+        scanInterval: 2000,
+        advertiseInterval: 3000,
+        advertiseDuration: 7000,
         large_icon: 'notificationLargeIconPath',
         small_icon: 'notificationSmallIconPath',
         token: 'default_token'
