@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -338,6 +339,13 @@ public class User {
                 }
             }
         }
+
+        Collections.sort(matches, new Comparator<Match>() {
+            @Override
+            public int compare(Match o1, Match o2) {
+                return o1.getInfectedTime() - o2.getInfectedTime();
+            }
+        });
 
         List<MatchResponse> timeRangeMatch = new ArrayList<>();
 
