@@ -24,18 +24,18 @@ public class DBClient: NSObject {
         return res
     }
     
-    @objc(addContactWithAsciiEphemeral::::)
-    public static func addContactWithAsciiEphemeral(ephemeral_id: String, rssi: Int, time: Int, location: [UInt8]){
+    @objc(addContactWithAsciiEphemeral::::::)
+    public static func addContactWithAsciiEphemeral(ephemeral_id: String, rssi: Int, time: Int, location: [UInt8], lat: Double, lon: Double){
         let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
 
-        DBContactManager.shared.addNewContact(ephemeral_id: ephemeral_id.asciiToUInt8Bytes(), rssi: rssi, time: time, location: location, id: contactsCount+1)
+        DBContactManager.shared.addNewContact(ephemeral_id: ephemeral_id.asciiToUInt8Bytes(), rssi: rssi, time: time, location: location, id: contactsCount+1,lat: lat, lon: lon)
     }
     
-    @objc(addJsonContact::::) // this one is with hex string ephemeral
-        public static func addJsonContact(ephemeral_id: String, rssi: Int, time: Int, location: String){
+    @objc(addJsonContact::::::) // this one is with hex string ephemeral
+        public static func addJsonContact(ephemeral_id: String, rssi: Int, time: Int, location: String, lat: Double, lon: Double){
             let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
 
-            DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id)!, rssi: rssi, time: time, location: stringToBytes(location)!, id: contactsCount+1)
+            DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id)!, rssi: rssi, time: time, location: stringToBytes(location)!, id: contactsCount+1,lat: lat, lon: lon)
         }
     
     @objc(clearAllContacts)

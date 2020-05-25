@@ -4,6 +4,8 @@
         <attribute name="ephemeral_id" optional="YES" attributeType="Binary"/>
         <attribute name="geohash" optional="YES" attributeType="Binary"/>
         <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="lon" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="rssi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
@@ -30,9 +32,9 @@
         <attribute name="scan_tx" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <elements>
+        <element name="Contact" positionX="-36" positionY="72" width="128" height="148"/>
         <element name="Device" positionX="-54" positionY="-9" width="128" height="28"/>
         <element name="PublicKey" positionX="-36" positionY="9" width="128" height="73"/>
         <element name="Scan" positionX="-18" positionY="54" width="128" height="148"/>
-        <element name="Contact" positionX="-36" positionY="72" width="128" height="28"/>
     </elements>
 </model>
