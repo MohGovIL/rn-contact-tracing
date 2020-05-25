@@ -159,8 +159,12 @@ public class ParseUtils {
                 byte[] rssi = BytesUtils.numToBytes(jo.getInt("rssi"),4);
                 byte[] ownLocation = Hex.hexStringToByteArray(jo.getString("geohash"));
                 int time = jo.getInt("timestamp");
-                double lat = 0;// TODO: add jo.getDouble("lat");
-                double lon = 0;// TODO: add jo.getDouble("lon");
+                double lat = 0;
+                double lon = 0;
+                if(jo.has("lat"))
+                     lat = jo.getDouble("lat");
+                if(jo.has("lon"))
+                    lon = jo.getDouble("lon");
                 DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
             }
 
