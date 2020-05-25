@@ -492,7 +492,7 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputserverReponse" ofType:@"json"];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"serverReponse_two-user-data" ofType:@"json"];
         if (!path)
         {
             return @"file not found";
@@ -522,7 +522,7 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"outputcontacts" ofType:@"json"];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"contacts_two-user-data" ofType:@"json"];
         if (!path)
         {
             NSLog(@"file not found");
