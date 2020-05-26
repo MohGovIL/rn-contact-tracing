@@ -13,14 +13,11 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.ParcelUuid;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
-import com.wix.crypto.Constants;
-import com.wix.crypto.Contact;
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.specialble.config.Config;
@@ -30,16 +27,10 @@ import com.wix.specialble.sensor.AccelerometerManager;
 import com.wix.specialble.sensor.ProximityManager;
 import com.wix.specialble.sensor.RotationVectorManager;
 import com.wix.specialble.sensor.SensorUtils;
+import com.wix.specialble.util.Constants;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 public class BLEScannerManager {
@@ -139,12 +130,18 @@ public class BLEScannerManager {
         }
 
         @Override
-        public void onScanFailed(int errorCode) {
+        public void onScanFailed(final int errorCode) {
             super.onScanFailed(errorCode);
             if (errorCode != SCAN_FAILED_ALREADY_STARTED) {
                 mEventListenerCallback.onEvent(SCANNING_STATUS, false);
                 unregisterSensors();
             }
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), "none", Constants.ACTION_SCAN, "failure", String.valueOf(errorCode)));
+                }
+            });
         }
     }
 
@@ -153,6 +150,8 @@ public class BLEScannerManager {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
+                DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", ""));
+
                 Device oldDevice = dbClient.getDeviceByKey(scannedToken); // get device from database
                 Device newDevice;
 
@@ -184,25 +183,34 @@ public class BLEScannerManager {
 
                 double lat = 0;
                 double lon = 0;
-                LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-                if (locationManager != null) {
+                try {
+                    LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                    if (locationManager != null) {
 
-                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                            ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                    }
-                    else {
+                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                        } else {
 
-                        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        lat = location.getLatitude();
-                        lon = location.getLongitude();
+
+                            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                lat = location.getLatitude();
+                                lon = location.getLongitude();
+                            }
+
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
                 }
 
 //                if(byteScannedToken.length == Constants.KEY_LEN) {

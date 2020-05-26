@@ -221,8 +221,28 @@ function HomeScreen() {
 
                 </View>
 
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+
+                    {_renderButton('Export Scans data', _exportScansData)}
+
+                </View>
+
+                <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+
+                    {_renderButton('Export Advertise data', _exportAdvertiseData)}
+
+                </View>
+
             </Fragment>
         )
+    }
+
+    function _exportAdvertiseData() {
+        SpecialBle.exportAdvertiseAsCSV();
+    }
+
+    function _exportScansData() {
+        SpecialBle.exportScansDataAsCSV();
     }
 
     function _exportContacts() {

@@ -6,20 +6,15 @@ import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.wix.crypto.CryptoManager;
 import com.wix.specialble.config.Config;
+import com.wix.specialble.db.DBClient;
 import com.wix.specialble.listeners.IEventListener;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.util.Date;
+import com.wix.specialble.util.Constants;
 import java.util.UUID;
 
 public class BLEAdvertisingManager {
@@ -35,16 +30,33 @@ public class BLEAdvertisingManager {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             super.onStartSuccess(settingsInEffect);
+            
+            insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(),
+                                                            Constants.ACTION_ADVERTISE, Constants.ADVERTISE_SUCCESS, ""));
+
             mEventListenerCallback.onEvent(BLEAdvertisingManager.ADVERTISING_STATUS, true);
         }
 
         @Override
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
+
+            insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(),
+                                                            Constants.ACTION_ADVERTISE, Constants.ADVERTISE_FAIL, "error code: " + errorCode));
+
             mEventListenerCallback.onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);
             Log.d(TAG, "onAdvertiseStartFailed - ErrorCode: " + errorCode);
         }
     };
+
+    private void insertToDb(final Event event) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                DBClient.getInstance(mContext).insert(event);
+            }
+        });
+    }
 
     BLEAdvertisingManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;

@@ -1,7 +1,6 @@
 package com.wix.specialble.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -9,19 +8,13 @@ import com.facebook.common.util.Hex;
 import com.wix.crypto.Contact;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
+import com.wix.specialble.bt.Event;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.List;
-
-import de.siegmar.fastcsv.writer.CsvAppender;
-import de.siegmar.fastcsv.writer.CsvWriter;
 
 public class CSVUtil {
     private static final String TAG = CSVUtil.class.getSimpleName();
@@ -36,6 +29,16 @@ public class CSVUtil {
 
     public static File getScansCsvFile(Context context) {
         return getCsvFile(context, FILE_NAME_SCANS);
+    }
+
+    public static File getAdvertiseCsvFile(Context context) {
+
+        return getCsvFile(context, "Advertise");
+    }
+
+    public static File getScansDataCsvFile(Context context) {
+
+        return getCsvFile(context, "Scan");
     }
 
     public static File getScanByKeyCsvFile(Context context, String key ) {
@@ -84,7 +87,7 @@ public class CSVUtil {
 
     private static void writeScan(OutputStream dos, Scan scan) throws IOException
     {
-        appendColumn(String.valueOf(scan.getTimestamp()), dos, false);
+        appendColumn(String.valueOf(scan.getTimestamp()), dos, true);
         appendColumn(scan.getPublicKey(), dos, true);
         appendColumn(scan.getScanAddress(), dos, true);
         appendColumn(scan.getScanProtocol(), dos, true);
@@ -154,7 +157,7 @@ public class CSVUtil {
 
     private static void writeDevice(Device device, OutputStream dos) throws IOException
     {
-        appendColumn(String.valueOf(device.getFirstTimestamp()), dos, false);
+        appendColumn(String.valueOf(device.getFirstTimestamp()), dos, true);
         appendColumn(String.valueOf(device.getLastTimestamp()), dos, true);
         appendColumn(device.getPublicKey(), dos, true);
         appendColumn(device.getDeviceAddress(), dos, true);
@@ -182,6 +185,33 @@ public class CSVUtil {
         appendColumn(Hex.encodeHex(contact.getGeohash(), false), dos, true);
         appendColumn(String.valueOf(contact.getLat()), dos,true);
         appendColumn(String.valueOf(contact.getLon()), dos,true);
+        dos.write(System.lineSeparator().getBytes());
+    }
+
+    public static void saveAllAdvertiseAsCSV(final Context context, List<Event> advertiseEvents) throws Exception {
+        FileOutputStream fos = new FileOutputStream(getAdvertiseCsvFile(context));
+        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage");
+
+        for(Event event : advertiseEvents) {
+            writeEvent(event, fos);
+        }
+    }
+
+    public static void saveAllScansDataAsCSV(final Context context, List<Event> scansEvents) throws Exception {
+        FileOutputStream fos = new FileOutputStream(getScansDataCsvFile(context));
+        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage");
+        for(Event event : scansEvents) {
+            writeEvent(event, fos);
+        }
+    }
+
+    private static void writeEvent(Event event, OutputStream dos) throws IOException {
+
+        appendColumn(String.valueOf(event.getTimestamp()), dos, true);
+        appendColumn(String.valueOf(event.getDeviceName()), dos, true);
+        appendColumn(String.valueOf(event.getActionType()), dos, true);
+        appendColumn(String.valueOf(event.getSuccess()), dos, true);
+        appendColumn(String.valueOf(event.getErrorMessage()), dos, true);
         dos.write(System.lineSeparator().getBytes());
     }
 }
