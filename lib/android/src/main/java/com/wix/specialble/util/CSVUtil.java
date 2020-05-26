@@ -190,7 +190,7 @@ public class CSVUtil {
 
     public static void saveAllAdvertiseAsCSV(final Context context, List<Event> advertiseEvents) throws Exception {
         FileOutputStream fos = new FileOutputStream(getAdvertiseCsvFile(context));
-        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage");
+        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage", "battery");
 
         for(Event event : advertiseEvents) {
             writeEvent(event, fos);
@@ -199,7 +199,7 @@ public class CSVUtil {
 
     public static void saveAllScansDataAsCSV(final Context context, List<Event> scansEvents) throws Exception {
         FileOutputStream fos = new FileOutputStream(getScansDataCsvFile(context));
-        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage");
+        appendHeaderLine(fos, "timestamp", "device_name", "action_type", "success", "errorMessage", "battery");
         for(Event event : scansEvents) {
             writeEvent(event, fos);
         }
@@ -212,6 +212,7 @@ public class CSVUtil {
         appendColumn(String.valueOf(event.getActionType()), dos, true);
         appendColumn(String.valueOf(event.getSuccess()), dos, true);
         appendColumn(String.valueOf(event.getErrorMessage()), dos, true);
+        appendColumn(String.valueOf(event.getBattery()), dos, true);
         dos.write(System.lineSeparator().getBytes());
     }
 }

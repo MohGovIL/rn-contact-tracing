@@ -27,12 +27,16 @@ public class Event {
     @ColumnInfo(name = "errorMessage")
     private String errorMessage = "";
 
-    public Event(long timestamp, String deviceName, String actionType, String success, String errorMessage) {
+    @ColumnInfo(name = "battery")
+    private int battery = 0;
+
+    public Event(long timestamp, String deviceName, String actionType, String success, String errorMessage, int battery) {
         this.timestamp = timestamp;
         this.deviceName = deviceName;
         this.actionType = actionType;
         this.success = success;
         this.errorMessage = errorMessage;
+        this.battery = battery;
     }
 
     public int getId() {
@@ -59,6 +63,8 @@ public class Event {
         return errorMessage;
     }
 
+    public int getBattery() { return battery; }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -82,4 +88,6 @@ public class Event {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    public void setBattery(int battery) { this.battery = battery; }
 }
