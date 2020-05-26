@@ -200,8 +200,10 @@ public class BLEScannerManager {
                     else {
 
                         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        lat = location.getLatitude();
-                        lon = location.getLongitude();
+                        if(location != null) {
+                            lat = location.getLatitude();
+                            lon = location.getLongitude();
+                        }
                     }
                 }
 
