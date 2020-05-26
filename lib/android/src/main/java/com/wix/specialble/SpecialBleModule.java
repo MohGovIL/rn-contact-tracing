@@ -32,6 +32,7 @@ import com.wix.crypto.Contact;
 import com.wix.crypto.Crypto;
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.Match;
+import com.wix.crypto.MatchResponse;
 import com.wix.crypto.User;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.Hex;
@@ -237,6 +238,30 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void exportAdvertiseAsCSV() {
+
+        try {
+            CSVUtil.saveAllAdvertiseAsCSV(reactContext, bleManager.getAllAdvertiseData());
+            shareFile(CSVUtil.getAdvertiseCsvFile(reactContext));
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exportAdvertiseAsCSV" + e.getMessage(), e );
+        }
+
+    }
+
+    @ReactMethod
+    public void exportScansDataAsCSV() {
+        try {
+            CSVUtil.saveAllScansDataAsCSV(reactContext, bleManager.getAllScansData());
+            shareFile(CSVUtil.getScansDataCsvFile(reactContext));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @ReactMethod
     public void exportAllDevicesCsv() {
         try {
             CSVUtil.saveAllDevicesAsCSV(reactContext, bleManager.getAllDevices());
@@ -253,6 +278,27 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
             shareFile(CSVUtil.getScansCsvFile(reactContext));
         } catch (Exception e) {
             Log.e(TAG, "exportAllScansCsv: " + e.getMessage(), e); //handle exception
+        }
+    }
+
+    @ReactMethod
+    public void exportScansByKeyAsCSV(String key) {
+        try {
+            CSVUtil.saveScansByKeyAsCsv(reactContext, bleManager.getScansByKey(key), key);
+            shareFile(CSVUtil.getScanByKeyCsvFile(reactContext, key));
+        } catch (Exception e) {
+            Log.e(TAG, "exportScansByKeyCsv: " + e.getMessage(), e); //handle exception
+        }
+    }
+
+    @ReactMethod
+    public void exportAllContactsAsCsv() {
+        try {
+            CSVUtil.saveAllContactsAsCSV(reactContext, bleManager.getAllContacts());
+            shareFile(CSVUtil.getContactsCsvFile(reactContext));
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exportAllContactsAsCsv: " + e.getMessage(), e );
         }
     }
 
@@ -295,7 +341,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     public void match(String epochs, Callback callback)
     {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infe = ParseUtils.extractInfectedDbFromJson(epochs, reactContext.getApplicationContext()); //TODO::pass epochs when ready
-        List<Match> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
+        List<MatchResponse> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
         if(result.size() > 0)
         {
             Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();

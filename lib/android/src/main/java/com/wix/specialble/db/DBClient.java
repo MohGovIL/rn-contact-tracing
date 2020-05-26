@@ -3,11 +3,11 @@ package com.wix.specialble.db;
 import android.content.Context;
 import android.database.Cursor;
 
-import androidx.room.Delete;
 import androidx.room.Room;
 
 import com.wix.crypto.Contact;
 import com.wix.specialble.bt.Device;
+import com.wix.specialble.bt.Event;
 import com.wix.specialble.bt.Scan;
 import com.wix.specialble.kays.PublicKey;
 
@@ -127,4 +127,22 @@ public class DBClient {
         bleDevicesDB.deviceDao().clearAll();
         bleDevicesDB.scanDao().clearAll();
     }
+
+    /***********
+     *  Events  *
+     ***********/
+
+    public List<Event> getAllEvents() { return  bleDevicesDB.eventDao().getAllEvents(); }
+
+    public List<Event> getEventsByActionType(String actionType) { return  bleDevicesDB.eventDao().getEventsByActionType(actionType); }
+
+    public void insertAll(Event... events) { bleDevicesDB.eventDao().insertAll(events); }
+
+    public void insert(Event event) { bleDevicesDB.eventDao().insert(event); }
+
+    public void update(Event event) { bleDevicesDB.eventDao().update(event); }
+
+    public void delete(Event event) { bleDevicesDB.eventDao().delete(event); }
+
+    public void clearAllEvents() { bleDevicesDB.eventDao().clearAll(); }
 }
