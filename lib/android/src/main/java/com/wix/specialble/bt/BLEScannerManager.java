@@ -133,7 +133,7 @@ public class BLEScannerManager {
             @Override
             public void run() {
 
-                DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", ""));
+                DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", "", SensorUtils.getBatteryPercentage(mContext)));
 
                 Device oldDevice = dbClient.getDeviceByKey(scannedToken); // get device from database
                 Device newDevice;

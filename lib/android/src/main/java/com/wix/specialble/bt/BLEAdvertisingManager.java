@@ -13,6 +13,7 @@ import android.util.Log;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.listeners.IEventListener;
+import com.wix.specialble.sensor.SensorUtils;
 import com.wix.specialble.util.Constants;
 
 import java.nio.charset.Charset;
@@ -30,14 +31,14 @@ public class BLEAdvertisingManager {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             super.onStartSuccess(settingsInEffect);
-            insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERITSE_SUCCESS, ""));
+            insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERITSE_SUCCESS, "", SensorUtils.getBatteryPercentage(mContext)));
             mEventListenerCallback.onEvent(BLEAdvertisingManager.ADVERTISING_STATUS, true);
         }
 
         @Override
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
-            insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERITSE_FAIL, "error code: " + errorCode));
+            insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERITSE_FAIL, "error code: " + errorCode, SensorUtils.getBatteryPercentage(mContext)));
             mEventListenerCallback.onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);
             Log.d(TAG, "onAdvertiseStartFailed - ErrorCode: " + errorCode);
         }
