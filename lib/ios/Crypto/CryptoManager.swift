@@ -238,7 +238,7 @@ public class CryptoManager {
                 }
                 rootInfected.append(rootInfectedEpochs)
             }
-            root["infected"] = rootInfected
+            root["days"] = rootInfected
         }
         
         let dataJson = try! JSONSerialization.data(withJSONObject: root, options: .prettyPrinted)

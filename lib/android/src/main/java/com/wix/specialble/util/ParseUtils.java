@@ -36,6 +36,9 @@ import static com.wix.crypto.Constants.NUM_OF_EPOCHS;
  */
 public class ParseUtils {
 
+    public static final String INFECTED = "days";
+    public static final String START_DAY = "startDay";
+
     public static String infectedDbToJson(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedDb) {
         JSONObject root = new JSONObject();
         JSONArray rootInfected = new JSONArray();
@@ -45,7 +48,7 @@ public class ParseUtils {
             Arrays.sort(keySetArray); // Make sure the keys are in ascending order
             int today = (int) keySetArray[keySetArray.length - 1];
             int startDay = today - NUM_OF_DAYS; // We subtract 14 from today, because we want to go 15 days back and today is the 15th day.
-            root.put("startDay", startDay);
+            root.put(START_DAY, startDay);
             for (int i = startDay; i <= today; i++) {
 
                 Map<Integer, ArrayList<byte[]>> epochs = infectedDb.get(i);
@@ -76,7 +79,7 @@ public class ParseUtils {
                 }
                 rootInfected.put(rootInfectedEpochs);
             }
-            root.put("infected", rootInfected);
+            root.put(INFECTED, rootInfected);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,8 +95,8 @@ public class ParseUtils {
             else
                 jsonRes = new JSONObject(loadJSONFromAsset(applicationContext)); ///for testing
 
-            JSONArray infected = jsonRes.getJSONArray("infected");
-            int startDay = jsonRes.getInt("startDay");
+            JSONArray infected = jsonRes.getJSONArray(INFECTED);
+            int startDay = jsonRes.getInt(START_DAY);
 
             for (int i = 0; i < infected.length(); i++, startDay++) {
                 infectedDb.put(startDay, new HashMap<Integer, ArrayList<byte[]>>());

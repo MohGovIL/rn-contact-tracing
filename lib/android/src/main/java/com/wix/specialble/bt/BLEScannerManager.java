@@ -139,7 +139,7 @@ public class BLEScannerManager {
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), "none", Constants.ACTION_SCAN, "failure", String.valueOf(errorCode)));
+                    DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), "none", Constants.ACTION_SCAN, "failure", String.valueOf(errorCode), SensorUtils.getBatteryPercentage(mContext)));
                 }
             });
         }
@@ -150,7 +150,7 @@ public class BLEScannerManager {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", ""));
+                DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", "", SensorUtils.getBatteryPercentage(mContext)));
 
                 Device oldDevice = dbClient.getDeviceByKey(scannedToken); // get device from database
                 Device newDevice;

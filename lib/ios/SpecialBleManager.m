@@ -507,7 +507,7 @@ int resetBleStack = 0;
         NSLog(@"Error parsing JSON: %@",error);
         return @"Error parsing JSON";
     }
-    NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"infected"]];
+    NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"days"]];
     NSLog(@"%@",resJSON);
     return resJSON;
 }
