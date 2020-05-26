@@ -238,6 +238,30 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void exportAdvertiseAsCSV() {
+
+        try {
+            CSVUtil.saveAllAdvertiseAsCSV(reactContext, bleManager.getAllAdvertiseData());
+            shareFile(CSVUtil.getAdvertiseCsvFile(reactContext));
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exportAdvertiseAsCSV" + e.getMessage(), e );
+        }
+
+    }
+
+    @ReactMethod
+    public void exportScansDataAsCSV() {
+        try {
+            CSVUtil.saveAllScansDataAsCSV(reactContext, bleManager.getAllScansData());
+            shareFile(CSVUtil.getScansDataCsvFile(reactContext));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @ReactMethod
     public void exportAllDevicesCsv() {
         try {
             CSVUtil.saveAllDevicesAsCSV(reactContext, bleManager.getAllDevices());
