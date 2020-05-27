@@ -55,7 +55,6 @@ public class BLEManager implements IEventListener {
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
-            bluetoothAdapter.enable();
             bleScanner = new BLEScannerManager(context, this);
             bleAdvertiser = new BLEAdvertisingManager(context, this);
         }

@@ -21,6 +21,7 @@ import java.util.UUID;
 public class BLEAdvertisingManager {
 
     public static final String ADVERTISING_STATUS = "advertisingStatus";
+    private BluetoothAdapter bluetoothAdapter;
     Context mContext;
     BluetoothLeAdvertiser advertiser;
     private String TAG = "BLEAdvertisingManager";
@@ -59,36 +60,52 @@ public class BLEAdvertisingManager {
 
     BLEAdvertisingManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;
-        advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        advertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
         mEventListenerCallback = eventListenerCallback;
     }
 
     public void stopAdvertise() {
-        advertiser.stopAdvertising(advertiseCallback);
-        mEventListenerCallback.onEvent(ADVERTISING_STATUS, false);
+        if(bluetoothAdapter.isEnabled()){
+
+            if(advertiser == null)
+                advertiser = bluetoothAdapter.getBluetoothLeAdvertiser(); // if we turned the bluetooth on while the service is running
+
+            if(advertiser != null)
+                advertiser.stopAdvertising(advertiseCallback);
+
+            mEventListenerCallback.onEvent(ADVERTISING_STATUS, false);
+        }
     }
 
     public void startAdvertise(String serviceUUID) {
-        Config config = Config.getInstance(mContext);
+        if(bluetoothAdapter.isEnabled()) {
 
-        ParcelUuid pUuid = new ParcelUuid(UUID.fromString(serviceUUID));
+            if(advertiser == null)
+                advertiser = bluetoothAdapter.getBluetoothLeAdvertiser(); // if we turned the bluetooth on while the service is running
 
-        AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
-        dataBuilder.addServiceUuid(pUuid);
-        dataBuilder.setIncludeDeviceName(false);
-        dataBuilder.setIncludeTxPowerLevel(true);
+            Config config = Config.getInstance(mContext);
 
-        int currentTime = (int)(System.currentTimeMillis() / 1000);
-        byte[] key = CryptoManager.getInstance(mContext).mySelf.generateEphemeralId(currentTime, BLEScannerManager.sGeoHash);
+            ParcelUuid pUuid = new ParcelUuid(UUID.fromString(serviceUUID));
 
-        dataBuilder.addServiceData(pUuid, key);
+            AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
+            dataBuilder.addServiceUuid(pUuid);
+            dataBuilder.setIncludeDeviceName(false);
+            dataBuilder.setIncludeTxPowerLevel(true);
 
-        AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
-        settingsBuilder.setAdvertiseMode(config.getAdvertiseMode());
-        settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
-        settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
-        settingsBuilder.setConnectable(false);
+            int currentTime = (int) (System.currentTimeMillis() / 1000);
+            byte[] key = CryptoManager.getInstance(mContext).mySelf.generateEphemeralId(currentTime, BLEScannerManager.sGeoHash);
 
-        advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+            dataBuilder.addServiceData(pUuid, key);
+
+            AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
+            settingsBuilder.setAdvertiseMode(config.getAdvertiseMode());
+            settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
+            settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
+            settingsBuilder.setConnectable(false);
+
+            if(advertiser != null)
+                advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+        }
     }
 }
