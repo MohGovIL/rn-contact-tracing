@@ -29,7 +29,7 @@
 		20C0FA09247EA71A00D3FA7D /* serverReponse_Whole_last_day_removed.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA05247EA71900D3FA7D /* serverReponse_Whole_last_day_removed.json */; };
 		20C0FA0A247EA71A00D3FA7D /* serverReponse_wrong_startDay_key.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA06247EA71A00D3FA7D /* serverReponse_wrong_startDay_key.json */; };
 		20C0FA0C247EB04700D3FA7D /* serverReponse_wrong_type.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA0B247EB04700D3FA7D /* serverReponse_wrong_type.json */; };
-		20C0FA0E247EB19E00D3FA7D /* serverReponse_wrong_typ_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA0D247EB19E00D3FA7D /* serverReponse_wrong_typ_2.json */; };
+		20C0FA10247EB2C600D3FA7D /* serverReponse_wrong_typ_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA0F247EB2C600D3FA7D /* serverReponse_wrong_typ_2.json */; };
 		26F3636024476ED500B45664 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F3635F24476ED500B45664 /* Dummy.swift */; };
 		5546FBE32455EE6800428401 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5546FBE22455EE6800428401 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -61,7 +61,7 @@
 		20C0FA05247EA71900D3FA7D /* serverReponse_Whole_last_day_removed.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverReponse_Whole_last_day_removed.json; sourceTree = "<group>"; };
 		20C0FA06247EA71A00D3FA7D /* serverReponse_wrong_startDay_key.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverReponse_wrong_startDay_key.json; sourceTree = "<group>"; };
 		20C0FA0B247EB04700D3FA7D /* serverReponse_wrong_type.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverReponse_wrong_type.json; sourceTree = "<group>"; };
-		20C0FA0D247EB19E00D3FA7D /* serverReponse_wrong_typ_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverReponse_wrong_typ_2.json; sourceTree = "<group>"; };
+		20C0FA0F247EB2C600D3FA7D /* serverReponse_wrong_typ_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverReponse_wrong_typ_2.json; sourceTree = "<group>"; };
 		26F3635F24476ED500B45664 /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		26F3636124476F4A00B45664 /* example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "example-Bridging-Header.h"; sourceTree = "<group>"; };
 		337F95A4A2A5CB87972DEB20 /* libPods-example-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-example-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,7 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				20C0FA0B247EB04700D3FA7D /* serverReponse_wrong_type.json */,
-				20C0FA0D247EB19E00D3FA7D /* serverReponse_wrong_typ_2.json */,
+				20C0FA0F247EB2C600D3FA7D /* serverReponse_wrong_typ_2.json */,
 				20C0FA04247EA71900D3FA7D /* serverReponse_lastDay_removed_10_epocs.json */,
 				20C0FA05247EA71900D3FA7D /* serverReponse_Whole_last_day_removed.json */,
 				20C0FA03247EA71900D3FA7D /* serverReponse_wrong_days_key.json */,
@@ -266,7 +266,7 @@
 				20C0FA01247E8F6B00D3FA7D /* contacts.json in Resources */,
 				20367D62247B9AA200B09B90 /* contacts_two-user-data.json in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				20C0FA0E247EB19E00D3FA7D /* serverReponse_wrong_typ_2.json in Resources */,
+				20C0FA10247EB2C600D3FA7D /* serverReponse_wrong_typ_2.json in Resources */,
 				20367D56247B9A0A00B09B90 /* contacts_following-day-epoch.json in Resources */,
 				20728369247504BD00F1DD7B /* outputserverReponse.json in Resources */,
 				20367D55247B9A0A00B09B90 /* serverReponse_following-day-epoch.json in Resources */,
