@@ -492,7 +492,8 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"serverReponse_two-user-data" ofType:@"json"];
+        NSString* fileName = @"serverReponse_lastDay_removed_10_epocs";
+        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
             return @"file not found";
@@ -507,6 +508,7 @@ int resetBleStack = 0;
         NSLog(@"Error parsing JSON: %@",error);
         return @"Error parsing JSON";
     }
+    // TODO: check days and startDay types!!!
     NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"days"]];
     NSLog(@"%@",resJSON);
     return resJSON;
@@ -522,7 +524,8 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"contacts_two-user-data" ofType:@"json"];
+        NSString* fileName = @"contacts";
+        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
             NSLog(@"file not found");
