@@ -508,7 +508,7 @@ int resetBleStack = 0;
         NSLog(@"Error parsing JSON: %@",error);
         return @"Error parsing JSON";
     }
-    // TODO: check days and startDay types!!!
+    
     NSString* resJSON;
     @try {
         NSNumber* startDay = matchDict[@"startDay"];
