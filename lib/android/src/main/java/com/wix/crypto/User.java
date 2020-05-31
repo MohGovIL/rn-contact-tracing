@@ -428,7 +428,7 @@ public class User {
                 List<String> verifiedEphemerals = new ArrayList<>();
                 verifiedEphemerals.add(Hex.toHexString(compareable.getContact().getEphemeral_id()));
                 verifiedEphemerals.add(lastSavedMatch.getVerifiedEphemerals().get(1));
-                MatchResponse extendedMatch = new MatchResponse(compareable.getContact().getTimestamp(), lastSavedMatch.getEndContactTimeStamp(),
+                MatchResponse extendedMatch = new MatchResponse(compareable.getContact().getTimestamp(), lastSavedMatch.getEndContactTimestamp(),
                                                                 verifiedEphemerals, lastSavedMatch.getLat(), lastSavedMatch.getLon(),
                                                                 lastSavedMatch.getContactIntegrityLevel());
 

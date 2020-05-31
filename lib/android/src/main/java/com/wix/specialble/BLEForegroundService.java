@@ -68,7 +68,7 @@ public class BLEForegroundService extends Service {
             }
         }
         else {
-            Toast.makeText(context, "This device doesn't support BLE", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "startThisService: This device doesn't support BLE");
         }
     }
 
