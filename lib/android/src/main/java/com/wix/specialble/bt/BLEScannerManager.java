@@ -2,6 +2,7 @@ package com.wix.specialble.bt;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanRecord;
@@ -44,6 +45,7 @@ public class BLEScannerManager {
 
     Context mContext;
     BluetoothAdapter bluetoothAdapter;
+    BluetoothLeScanner bluetoothLeScanner;
     SpecialBLEScanCallback bleScanCallback;
     DBClient dbClient;
 
@@ -59,7 +61,8 @@ public class BLEScannerManager {
 
     BLEScannerManager(Context context, IEventListener eventListenerCallback) {
         mContext = context;
-        this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         bleScanCallback = new SpecialBLEScanCallback();
         dbClient = DBClient.getInstance(context);
         mEventListenerCallback = eventListenerCallback;
@@ -73,8 +76,11 @@ public class BLEScannerManager {
     }
 
     public void startScan(String serviceUUID) {
-        bluetoothAdapter.enable();
         if (bluetoothAdapter.isEnabled()) {
+
+            if(bluetoothLeScanner == null) // if we turned the bluetooth on while the service is running
+                bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
+
             registerSensors();
 
             Config config = Config.getInstance(mContext);
@@ -91,16 +97,24 @@ public class BLEScannerManager {
                 settings = new ScanSettings.Builder().build();
             }
 
-            bluetoothAdapter.getBluetoothLeScanner().startScan(filters, settings, bleScanCallback);
+            if(bluetoothLeScanner != null)
+                bluetoothLeScanner.startScan(filters, settings, bleScanCallback);
             mEventListenerCallback.onEvent(SCANNING_STATUS, true);
         }
     }
 
     public void stopScan() {
-        bluetoothAdapter.getBluetoothLeScanner().stopScan(bleScanCallback);
-        mEventListenerCallback.onEvent(SCANNING_STATUS, false);
-        unregisterSensors();
+        if(bluetoothAdapter.isEnabled()){
 
+            if(bluetoothLeScanner == null) // if we turned the bluetooth on while the service is running
+                bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
+
+            if(bluetoothLeScanner != null)
+                bluetoothLeScanner.stopScan(bleScanCallback);
+
+            mEventListenerCallback.onEvent(SCANNING_STATUS, false);
+            unregisterSensors();
+        }
     }
 
     class SpecialBLEScanCallback extends ScanCallback {

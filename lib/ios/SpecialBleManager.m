@@ -492,7 +492,8 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"serverReponse_two-user-data" ofType:@"json"];
+        NSString* fileName = @"serverMatrix";
+        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
             return @"file not found";
@@ -507,8 +508,35 @@ int resetBleStack = 0;
         NSLog(@"Error parsing JSON: %@",error);
         return @"Error parsing JSON";
     }
-    NSString* resJSON = [CryptoClient findMatch:[matchDict[@"startDay"] integerValue] :matchDict[@"days"]];
-    NSLog(@"%@",resJSON);
+    
+    NSString* resJSON;
+    @try {
+        NSNumber* startDay = matchDict[@"startDay"];
+        if (![matchDict[@"startDay"] isKindOfClass:[NSNumber class]])
+        {
+            resJSON = @"[]";
+            return resJSON;
+        }
+        NSArray* days = matchDict[@"days"];
+        if (![days isKindOfClass:[NSArray class]])
+        {
+            resJSON = @"[]";
+            return resJSON;
+        }
+        for (id obj in days)
+        {
+            if (![obj isKindOfClass:[NSArray class]])
+            {
+                resJSON = @"[]";
+                return resJSON;
+            }
+        }
+        resJSON = [CryptoClient findMatch:[startDay integerValue] :days];
+        NSLog(@"%@",resJSON);
+    } @catch (NSException *exception) {
+        resJSON = @"[]";
+        NSLog(@"Error finding match: %@", exception.reason);
+    }
     return resJSON;
 }
 
@@ -522,7 +550,8 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"contacts_two-user-data" ofType:@"json"];
+        NSString* fileName = @"contactsMatrix";
+        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
             NSLog(@"file not found");
@@ -538,9 +567,11 @@ int resetBleStack = 0;
     {
         int numberOfContactsAdded = 0;
         for (NSDictionary* contactDict in contactsArray) {
-            double lat = contactDict[@"lat"] ? [contactDict[@"lat"] doubleValue] : 0;
-            double lon = contactDict[@"lon"] ? [contactDict[@"lon"] doubleValue] : 0;
-            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :[contactDict[@"rssi"] integerValue] :[contactDict[@"timestamp"] integerValue] : contactDict[@"geohash"] :lat :lon];
+            double lat = 0;//contactDict[@"lat"] ? [contactDict[@"lat"] doubleValue] : 0;
+            double lon = 0;//contactDict[@"lon"] ? [contactDict[@"lon"] doubleValue] : 0;
+            NSString* geohash = contactDict[@"geohash"] ? [NSString stringWithFormat:@"%@", contactDict[@"geohash"]] : @"0000000000";
+            NSInteger rssi = [contactDict[@"rssi"] integerValue] ?: 0;
+            [DBClient addJsonContact:contactDict[@"ephemeral_id"] :rssi :[contactDict[@"timestamp"] integerValue] : geohash :lat :lon];
             numberOfContactsAdded+=1;
         }
         NSLog(@"number of contacts added: %d",numberOfContactsAdded);

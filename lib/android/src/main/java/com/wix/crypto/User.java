@@ -247,6 +247,9 @@ public class User {
      */
     public List<MatchResponse> findCryptoMatches(Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedKeyDatabase) {
 
+        if(infectedKeyDatabase.isEmpty())
+            return null;
+
         List<Match> matches = new ArrayList<>();
 
 
@@ -404,16 +407,47 @@ public class User {
 
     private void createMatchResponse(Match anchor, Match compareable, String contactIntegrityLevel, List<MatchResponse> responseMatches) {
 
-        List<String> verifiedEphemerals  = new ArrayList<>();
-        verifiedEphemerals.add(Hex.toHexString(compareable.getContact().getEphemeral_id()));
-        verifiedEphemerals.add(Hex.toHexString(anchor.getContact().getEphemeral_id()));
+        if(responseMatches.isEmpty())
+        {
+            List<String> verifiedEphemerals  = new ArrayList<>();
+            verifiedEphemerals.add(Hex.toHexString(compareable.getContact().getEphemeral_id()));
+            verifiedEphemerals.add(Hex.toHexString(anchor.getContact().getEphemeral_id()));
 
-        MatchResponse matchResponse = new MatchResponse(compareable.getContact().getTimestamp(),
-                anchor.getContact().getTimestamp(), verifiedEphemerals,
-                anchor.getContact().getLat(), anchor.getContact().getLon(),
-                contactIntegrityLevel);
+            MatchResponse matchResponse = new MatchResponse(compareable.getContact().getTimestamp(),
+                    anchor.getContact().getTimestamp(), verifiedEphemerals,
+                    anchor.getContact().getLat(), anchor.getContact().getLon(),
+                    contactIntegrityLevel);
 
-        responseMatches.add(matchResponse);
+            responseMatches.add(matchResponse);
+        }
+        else
+        {
+            MatchResponse lastSavedMatch = responseMatches.remove(responseMatches.size() - 1);
+            if(lastSavedMatch.getStartContactTimestamp() - compareable.getContact().getTimestamp() <= MAX_TIME_FOR_MATCH) {
+
+                List<String> verifiedEphemerals = new ArrayList<>();
+                verifiedEphemerals.add(Hex.toHexString(compareable.getContact().getEphemeral_id()));
+                verifiedEphemerals.add(lastSavedMatch.getVerifiedEphemerals().get(1));
+                MatchResponse extendedMatch = new MatchResponse(compareable.getContact().getTimestamp(), lastSavedMatch.getEndContactTimestamp(),
+                                                                verifiedEphemerals, lastSavedMatch.getLat(), lastSavedMatch.getLon(),
+                                                                lastSavedMatch.getContactIntegrityLevel());
+
+                responseMatches.add(extendedMatch);
+            }
+            else {
+                responseMatches.add(lastSavedMatch);
+                List<String> verifiedEphemerals  = new ArrayList<>();
+                verifiedEphemerals.add(Hex.toHexString(compareable.getContact().getEphemeral_id()));
+                verifiedEphemerals.add(Hex.toHexString(anchor.getContact().getEphemeral_id()));
+
+                MatchResponse matchResponse = new MatchResponse(compareable.getContact().getTimestamp(),
+                        anchor.getContact().getTimestamp(), verifiedEphemerals,
+                        anchor.getContact().getLat(), anchor.getContact().getLon(),
+                        contactIntegrityLevel);
+
+                responseMatches.add(matchResponse);
+            }
+        }
     }
     /**
      * Delete my keys in a time period.

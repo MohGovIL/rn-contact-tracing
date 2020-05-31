@@ -82,9 +82,9 @@ public class CryptoManager {
     func findMatch(startDay: Int, infectedArray: [[[String]]]) -> String {
         var infectedEpochs:[Int: [Int : [[UInt8]]]] = [:]
         
-        for i in 0..<14 {
+        for i in 0..<infectedArray.count {
             infectedEpochs[i+startDay] = [:]
-            for j in 0..<24 {
+            for j in 0..<infectedArray[i].count {
                 let currentEpochsHex = infectedArray[i][j]
                 
                 if currentEpochsHex.count > 0 {
@@ -97,7 +97,8 @@ public class CryptoManager {
             }
         }
         
-        let matches =  Array(mySelf.find_crypto_matches(infected_key_database: infectedEpochs).reversed())
+//        let matches =  Array(mySelf.find_crypto_matches(infected_key_database: infectedEpochs).reversed())
+        let matches = mySelf.find_crypto_matches(infected_key_database: infectedEpochs)
         
 //        var matchesResults:[[String:Any]] = []
 //        for match in matches {
@@ -118,9 +119,9 @@ public class CryptoManager {
         var matchesResultArray : [[String:Any]] = []
         
         if matches.count > 0 {
-            for i in 0 ..< matches.count-1
+            for i in (1 ... matches.count-1).reversed()
             {
-                for j in i+1..<matches.count
+                for j in (0 ... i-1).reversed()
                 {
                     if matches[i].contact.timestamp - matches[j].contact.timestamp > 1200
                     {
@@ -130,33 +131,53 @@ public class CryptoManager {
                     {
                         if (matches[j].matchEpoc == matches[i].matchEpoc)
                         {
-                            var matchObject : [String:Any] = [:]
-                            matchObject["startContactTimestamp"] = matches[i].contact.timestamp
-                            matchObject["endContactTimestamp"] = matches[j].contact.timestamp
-                            matchObject["verifiedEphemerals"] = [ Data(matches[i].matchEpoc).hex(), Data(matches[j].matchEpoc).hex() ]
-                            matchObject["lat"] = matches[i].contact.lat
-                            matchObject["lon"] = matches[i].contact.lon
-                            matchObject["contactIntegrityLevel"] = "high"
-                            
-                            matchesResultArray.append(matchObject)
-                            //                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                            if (matchesResultArray.count>0 && (matchesResultArray.last!["startContactTimestamp"] as! Int)-matches[j].contact.timestamp<=20*60)
+                            {
+                                matchesResultArray[matchesResultArray.count-1]["startContactTimestamp"] = matches[j].contact.timestamp
+                                var newVerifiedEphemerals : [String] = matchesResultArray[matchesResultArray.count-1]["verifiedEphemerals"] as! [String]
+                                newVerifiedEphemerals[1] = Data(matches[j].contact.ephemeral_id).hex()
+                                
+                                matchesResultArray[matchesResultArray.count-1]["verifiedEphemerals"] = newVerifiedEphemerals
+                            }
+                            else
+                            {
+                                var matchObject : [String:Any] = [:]
+                                matchObject["startContactTimestamp"] = matches[j].contact.timestamp
+                                matchObject["endContactTimestamp"] = matches[i].contact.timestamp
+                                matchObject["verifiedEphemerals"] = [ Data(matches[i].contact.ephemeral_id).hex(), Data(matches[j].contact.ephemeral_id).hex() ]
+                                matchObject["lat"] = matches[i].contact.lat
+                                matchObject["lon"] = matches[i].contact.lon
+                                matchObject["contactIntegrityLevel"] = "high"
+                                
+                                matchesResultArray.append(matchObject)
+                            }
                         }
                         else if isSuccessiveEpoch(anchorMatch: matches[i],
                                                   targetEpoch: matches[j].matchEpoc,
                                                   infectedEpochs: infectedEpochs,
                                                   reportStartDay: startDay)
                         {
-                            var matchObject : [String:Any] = [:]
-                            matchObject["startContactTimestamp"] = matches[i].contact.timestamp
-                            matchObject["endContactTimestamp"] = matches[j].contact.timestamp
-                            matchObject["verifiedEphemerals"] = [ Data(matches[i].matchEpoc).hex(), Data(matches[j].matchEpoc).hex() ]
-                            matchObject["lat"] = matches[i].contact.lat
-                            matchObject["lon"] = matches[i].contact.lon
-                            
-                            matchObject["contactIntegrityLevel"] = "low"
-                            
-                            matchesResultArray.append(matchObject)
-                            //                        return "Found match for time: \(matches[i].contact.timestamp) with epoch: \(matches[i].matchEpoc) and: \(matches[j].contact.timestamp) with epoch: \(matches[j].matchEpoc)"
+                            if (matchesResultArray.count>0 && (matchesResultArray.last!["startContactTimestamp"] as! Int)-matches[j].contact.timestamp<=20*60)
+                            {
+                                matchesResultArray[matchesResultArray.count-1]["startContactTimestamp"] = matches[j].contact.timestamp
+                                var newVerifiedEphemerals : [String] = matchesResultArray[matchesResultArray.count-1]["verifiedEphemerals"] as! [String]
+                                newVerifiedEphemerals[1] = Data(matches[j].contact.ephemeral_id).hex()
+                                
+                                matchesResultArray[matchesResultArray.count-1]["verifiedEphemerals"] = newVerifiedEphemerals
+                            }
+                            else
+                            {
+                                var matchObject : [String:Any] = [:]
+                                matchObject["startContactTimestamp"] = matches[j].contact.timestamp
+                                matchObject["endContactTimestamp"] = matches[i].contact.timestamp
+                                matchObject["verifiedEphemerals"] = [ Data(matches[i].contact.ephemeral_id).hex(), Data(matches[j].contact.ephemeral_id).hex() ]
+                                matchObject["lat"] = matches[i].contact.lat
+                                matchObject["lon"] = matches[i].contact.lon
+                                
+                                matchObject["contactIntegrityLevel"] = "low"
+                                
+                                matchesResultArray.append(matchObject)
+                            }
                         }
                     }
                 }

@@ -1,0 +1,50 @@
+[
+  {
+    "ephemeral_id": "7a08f7d04969212a87f0312f914a805d",
+    "timestamp": 1590567900,
+    "rssi": -78,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "88d0ae746f9e4a91f0feac780761fdc8",
+    "timestamp": 1590568200,
+    "rssi": -97,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "7988c450a1dcf682d1d1887890133a6a",
+    "timestamp": 1590568500,
+    "rssi": -13,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "c367aafc2d33069c4b3a1dc71691d839",
+    "timestamp": 1590568800,
+    "rssi": -81,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "303722724cf9034358c6a3aff15cf418",
+    "timestamp": 1590569100,
+    "rssi": -14,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "bf8d50253cfc2f7a68d720d317291e53",
+    "timestamp": 1590569400,
+    "rssi": -118,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "f254b563629eab1a694dafc007d551a1",
+    "timestamp": 1590569700,
+    "rssi": -87,
+    "geohash": "81d58d1ff5"
+  },
+  {
+    "ephemeral_id": "e4617622557e2db8cc4c7e94928cc02c",
+    "timestamp": 1590570000,
+    "rssi": -84,
+    "geohash": "81d58d1ff5"
+  }
+]
