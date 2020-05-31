@@ -11,16 +11,16 @@ import java.util.List;
 public class MatchResponse {
 
     private long startContactTimestamp;
-    private long endContactTimeStamp;
+    private long endContactTimestamp;
 
     private List<String> verifiedEphemerals;
     private double lat;
     private double lon;
     private String contactIntegrityLevel;
 
-    public MatchResponse(long startContactTimestamp, long endContactTimeStamp, List<String> verifiedEphemerals, double lat, double lon, String contactIntegrityLevel) {
+    public MatchResponse(long startContactTimestamp, long endContactTimestamp, List<String> verifiedEphemerals, double lat, double lon, String contactIntegrityLevel) {
         this.startContactTimestamp = startContactTimestamp;
-        this.endContactTimeStamp = endContactTimeStamp;
+        this.endContactTimestamp = endContactTimestamp;
         this.verifiedEphemerals = verifiedEphemerals;
         this.lat = lat;
         this.lon = lon;
@@ -35,12 +35,12 @@ public class MatchResponse {
         this.startContactTimestamp = startContactTimestamp;
     }
 
-    public long getEndContactTimeStamp() {
-        return endContactTimeStamp;
+    public long getEndContactTimestamp() {
+        return endContactTimestamp;
     }
 
-    public void setEndContactTimeStamp(long endContactTimeStamp) {
-        this.endContactTimeStamp = endContactTimeStamp;
+    public void setEndContactTimestamp(long endContactTimestamp) {
+        this.endContactTimestamp = endContactTimestamp;
     }
 
     public List<String> getVerifiedEphemerals() {
@@ -82,7 +82,7 @@ public class MatchResponse {
         try
         {
             jo.put("startContactTimestamp", String.valueOf(startContactTimestamp));
-            jo.put("endContactTimeStamp", String.valueOf(endContactTimeStamp));
+            jo.put("endContactTimestamp", String.valueOf(endContactTimestamp));
             jo.put("verifiedEphemerals", verifiedEphemerals);
             jo.put("lat",lat);
             jo.put("lon",lon);
