@@ -344,9 +344,8 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         List<MatchResponse> result = CryptoManager.getInstance(reactContext).mySelf.findCryptoMatches(infe);
         if(result != null && result.size() > 0)
         {
-            Toast.makeText(reactContext.getApplicationContext(),"We Found a Match!! :(",Toast.LENGTH_LONG).show();
+            Log.e(TAG, "match: We Found a Match!!");
         }
-//        return ParseUtils.parseResultToJson(result);/**/
         callback.invoke(ParseUtils.parseResultToJson(result));
     }
 
