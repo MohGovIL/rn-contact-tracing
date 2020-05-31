@@ -1,0 +1,227 @@
+[
+  {
+    "ephemeral_id": "5852CC65F77A24441C878F4253D65AF8",
+    "rssi": "A5FFFFFF",
+    "timestamp": 1590598175,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:49:35"
+  },
+  {
+    "ephemeral_id": "5852CC65F77A24441C878F4253D65AF8",
+    "rssi": "A0FFFFFF",
+    "timestamp": 1590598179,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:49:39"
+  },
+  {
+    "ephemeral_id": "5852CC65F77A24441C878F4253D65AF8",
+    "rssi": "A5FFFFFF",
+    "timestamp": 1590598187,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:49:47"
+  },
+  {
+    "ephemeral_id": "86A7EDD3E762F0310C7A35D88FACEE3C",
+    "rssi": "B1FFFFFF",
+    "timestamp": 1590598207,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:50:07"
+  },
+  {
+    "ephemeral_id": "86A7EDD3E762F0310C7A35D88FACEE3C",
+    "rssi": "B6FFFFFF",
+    "timestamp": 1590598211,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:50:11"
+  },
+  {
+    "ephemeral_id": "DDD65BCED74E2126F63323233661157B",
+    "rssi": "A5FFFFFF",
+    "timestamp": 1590598228,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:50:28"
+  },
+  {
+    "ephemeral_id": "A7E667DA59DB74F9B2FC5180FD0B6C4E",
+    "rssi": "B3FFFFFF",
+    "timestamp": 1590598228,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:50:28"
+  },
+  {
+    "ephemeral_id": "6A42F9CBCFC4D11CFFB14C665729C01D",
+    "rssi": "AAFFFFFF",
+    "timestamp": 1590598491,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:54:51"
+  },
+  {
+    "ephemeral_id": "7F98314685548CDABFBD797F734EA6A2",
+    "rssi": "B3FFFFFF",
+    "timestamp": 1590598512,
+    "geohash": 0,
+    "lat": 32.133415,
+    "lon": 34.89864,
+    "": "27/05/2020 19:55:12"
+  },
+  {
+    "ephemeral_id": "27EBC6C0D0E79A1FA8EF0C1A0B80926F",
+    "rssi": "C6FFFFFF",
+    "timestamp": 1590650325,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:18:45"
+  },
+  {
+    "ephemeral_id": "27EBC6C0D0E79A1FA8EF0C1A0B80926F",
+    "rssi": "CBFFFFFF",
+    "timestamp": 1590650329,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:18:49"
+  },
+  {
+    "ephemeral_id": "27EBC6C0D0E79A1FA8EF0C1A0B80926F",
+    "rssi": "C7FFFFFF",
+    "timestamp": 1590650333,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:18:53"
+  },
+  {
+    "ephemeral_id": "5B6E387BEDDC60DBAF8BE729F3F60077",
+    "rssi": "CBFFFFFF",
+    "timestamp": 1590650439,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:20:39"
+  },
+  {
+    "ephemeral_id": "5B6E387BEDDC60DBAF8BE729F3F60077",
+    "rssi": "C9FFFFFF",
+    "timestamp": 1590650443,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:20:43"
+  },
+  {
+    "ephemeral_id": "512BC3CBD6E87D38FDEAF9B0FCCF74E9",
+    "rssi": "CFFFFFFF",
+    "timestamp": 1590650722,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:25:22"
+  },
+  {
+    "ephemeral_id": "512BC3CBD6E87D38FDEAF9B0FCCF74E9",
+    "rssi": "C8FFFFFF",
+    "timestamp": 1590650935,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:28:55"
+  },
+  {
+    "ephemeral_id": "512BC3CBD6E87D38FDEAF9B0FCCF74E9",
+    "rssi": "CBFFFFFF",
+    "timestamp": 1590650938,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:28:58"
+  },
+  {
+    "ephemeral_id": "512BC3CBD6E87D38FDEAF9B0FCCF74E9",
+    "rssi": "C8FFFFFF",
+    "timestamp": 1590650942,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:29:02"
+  },
+  {
+    "ephemeral_id": "512BC3CBD6E87D38FDEAF9B0FCCF74E9",
+    "rssi": "CDFFFFFF",
+    "timestamp": 1590650995,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:29:55"
+  },
+  {
+    "ephemeral_id": "512BC3CBD6E87D38FDEAF9B0FCCF74E9",
+    "rssi": "CDFFFFFF",
+    "timestamp": 1590650999,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:29:59"
+  },
+  {
+    "ephemeral_id": "50A2A5D10B9BBAD43638E3ED29834832",
+    "rssi": "C8FFFFFF",
+    "timestamp": 1590651048,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:30:48"
+  },
+  {
+    "ephemeral_id": "50A2A5D10B9BBAD43638E3ED29834832",
+    "rssi": "DBFFFFFF",
+    "timestamp": 1590651213,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:33:33"
+  },
+  {
+    "ephemeral_id": "50A2A5D10B9BBAD43638E3ED29834832",
+    "rssi": "DDFFFFFF",
+    "timestamp": 1590651217,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:33:37"
+  },
+  {
+    "ephemeral_id": "50A2A5D10B9BBAD43638E3ED29834832",
+    "rssi": "DDFFFFFF",
+    "timestamp": 1590651266,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:34:26"
+  },
+  {
+    "ephemeral_id": "6484038F88EBD4B6D251CE933861B1A4",
+    "rssi": "CCFFFFFF",
+    "timestamp": 1590651327,
+    "geohash": 0,
+    "lat": 32.12660167,
+    "lon": 34.99346833,
+    "": "28/05/2020 10:35:27"
+  }
+]

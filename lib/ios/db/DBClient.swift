@@ -48,7 +48,7 @@ public class DBClient: NSObject {
     static func stringToBytes(_ string: String) -> [UInt8]? {
         let length = string.count
         if length & 1 != 0 {
-            return nil
+            return []
         }
         var bytes = [UInt8]()
         bytes.reserveCapacity(length/2)
