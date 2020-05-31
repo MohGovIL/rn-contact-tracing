@@ -34,6 +34,8 @@
 		20C0FA1424839DEF00D3FA7D /* serverReponse_startDay_String.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA1324839DEF00D3FA7D /* serverReponse_startDay_String.json */; };
 		20C0FA172483AA0F00D3FA7D /* contactsMatrix.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA152483AA0F00D3FA7D /* contactsMatrix.json */; };
 		20C0FA182483AA0F00D3FA7D /* serverMatrix.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA162483AA0F00D3FA7D /* serverMatrix.json */; };
+		20C0FA1C2483E1B400D3FA7D /* A-10_contacts.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA1B2483E1B400D3FA7D /* A-10_contacts.json */; };
+		20C0FA202483E21200D3FA7D /* A-10_serverResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 20C0FA1F2483E21200D3FA7D /* A-10_serverResponse.json */; };
 		26F3636024476ED500B45664 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F3635F24476ED500B45664 /* Dummy.swift */; };
 		5546FBE32455EE6800428401 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5546FBE22455EE6800428401 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -70,6 +72,8 @@
 		20C0FA1324839DEF00D3FA7D /* serverReponse_startDay_String.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverReponse_startDay_String.json; sourceTree = "<group>"; };
 		20C0FA152483AA0F00D3FA7D /* contactsMatrix.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = contactsMatrix.json; sourceTree = "<group>"; };
 		20C0FA162483AA0F00D3FA7D /* serverMatrix.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = serverMatrix.json; sourceTree = "<group>"; };
+		20C0FA1B2483E1B400D3FA7D /* A-10_contacts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "A-10_contacts.json"; sourceTree = "<group>"; };
+		20C0FA1F2483E21200D3FA7D /* A-10_serverResponse.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "A-10_serverResponse.json"; sourceTree = "<group>"; };
 		26F3635F24476ED500B45664 /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		26F3636124476F4A00B45664 /* example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "example-Bridging-Header.h"; sourceTree = "<group>"; };
 		337F95A4A2A5CB87972DEB20 /* libPods-example-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-example-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,6 +125,8 @@
 		20C0F9EA247E86E500D3FA7D /* Contacts files */ = {
 			isa = PBXGroup;
 			children = (
+				20C0FA1B2483E1B400D3FA7D /* A-10_contacts.json */,
+				20C0FA1F2483E21200D3FA7D /* A-10_serverResponse.json */,
 				20C0FA152483AA0F00D3FA7D /* contactsMatrix.json */,
 				20C0FA162483AA0F00D3FA7D /* serverMatrix.json */,
 				20C0FA0B247EB04700D3FA7D /* serverReponse_wrong_type.json */,
@@ -280,11 +286,13 @@
 				20C0FA1424839DEF00D3FA7D /* serverReponse_startDay_String.json in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				20C0FA10247EB2C600D3FA7D /* serverReponse_wrong_typ_2.json in Resources */,
+				20C0FA1C2483E1B400D3FA7D /* A-10_contacts.json in Resources */,
 				20367D56247B9A0A00B09B90 /* contacts_following-day-epoch.json in Resources */,
 				20728369247504BD00F1DD7B /* outputserverReponse.json in Resources */,
 				20367D55247B9A0A00B09B90 /* serverReponse_following-day-epoch.json in Resources */,
 				20367D61247B9AA200B09B90 /* serverReponse_two-user-data.json in Resources */,
 				20C0FA182483AA0F00D3FA7D /* serverMatrix.json in Resources */,
+				20C0FA202483E21200D3FA7D /* A-10_serverResponse.json in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				20C0FA09247EA71A00D3FA7D /* serverReponse_Whole_last_day_removed.json in Resources */,
 				20C0FA0C247EB04700D3FA7D /* serverReponse_wrong_type.json in Resources */,

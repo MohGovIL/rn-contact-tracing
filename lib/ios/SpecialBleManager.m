@@ -492,7 +492,7 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString* fileName = @"serverMatrix";
+        NSString* fileName = @"A-10_serverResponse";
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
@@ -550,7 +550,7 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString* fileName = @"contactsMatrix";
+        NSString* fileName = @"A-10_contacts";
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
