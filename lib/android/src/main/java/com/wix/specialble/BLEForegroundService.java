@@ -1,5 +1,6 @@
 package com.wix.specialble;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -59,7 +60,8 @@ public class BLEForegroundService extends Service {
      * Utility for starting this Service the same way from multiple places.
      */
     public static void startThisService(Context context) {
-        if(context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+        if(!BLEForegroundService.isServiceRunningInForeground(context, BLEForegroundService.class) &&
+                context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Intent sIntent = new Intent(context, BLEForegroundService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(sIntent);
@@ -101,7 +103,15 @@ public class BLEForegroundService extends Service {
         }
     };
 
-
+    public static boolean isServiceRunningInForeground(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return service.foreground;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void onDestroy() {
