@@ -1,5 +1,6 @@
 package com.wix.specialble;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -41,6 +42,7 @@ import static com.wix.specialble.receivers.AlarmReceiver.alarmInterval_after_5;
 public class BLEForegroundService extends Service {
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
     private static final String TAG = "BLEForegroundService";
+    private static boolean isServiceRunning = false;
 
     BLEManager bleManager;
     private PowerManager.WakeLock wakeLock;
@@ -59,7 +61,9 @@ public class BLEForegroundService extends Service {
      * Utility for starting this Service the same way from multiple places.
      */
     public static void startThisService(Context context) {
-        if(context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+        if(!isServiceRunning && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+
+
             Intent sIntent = new Intent(context, BLEForegroundService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(sIntent);
@@ -101,11 +105,21 @@ public class BLEForegroundService extends Service {
         }
     };
 
-
+    public static boolean isServiceRunningInForeground(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return service.foreground;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        isServiceRunning = false;
+
         if (bleManager != null) {
             bleManager.stopScan();
             bleManager.stopAdvertise();
@@ -139,78 +153,80 @@ public class BLEForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        createNotificationChannel();
-        Config config = Config.getInstance(this);
 
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-        PendingIntent mainActivityIntent = null;
-        if (launchIntent != null) {
-            mainActivityIntent = PendingIntent.getActivity(this, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
+        if(!isServiceRunning) {
 
-        Intent notificationIntent = new Intent(this, BLEForegroundService.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
-        ////////////////////////////////////////////////////////////////////////////
-        //                  Prepare icons for notification display
-        //
-        //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()
-        //  Large icon comes from the field notificationLargeIconPath.
-        //  Small icon comes from the field notificationSmallIconPath.
-        //
-        ////////////////////////////////////////////////////////////////////////////
-        int resId = 0;
-        if(config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0)
-        {
-            try {
-                resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", "com.rncontacttracing.demo");
+            isServiceRunning = true;
+
+            createNotificationChannel();
+            Config config = Config.getInstance(this);
+
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            PendingIntent mainActivityIntent = null;
+            if (launchIntent != null) {
+                mainActivityIntent = PendingIntent.getActivity(this, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             }
-            catch (Throwable throwable) {
-                throwable.printStackTrace();
+
+            Intent notificationIntent = new Intent(this, BLEForegroundService.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                    0, notificationIntent, 0);
+            ////////////////////////////////////////////////////////////////////////////
+            //                  Prepare icons for notification display
+            //
+            //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()
+            //  Large icon comes from the field notificationLargeIconPath.
+            //  Small icon comes from the field notificationSmallIconPath.
+            //
+            ////////////////////////////////////////////////////////////////////////////
+            int resId = 0;
+            if (config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0) {
+                try {
+                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", "com.rncontacttracing.demo");
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            }
+            Bitmap bitmap = null;
+            if (config.getLargeNotificationIconPath() != null && config.getLargeNotificationIconPath().length() > 0) {
+
+                try {
+                    InputStream ims = getAssets().open(config.getLargeNotificationIconPath());
+                    bitmap = BitmapFactory.decodeStream(ims);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(config.getNotificationTitle())
+                    .setContentText(config.getNotificationContent())
+                    .setSmallIcon(resId)
+                    .setContentIntent(mainActivityIntent);
+            if (bitmap != null) {
+                notificationBuilder.setLargeIcon(bitmap);
+            }
+            Notification notification = notificationBuilder.build();
+
+            startForeground(1, notification);
+            // initialize if needed
+            if (bleManager == null) {
+                bleManager = BLEManager.getInstance(getApplicationContext());
+            }
+            this.handler.post(this.scanRunnable);
+            this.handler.post(this.advertiseRunnable);
+
+            //schedule wake locks every 5,10,15 minutes to make sure were awake
+            //the minimum time is 15 min but the wake lock and foreground service will help in regard to this limitation
+            scheduleAlarms();
+
+            //acquire partial wake lock to hold the cpu awake
+            if (wakeLock == null) {
+                PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+                wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                        "RnContactTracing::MyWakelockTag");
+                wakeLock.acquire();
             }
         }
-        Bitmap bitmap = null;
-        if(config.getLargeNotificationIconPath() != null && config.getLargeNotificationIconPath().length()  > 0)
-        {
-
-            try {
-                InputStream ims = getAssets().open(config.getLargeNotificationIconPath());
-                bitmap = BitmapFactory.decodeStream(ims);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(config.getNotificationTitle())
-                .setContentText(config.getNotificationContent())
-                .setSmallIcon(resId)
-                .setContentIntent(mainActivityIntent);
-        if(bitmap != null) {
-            notificationBuilder.setLargeIcon(bitmap);
-        }
-        Notification notification = notificationBuilder.build();
-
-        startForeground(1, notification);
-        // initialize if needed
-        if (bleManager == null) {
-            bleManager = BLEManager.getInstance(getApplicationContext());
-        }
-        this.handler.post(this.scanRunnable);
-        this.handler.post(this.advertiseRunnable);
-
-        //schedule wake locks every 5,10,15 minutes to make sure were awake
-        //the minimum time is 15 min but the wake lock and foreground service will help in regard to this limitation
-        scheduleAlarms();
-
-        //acquire partial wake lock to hold the cpu awake
-        if(wakeLock == null) {
-            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "RnContactTracing::MyWakelockTag");
-            wakeLock.acquire();
-        }
-
         return START_STICKY;
     }
 

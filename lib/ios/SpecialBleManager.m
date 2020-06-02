@@ -419,58 +419,61 @@ int resetBleStack = 0;
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
+    
+    // ****** manage advertisement ***** //
     NSLog(@"didStartAdvertising, duration:%d , interval:%d",
     [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        [self stopAdvertise:self.eventEmitter];
-        if(resetBleStack == 2)
-        {
-            [self stopBLEServicesWithEmitter:self.eventEmitter];
-        }
-        else
-        {
-            [self stopAdvertise:self.eventEmitter];
-        }
+        [self stopAdvertise:self.eventEmitter];
+//        if(resetBleStack == 2)
+//        {
+//            [self stopBLEServicesWithEmitter:self.eventEmitter];
+//        }
+//        else
+//        {
+//            [self stopAdvertise:self.eventEmitter];
+//        }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            if (self.advertisingIsOn)
-//                [self _advertise];
-//            else
-//                NSLog(@"interval received but advertising is off!!!");
-            if(resetBleStack == 2)
-            {
-                [self startBLEServicesWithEventEmitter:self.eventEmitter];
-                resetBleStack = 0;
-            }
+            if (self.advertisingIsOn)
+                [self _advertise];
             else
-            {
-                if (self.advertisingIsOn)
-                    [self _advertise];
-                else
-                    NSLog(@"interval received but advertising is off!!!");
-                resetBleStack++;
-            }
+                NSLog(@"interval received but advertising is off!!!");
+//            if(resetBleStack == 2)
+//            {
+//                [self startBLEServicesWithEventEmitter:self.eventEmitter];
+//                resetBleStack = 0;
+//            }
+//            else
+//            {
+//                if (self.advertisingIsOn)
+//                    [self _advertise];
+//                else
+//                    NSLog(@"interval received but advertising is off!!!");
+//                resetBleStack++;
+//            }
         });
     });
     
-    // ********** SCAN ************ //
-//    NSLog(@"Start scanning for %@, duration:%d , interval:%d", self.scanUUIDString,
-//    [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
-//    if (self.scanningIsOn)
-//    {
-//        CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
-//        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
-//        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            [self stopScan:self.eventEmitter];
-//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
-//                [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
-//                [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
-//            });
-//        });
-//    }
-//    else
-//        NSLog(@"interval received but advertising is off!!!");
+    // ********** Manage SCAN ************ //
+    if (self.scanningIsOn)
+    {
+        CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
+        NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
+              [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self stopScan:self.eventEmitter];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
+                [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+                [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+            });
+        });
+    }
+    else
+        NSLog(@"interval received but scanning is off!!!");
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral {
@@ -492,7 +495,7 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString* fileName = @"serverMatrix";
+        NSString* fileName = @"A-10_serverResponse";
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {
@@ -550,7 +553,7 @@ int resetBleStack = 0;
     }
     else // TODO: only to tests!!! getting hardCoded file
     {
-        NSString* fileName = @"contactsMatrix";
+        NSString* fileName = @"A-10_contacts";
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
         if (!path)
         {

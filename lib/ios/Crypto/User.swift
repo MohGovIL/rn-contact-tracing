@@ -327,6 +327,9 @@ public class User : NSObject, Codable {
     }
     
     func _is_match(mask: [UInt8], epoch_mac: [UInt8], contact: Contact) -> (Bool, [UInt8], [UInt8]) {
+        if mask.count != 16 || epoch_mac.count != 16 || contact.ephemeral_id.count != 16 {
+            return (false, [0x00], [0x00])
+        }
         let ephid = [UInt8](contact.ephemeral_id)
         let plain = BytesUtils.xor(mask, ephid)
         let zeros = Array(plain[0..<3])
