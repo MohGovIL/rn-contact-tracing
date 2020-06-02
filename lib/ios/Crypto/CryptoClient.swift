@@ -18,7 +18,9 @@ public class CryptoClient : NSObject {
     
     @objc(getEphemeralId)
     static public func getEphemeralId() -> String {
-        return CryptoManager.shared.getStringEphemeral()
+        // TODO: change after tests
+        return "GAT_" + UIDevice.current.name
+//        return CryptoManager.shared.getStringEphemeral()
     }
     
     @objc(saveMyUserToDisk)

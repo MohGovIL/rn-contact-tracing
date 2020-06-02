@@ -189,8 +189,8 @@ function HomeScreen() {
                 {_renderButton('Add Contacts to DB', _writeContactsToDB)}
             </View>
 
-            <View style = {{display: 'none'}}>
-
+            {/* <View style = {{display: 'none'}}> */}
+            <View>
                 <View style={styles.subContainer}>
                     {_renderButton('Start Scan', _startScan)}
                     {_renderButton('Start Advertise', _startAdvertise)}
