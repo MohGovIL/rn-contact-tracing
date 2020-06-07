@@ -81,7 +81,7 @@ public class BLEScannerManager {
             if(bluetoothLeScanner == null) // if we turned the bluetooth on while the service is running
                 bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
-            registerSensors();
+//            registerSensors();
 
             Config config = Config.getInstance(mContext);
             int scanMatchMode = config.getScanMatchMode();
@@ -113,7 +113,7 @@ public class BLEScannerManager {
                 bluetoothLeScanner.stopScan(bleScanCallback);
 
             mEventListenerCallback.onEvent(SCANNING_STATUS, false);
-            unregisterSensors();
+//            unregisterSensors();
         }
     }
 
@@ -203,16 +203,7 @@ public class BLEScannerManager {
 
                         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
                         } else {
-
-
                             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                             if (location != null) {
                                 lat = location.getLatitude();

@@ -85,27 +85,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
         bleManager = BLEManager.getInstance(reactContext);
         bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
-//        ParseUtils.loadDatabase(reactContext.getApplicationContext());//open this to load db for testing from raw...
-
-        //  registerEventLiveData();
-
     }
-
-/*    private void registerEventLiveData() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                bleManager.getEventLiveData().observeForever(new Observer<Pair<String, Object>>() {
-                    @Override
-                    public void onChanged(Pair<String, Object> event) {
-                        mEventToJSDispatcher.onEvent(event.first, event.second);
-                    }
-                });
-            }
-        });
-    }*/
-
 
     @Override
     public String getName() {

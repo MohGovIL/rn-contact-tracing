@@ -4,14 +4,12 @@ package com.wix.specialble.bt;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.util.Log;
-
 import com.wix.crypto.Contact;
 import com.wix.specialble.EventToJSDispatcher;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.db.DBClient;
 import com.wix.specialble.listeners.IEventListener;
 import com.wix.specialble.util.Constants;
-
 import java.util.List;
 
 
@@ -68,15 +66,11 @@ public class BLEManager implements IEventListener {
         bleScanner.stopScan();
     }
 
-    public void advertise()
-    {
-        bleAdvertiser.startAdvertise(mConfig.getServiceUUID());
-    }
+    public void advertise() { bleAdvertiser.startAdvertise(mConfig.getServiceUUID()); }
 
     public void stopAdvertise() {
         bleAdvertiser.stopAdvertise();
     }
-
 
     public List<Device> getAllDevices() {
         return DBClient.getInstance(context).getAllDevices();
@@ -90,9 +84,7 @@ public class BLEManager implements IEventListener {
         return DBClient.getInstance(context).getAllScans();
     }
 
-    public List<Scan> getScansByKey(String pubKey) {
-        return DBClient.getInstance(context).getScansByKey(pubKey);
-    }
+    public List<Scan> getScansByKey(String pubKey) { return DBClient.getInstance(context).getScansByKey(pubKey); }
 
     public List<Contact> getAllContacts() { return DBClient.getInstance(context).getAllContacts(); }
 
@@ -100,17 +92,11 @@ public class BLEManager implements IEventListener {
         DBClient.getInstance(context).deleteDatabase();
     }
 
-    public void setEventToJSDispatcher(EventToJSDispatcher eventToJSDispatcher) {
-        mEventToJSDispatcher = eventToJSDispatcher;
-    }
+    public void setEventToJSDispatcher(EventToJSDispatcher eventToJSDispatcher) {mEventToJSDispatcher = eventToJSDispatcher; }
 
-    public List<Event> getAllAdvertiseData() {
-        return DBClient.getInstance(context).getEventsByActionType(Constants.ACTION_ADVERTISE);
-    }
+    public List<Event> getAllAdvertiseData() {return DBClient.getInstance(context).getEventsByActionType(Constants.ACTION_ADVERTISE); }
 
-    public List<Event> getAllScansData() {
-        return DBClient.getInstance(context).getEventsByActionType(Constants.ACTION_SCAN);
-    }
+    public List<Event> getAllScansData() { return DBClient.getInstance(context).getEventsByActionType(Constants.ACTION_SCAN); }
 
     @Override
     public void onEvent(String event, Object data) {

@@ -1,6 +1,6 @@
 package com.wix.specialble;
 
-import android.app.ActivityManager;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,32 +12,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
-import com.wix.crypto.User;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.receivers.AlarmReceiver;
+import com.wix.specialble.util.Constants;
 
 import java.io.IOException;
 import java.io.InputStream;
-import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP;
-import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP_AFTER_10;
-import static com.wix.specialble.receivers.AlarmReceiver.WAKE_ME_UP_AFTER_5;
-import static com.wix.specialble.receivers.AlarmReceiver.alarmInterval;
-import static com.wix.specialble.receivers.AlarmReceiver.alarmInterval_after_10;
-import static com.wix.specialble.receivers.AlarmReceiver.alarmInterval_after_5;
 
 public class BLEForegroundService extends Service {
     public static final String CHANNEL_ID = "BLEForegroundServiceChannel";
@@ -50,7 +39,7 @@ public class BLEForegroundService extends Service {
 
     {
         try {
-            bleManager = BLEManager.getInstance();
+            bleManager = BLEManager.getInstance(getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +51,6 @@ public class BLEForegroundService extends Service {
      */
     public static void startThisService(Context context) {
         if(!isServiceRunning && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-
 
             Intent sIntent = new Intent(context, BLEForegroundService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -79,12 +67,14 @@ public class BLEForegroundService extends Service {
     private Runnable scanRunnable = new Runnable() {
         @Override
         public void run() {
+            acquireWakeLock();
             bleManager.startScan();
             BLEForegroundService.handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     bleManager.stopScan();
                     handler.postDelayed(scanRunnable,Config.getInstance(BLEForegroundService.this).getScanInterval());
+                    releaseWakeLock();
                 }
             }, Config.getInstance(BLEForegroundService.this).getScanDuration());
         }
@@ -94,26 +84,18 @@ public class BLEForegroundService extends Service {
     private Runnable advertiseRunnable = new Runnable() {
         @Override
         public void run() {
+            acquireWakeLock();
             bleManager.advertise();
             BLEForegroundService.handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     bleManager.stopAdvertise();
                     handler.postDelayed(advertiseRunnable,Config.getInstance(BLEForegroundService.this).getAdvertiseInterval());
+                    releaseWakeLock();
                 }
             }, Config.getInstance(BLEForegroundService.this).getAdvertiseDuration());
         }
     };
-
-    public static boolean isServiceRunningInForeground(Context context, Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return service.foreground;
-            }
-        }
-        return false;
-    }
 
     @Override
     public void onDestroy() {
@@ -124,29 +106,24 @@ public class BLEForegroundService extends Service {
             bleManager.stopScan();
             bleManager.stopAdvertise();
         }
-        this.handler.removeCallbacksAndMessages(null);
-
+        handler.removeCallbacksAndMessages(null);
 
         //release wake lock
-        if(wakeLock != null && wakeLock.isHeld())
-        {
-            wakeLock.release();
-            wakeLock = null;
-        }
+        releaseWakeLock();
 
         //clear any pending wake up's
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        alarmIntent.setAction(WAKE_ME_UP);
+        alarmIntent.setAction(AlarmReceiver.WAKE_ME_UP);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
 
-        alarmIntent.setAction(WAKE_ME_UP_AFTER_5);
+        alarmIntent.setAction(AlarmReceiver.WAKE_ME_UP_AFTER_5);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
 
-        alarmIntent.setAction(WAKE_ME_UP_AFTER_10);
+        alarmIntent.setAction(AlarmReceiver.WAKE_ME_UP_AFTER_10);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
     }
@@ -168,20 +145,19 @@ public class BLEForegroundService extends Service {
             }
 
             Intent notificationIntent = new Intent(this, BLEForegroundService.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                    0, notificationIntent, 0);
-            ////////////////////////////////////////////////////////////////////////////
-            //                  Prepare icons for notification display
-            //
-            //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()
-            //  Large icon comes from the field notificationLargeIconPath.
-            //  Small icon comes from the field notificationSmallIconPath.
-            //
-            ////////////////////////////////////////////////////////////////////////////
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, 0);
+            /////////////////////////////////////////////////////////////////////////////////////////////////
+            //                  Prepare icons for notification display                                     //
+            //                                                                                             //
+            //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()  //
+            //  Large icon comes from the field notificationLargeIconPath.                                 //
+            //  Small icon comes from the field notificationSmallIconPath.                                 //
+            //                                                                                             //
+            /////////////////////////////////////////////////////////////////////////////////////////////////
             int resId = 0;
             if (config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0) {
                 try {
-                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", "com.rncontacttracing.demo");
+                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), Constants.DRAWABLE, Constants.DEF_PACKAGE);
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -212,72 +188,53 @@ public class BLEForegroundService extends Service {
             if (bleManager == null) {
                 bleManager = BLEManager.getInstance(getApplicationContext());
             }
-            this.handler.post(this.scanRunnable);
-            this.handler.post(this.advertiseRunnable);
+            handler.post(this.scanRunnable);
+            handler.post(this.advertiseRunnable);
 
             //schedule wake locks every 5,10,15 minutes to make sure were awake
             //the minimum time is 15 min but the wake lock and foreground service will help in regard to this limitation
             scheduleAlarms();
-
-            //acquire partial wake lock to hold the cpu awake
-            if (wakeLock == null) {
-                PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-                wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                        "RnContactTracing::MyWakelockTag");
-                wakeLock.acquire();
-            }
         }
         return START_STICKY;
     }
 
-    public void scheduleAlarms() {
-        final AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        alarmIntent.setAction(WAKE_ME_UP);
-        
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);
-        }
-        else
+    private void acquireWakeLock()
+    {
+        if (wakeLock == null)
         {
-            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);;
+            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, Constants.WAKELOCK_TAG);
+            wakeLock.acquire(Constants.TIMEOUT_WAKELOCK);
         }
+    }
+
+    private void releaseWakeLock() {
+        if(wakeLock != null && wakeLock.isHeld())
+        {
+            wakeLock.release();
+            wakeLock = null;
+        }
+    }
+
+    public void scheduleAlarms()
+    {
+        AlarmReceiver.scheduleAlarms(BLEForegroundService.this, AlarmReceiver.WAKE_ME_UP, AlarmReceiver.ALARM_INTERVAL);
 
         handler.postDelayed(new Runnable() {
             @Override
-            public void run() {
-                Intent alarmIntent = new Intent(BLEForegroundService.this, AlarmReceiver.class);
-                alarmIntent.setAction(WAKE_ME_UP_AFTER_5);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(BLEForegroundService.this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);
-                }
-                else
-                {
-                    alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);;
-                }
+            public void run()
+            {
+                AlarmReceiver.scheduleAlarms(BLEForegroundService.this, AlarmReceiver.WAKE_ME_UP_AFTER_5, AlarmReceiver.ALARM_INTERVAL);
             }
-        },alarmInterval_after_5);
+        },AlarmReceiver.ALARM_INTERVAL_AFTER_5);
 
         handler.postDelayed(new Runnable() {
             @Override
-            public void run() {
-                Intent alarmIntent = new Intent(BLEForegroundService.this, AlarmReceiver.class);
-                alarmIntent.setAction(WAKE_ME_UP_AFTER_10);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(BLEForegroundService.this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);
-                }
-                else
-                {
-                    alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + alarmInterval, pendingIntent);;
-                }
+            public void run()
+            {
+                AlarmReceiver.scheduleAlarms(BLEForegroundService.this, AlarmReceiver.WAKE_ME_UP_AFTER_10, AlarmReceiver.ALARM_INTERVAL);
             }
-        },alarmInterval_after_10);
+        },AlarmReceiver.ALARM_INTERVAL_AFTER_10);
     }
     
     private void createNotificationChannel() {
@@ -291,8 +248,6 @@ public class BLEForegroundService extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
     }
-
-
 
     @Nullable
     @Override
