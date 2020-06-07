@@ -81,7 +81,7 @@ public class BLEScannerManager {
             if(bluetoothLeScanner == null) // if we turned the bluetooth on while the service is running
                 bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
-            registerSensors();
+//            registerSensors();
 
             Config config = Config.getInstance(mContext);
             int scanMatchMode = config.getScanMatchMode();
@@ -113,7 +113,7 @@ public class BLEScannerManager {
                 bluetoothLeScanner.stopScan(bleScanCallback);
 
             mEventListenerCallback.onEvent(SCANNING_STATUS, false);
-            unregisterSensors();
+//            unregisterSensors();
         }
     }
 
