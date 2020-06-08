@@ -16,9 +16,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.ParcelUuid;
 import android.util.Log;
-
 import androidx.core.app.ActivityCompat;
-
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.specialble.config.Config;
@@ -29,7 +27,6 @@ import com.wix.specialble.sensor.ProximityManager;
 import com.wix.specialble.sensor.RotationVectorManager;
 import com.wix.specialble.sensor.SensorUtils;
 import com.wix.specialble.util.Constants;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -81,8 +78,6 @@ public class BLEScannerManager {
             if(bluetoothLeScanner == null) // if we turned the bluetooth on while the service is running
                 bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
-//            registerSensors();
-
             Config config = Config.getInstance(mContext);
             int scanMatchMode = config.getScanMatchMode();
 
@@ -113,7 +108,6 @@ public class BLEScannerManager {
                 bluetoothLeScanner.stopScan(bleScanCallback);
 
             mEventListenerCallback.onEvent(SCANNING_STATUS, false);
-//            unregisterSensors();
         }
     }
 
@@ -148,7 +142,6 @@ public class BLEScannerManager {
             super.onScanFailed(errorCode);
             if (errorCode != SCAN_FAILED_ALREADY_STARTED) {
                 mEventListenerCallback.onEvent(SCANNING_STATUS, false);
-                unregisterSensors();
             }
             AsyncTask.execute(new Runnable() {
                 @Override
@@ -203,13 +196,7 @@ public class BLEScannerManager {
 
                         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
+
                         } else {
 
 
@@ -227,9 +214,8 @@ public class BLEScannerManager {
                     e.printStackTrace();
                 }
 
-//                if(byteScannedToken.length == Constants.KEY_LEN) {
+                //TODO:: do we need to make sure our key is exactly 16 byte len as per the spec ?
                 CryptoManager.getInstance(mContext).mySelf.storeContact(byteScannedToken, rssi, currentTime, sGeoHash, lat, lon);
-//                }
 
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
