@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.wix.specialble.config.Config;
+import com.wix.specialble.util.PrefUtils;
 
 /**
  * Currently filtering in only BOOT_COMPLETE and MY_PACKEGE_REPLACED.
@@ -15,7 +16,9 @@ public class BLEReceiver extends BroadcastReceiver {
     private static final String TAG = BLEReceiver.class.getSimpleName();
 
     public void onReceive(Context context, Intent arg1) {
-        BLEForegroundService.startThisService(context);
+
+        if(PrefUtils.getStartServiceValue(context))
+            BLEForegroundService.startThisService(context);
 
         Log.d(TAG, "Restarting BLE service..");
     }
