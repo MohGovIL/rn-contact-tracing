@@ -45,6 +45,7 @@ import com.wix.specialble.kays.PublicKey;
 import com.wix.specialble.util.CSVUtil;
 import com.wix.specialble.util.DeviceUtil;
 import com.wix.specialble.util.ParseUtils;
+import com.wix.specialble.util.PrefUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -136,11 +137,15 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     private void startBLEService() {
+
+        PrefUtils.setStartServiceValue(this.reactContext, true);
         BLEForegroundService.startThisService(this.reactContext);
     }
 
     @ReactMethod
     public void stopBLEService() {
+
+        PrefUtils.setStartServiceValue(this.reactContext, false);
         this.reactContext.stopService(new Intent(this.reactContext, BLEForegroundService.class));
     }
 

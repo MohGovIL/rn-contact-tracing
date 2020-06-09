@@ -29,6 +29,7 @@ import com.wix.crypto.User;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.config.Config;
 import com.wix.specialble.receivers.AlarmReceiver;
+import com.wix.specialble.util.PrefUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +62,7 @@ public class BLEForegroundService extends Service {
      * Utility for starting this Service the same way from multiple places.
      */
     public static void startThisService(Context context) {
-        if(!isServiceRunning && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-
+        if(PrefUtils.getStartServiceValue(context) && !isServiceRunning && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
 
             Intent sIntent = new Intent(context, BLEForegroundService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -154,7 +154,7 @@ public class BLEForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if(!isServiceRunning) {
+        if(PrefUtils.getStartServiceValue(this) && !isServiceRunning) {
 
             isServiceRunning = true;
 

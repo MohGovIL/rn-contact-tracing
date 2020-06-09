@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.wix.specialble.BLEForegroundService;
 import com.wix.specialble.util.CSVUtil;
+import com.wix.specialble.util.PrefUtils;
 
 /**
  * Created by hagai on 30/04/2020.
@@ -31,14 +32,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent)
     {
         String action = intent.getAction() != null ? intent.getAction() : WAKE_ME_UP;
-        if(BleServiceRunning(context, BLEForegroundService.class))
-        {
-            //do nothing
-        }
-        else
-        {
+
+        if(PrefUtils.getStartServiceValue(context))
             BLEForegroundService.startThisService(context);
-        }
 
         switch (action)
         {
@@ -68,15 +64,5 @@ public class AlarmReceiver extends BroadcastReceiver {
         {
             alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delay, pendingIntent);
         }
-    }
-
-    private boolean BleServiceRunning(Context ctx, Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 }
