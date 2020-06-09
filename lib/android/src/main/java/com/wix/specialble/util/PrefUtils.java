@@ -13,14 +13,13 @@ public class PrefUtils {
     public static final void setStartServiceValue(Context context, boolean shouldStart) {
 
         SharedPreferences.Editor editor = context.getSharedPreferences(START_SERVICE_PREFS, Context.MODE_PRIVATE).edit();
-        editor.putBoolean("START_SERVICE_PREFS_KEY", true);
+        editor.putBoolean(START_SERVICE_PREFS_KEY, shouldStart);
         editor.apply();
     }
 
     public static final boolean getStartServiceValue(Context context) {
 
         SharedPreferences prefs = context.getSharedPreferences(START_SERVICE_PREFS, MODE_PRIVATE);
-        boolean startService = prefs.getBoolean(START_SERVICE_PREFS_KEY, false);
-        return startService;
+        return prefs.getBoolean(START_SERVICE_PREFS_KEY, false);
     }
 }

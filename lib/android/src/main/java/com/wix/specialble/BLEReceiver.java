@@ -17,9 +17,9 @@ public class BLEReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent arg1) {
 
-        if(PrefUtils.getStartServiceValue(context))
+        if(PrefUtils.getStartServiceValue(context)) {
             BLEForegroundService.startThisService(context);
-
-        Log.d(TAG, "Restarting BLE service..");
+            Log.d(TAG, "Restarting BLE service..");
+        }
     }
 }
