@@ -19,6 +19,7 @@ NSString *const EVENTS_ADVERTISE_STATUS     = @"advertisingStatus";
 int resetBleStack = 0;
 Byte keepAliveValue = 0x00;
 NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
+int lastKeepAliveTimeStamp;
 
 @interface SpecialBleManager () <CLLocationManagerDelegate>
 
@@ -287,7 +288,6 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
     if (!self.contactPeripherals[peripheral.identifier] || self.contactPeripherals[peripheral.identifier].state != CBPeripheralStateConnected)
     {
         self.contactPeripherals[peripheral.identifier] = peripheral;
-        peripheral.delegate = self;
         [self.cbCentral connectPeripheral:peripheral options:nil];
     }
     
@@ -471,14 +471,16 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
 {
     NSData* data = characteristic.value;
     if (!data) { return; }
-    NSString* stringFromData = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+    // TODO: check if needed ascii encode for ephemeral key
+    NSString* stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];// NSASCIIStringEncoding];
     if (!stringFromData) { return; }
     NSLog(@"received string value: %@", stringFromData);
     
     [self sendKeepAlive];
+    if (stringFromData.length < 16) { return; }
     
     // ********** add device to DB ************* //
-    NSString* publicKey = [stringFromData substringToIndex:8];
+    NSString* publicKey = [stringFromData substringToIndex:16];
     int64_t unixtime = [[NSDate date] timeIntervalSince1970];
 
     // add contact to DB
@@ -560,12 +562,8 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
             case CBManagerStatePoweredOn:
                 NSLog(@"Peripheral.state is Powered on");
                 NSLog(@"publicKey: %@",self.publicKey);
-                if (self.publicKey)
-                    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
-                else {
-                    self.publicKey = [CryptoClient getEphemeralId];
-                    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
-                }
+                self.publicKey = [CryptoClient getEphemeralId];
+                [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
                 break;
             default:
                 break;
@@ -591,19 +589,6 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
     }
     
     [self sendKeepAlive];
-    // ******* send data using GATT ****** //
-//    NSString* sendString = [NSString stringWithFormat:@"GATT_%@", UIDevice.currentDevice.name];
-//    NSData *testSendData = [sendString dataUsingEncoding:NSUTF8StringEncoding];
-//    const char keepAlive = {0};
-//    NSData* command = [NSData dataWithBytes:&testSendData length:testSendData.length];
-//
-//    CBMutableCharacteristic* mutChar = [[CBMutableCharacteristic alloc] initWithType:[CBUUID UUIDWithString:self.scanUUIDString] properties:CBCharacteristicPropertyWriteWithoutResponse value:command permissions:CBAttributePermissionsWriteable];
-//
-//    [peripheral updateValue:command forCharacteristic:mutChar onSubscribedCentrals:nil];
-    
-//    [peripheral updateValue:command forCharacteristic:self.characteristic onSubscribedCentrals:nil];
-    // **********************************//
-    
     
     // ****** manage advertisement ***** //
     NSLog(@"didStartAdvertising, duration:%d , interval:%d",
@@ -612,6 +597,8 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
 //        [self stopAdvertise:self.eventEmitter];
         if(resetBleStack == 2)
         {
+//            self.cbCentral = nil;
+//            self.cbPeripheral = nil;
             [self internalStopBLEServicesWithEmitter:self.eventEmitter];
         }
         else
@@ -680,11 +667,12 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
         return;
     }
     
-
-    // TODO: add timer, send publickKey
+    int unixtime = [[NSDate date] timeIntervalSince1970];
+    if (unixtime-lastKeepAliveTimeStamp < 60)
+        return;
     
-    NSString* sendString = [NSString stringWithFormat:@"back_%@", [UIDevice.currentDevice.name substringToIndex:3]];
-    NSMutableData* sendData = [NSMutableData dataWithData:[sendString dataUsingEncoding:NSUTF8StringEncoding]];
+    // TODO: check if needed ascii encode for ephemeral key
+    NSMutableData* sendData = [NSMutableData dataWithData:[[CryptoClient getEphemeralId] dataUsingEncoding:NSUTF8StringEncoding]]; // NSASCIIStringEncoding
 //    NSData *sendData = [sendString dataUsingEncoding:NSUTF8StringEncoding];
     
     keepAliveValue = keepAliveValue + 0x01;
@@ -697,6 +685,7 @@ NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
     
     if (success)
     {
+        lastKeepAliveTimeStamp = unixtime;
         NSLog(@"update keep alive success");
     }
     else
