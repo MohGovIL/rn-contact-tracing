@@ -292,7 +292,10 @@ public class BLEForegroundService extends Service {
         }
     }
 
+    public static boolean isServiceRunning() {
 
+        return isServiceRunning;
+    }
 
     @Nullable
     @Override
