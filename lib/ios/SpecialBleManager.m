@@ -21,7 +21,9 @@ int resetBleStack = 0;
 @interface SpecialBleManager () <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CBCentralManager* cbCentral;
+@property (nonatomic, strong) CBCentralManager* firstCreatedCentral;
 @property (nonatomic, strong) CBPeripheralManager* cbPeripheral;
+//@property (nonatomic, strong) CBPeripheralManager* firstCreatedPeripheral;
 @property (nonatomic, strong) CBService* service;
 @property (nonatomic, strong) CBCharacteristic* characteristic;
 @property (nonatomic, strong) RCTEventEmitter* eventEmitter;
@@ -82,13 +84,21 @@ int resetBleStack = 0;
     
     // init and start the scan Central
     if (!self.cbCentral)
+    {
         self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+        if (!self.firstCreatedCentral)
+            self.firstCreatedCentral = self.cbCentral;
+    }
     else
         [self scan:self.scanUUIDString withEventEmitter:emitter];
     
     // init and start the advertise Peropheral
     if (!self.cbPeripheral)
+    {
         self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+//        if (!self.firstCreatedPeripheral)
+//            self.firstCreatedPeripheral = self.cbPeripheral;
+    }
     else
         [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
 //    lastServiceUUIDString = self.config[KEY_SERVICE_UUID] ;
@@ -101,6 +111,14 @@ int resetBleStack = 0;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
 }
+
+//- (void)internalStopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
+//{
+////    self.advertisingIsOn = NO;
+////    self.scanningIsOn = NO;
+//    [self stopScan:emitter];
+//    [self stopAdvertise:emitter];
+//}
 
 #pragma mark Scan tasks
 
@@ -259,7 +277,7 @@ int resetBleStack = 0;
     // get private_key
     if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
         // Androids device...
-        NSLog(@"ANDROID AdvertisementData: %@", advertisementData);
+        NSLog(@"ANDROID AdvertisementData");//: %@", advertisementData);
         
         NSDictionary *dataService = advertisementData[CBAdvertisementDataServiceDataKey];
         CBUUID *serviceUUID = advertisementData[CBAdvertisementDataServiceUUIDsKey][0];
@@ -267,7 +285,8 @@ int resetBleStack = 0;
         NSData *data = dataService[serviceUUID];
 
         public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
-        [CryptoClient printDecodedKey:public_key];
+        NSLog(@"Android public_key: %@",public_key);
+//        [CryptoClient printDecodedKey:public_key];
 //        if (data.length == 16) {
 //            public_key = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] ?: @"";
 //            [CryptoClient printDecodedKey:public_key];
@@ -276,10 +295,11 @@ int resetBleStack = 0;
 //        }
     } else if (advertisementData && advertisementData[CBAdvertisementDataLocalNameKey]) {
         // IOS device...
-        NSLog(@"IPHONE AdvertisementData: %@", advertisementData);
+        NSLog(@"IPHONE AdvertisementData");//: %@", advertisementData);
         
         public_key = advertisementData[CBAdvertisementDataLocalNameKey];
-        [CryptoClient printDecodedKey:public_key];
+        NSLog(@"IPHONE public_key: %@",public_key);
+//        [CryptoClient printDecodedKey:public_key];
 //        if (public_key.length == 16)
 //        {
 //            [CryptoClient printDecodedKey:public_key];
@@ -317,7 +337,7 @@ int resetBleStack = 0;
     double lat = lastKnownLocation ? lastKnownLocation.coordinate.latitude : 0;
     double lon = lastKnownLocation ? lastKnownLocation.coordinate.longitude : 0;
     
-    [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :unixtime :geo :lat :lon];
+    [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :(int)unixtime :geo :lat :lon];
     
     // get current device from DB
     NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
@@ -390,12 +410,8 @@ int resetBleStack = 0;
             case CBManagerStatePoweredOn:
                 NSLog(@"Peripheral.state is Powered on");
                 NSLog(@"publicKey: %@",self.publicKey);
-                if (self.publicKey)
-                    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
-                else {
-                    self.publicKey = [CryptoClient getEphemeralId];
-                    [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
-                }
+                self.publicKey = [CryptoClient getEphemeralId];
+                [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
                 break;
             default:
                 break;
@@ -423,57 +439,109 @@ int resetBleStack = 0;
     // ****** manage advertisement ***** //
     NSLog(@"didStartAdvertising, duration:%d , interval:%d",
     [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
+    // Schedule service stop
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self stopAdvertise:self.eventEmitter];
 //        if(resetBleStack == 2)
 //        {
-//            [self stopBLEServicesWithEmitter:self.eventEmitter];
+//            self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+//            [self internalStopBLEServicesWithEmitter:self.eventEmitter];
 //        }
 //        else
 //        {
 //            [self stopAdvertise:self.eventEmitter];
 //        }
+        // Schedule service start
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (self.advertisingIsOn)
-                [self _advertise];
-            else
-                NSLog(@"interval received but advertising is off!!!");
-//            if(resetBleStack == 2)
-//            {
-//                [self startBLEServicesWithEventEmitter:self.eventEmitter];
-//                resetBleStack = 0;
-//            }
+//            if (self.advertisingIsOn)
+//                [self _advertise];
 //            else
-//            {
-//                if (self.advertisingIsOn)
-//                    [self _advertise];
-//                else
-//                    NSLog(@"interval received but advertising is off!!!");
-//                resetBleStack++;
-//            }
+//                NSLog(@"interval received but advertising is off!!!");
+            if (self.advertisingIsOn)
+            {
+                if(resetBleStack == 2)
+                {
+//                    [self startBLEServicesWithEventEmitter:self.eventEmitter];
+                    self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+//                    self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+//                    NSLog(@"-------- peripheral change ---------");
+//                    NSLog(@"Old peripheral: %@",self.firstCreatedPeripheral);
+//                    NSLog(@"New peripheral: %@",self.cbPeripheral);
+                    [self _advertise];
+                    resetBleStack = 0;
+                }
+                else
+                {
+//                    self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+//                    NSLog(@"-------- peripheral change ---------");
+//                    NSLog(@"Old peripheral: %@",self.firstCreatedPeripheral);
+//                    NSLog(@"New peripheral: %@",self.cbPeripheral);
+                    [self _advertise];
+                    resetBleStack++;
+                }
+            }
+            else
+            {
+                resetBleStack = 0;
+                NSLog(@"interval received but advertising is off!!!");
+            }
         });
     });
     
-    // ********** Manage SCAN ************ //
-    if (self.scanningIsOn)
-    {
-        CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
-        NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
-              [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
-        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
-        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self stopScan:self.eventEmitter];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
-                [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
-                [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
-            });
-        });
-    }
-    else
-        NSLog(@"interval received but scanning is off!!!");
+//    // ****** manage advertisement ***** //
+//    NSLog(@"didStartAdvertising, duration:%d , interval:%d",
+//    [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [self stopAdvertise:self.eventEmitter];
+////        if(resetBleStack == 2)
+////        {
+////            [self stopBLEServicesWithEmitter:self.eventEmitter];
+////        }
+////        else
+////        {
+////            [self stopAdvertise:self.eventEmitter];
+////        }
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_ADVERTISE_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            if (self.advertisingIsOn)
+//                [self _advertise];
+//            else
+//                NSLog(@"interval received but advertising is off!!!");
+////            if(resetBleStack == 2)
+////            {
+////                [self startBLEServicesWithEventEmitter:self.eventEmitter];
+////                resetBleStack = 0;
+////            }
+////            else
+////            {
+////                if (self.advertisingIsOn)
+////                    [self _advertise];
+////                else
+////                    NSLog(@"interval received but advertising is off!!!");
+////                resetBleStack++;
+////            }
+//        });
+//    });
+//
+//    // ********** Manage SCAN ************ //
+//    if (self.scanningIsOn)
+//    {
+//        CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
+//        NSLog(@"Start scanning for %@, duration:%d , interval:%d", UUID,
+//              [self.config[KEY_SCAN_DURATION] intValue]/1000, [self.config[KEY_SCAN_INTERVAL] intValue]/1000 );
+//        [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//        [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_DURATION] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self stopScan:self.eventEmitter];
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(([self.config[KEY_SCAN_INTERVAL] intValue] / 1000) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                CBUUID* UUID = [CBUUID UUIDWithString:self.scanUUIDString];
+//                [self.cbCentral scanForPeripheralsWithServices:@[UUID] options:nil];
+//                [self.eventEmitter sendEventWithName:EVENTS_SCAN_STATUS body:[NSNumber numberWithBool:YES]];
+//            });
+//        });
+//    }
+//    else
+//        NSLog(@"interval received but scanning is off!!!");
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral {
