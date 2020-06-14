@@ -147,6 +147,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
         if(BLEForegroundService.isServiceRunning()) {
             PrefUtils.setStartServiceValue(this.reactContext, false);
+            BLEForegroundService.setServiceRunningValue(false);
             this.reactContext.stopService(new Intent(this.reactContext, BLEForegroundService.class));
         }
     }

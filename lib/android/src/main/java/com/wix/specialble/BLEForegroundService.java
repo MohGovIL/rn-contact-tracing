@@ -297,6 +297,11 @@ public class BLEForegroundService extends Service {
         return isServiceRunning;
     }
 
+    public static void setServiceRunningValue(boolean isRunning) {
+
+        isServiceRunning = isRunning;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
