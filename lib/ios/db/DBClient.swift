@@ -35,7 +35,7 @@ public class DBClient: NSObject {
         public static func addJsonContact(ephemeral_id: String, rssi: Int, time: Int, location: String, lat: Double, lon: Double){
             let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
 
-            DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id)!, rssi: rssi, time: time, location: stringToBytes(location)!, id: contactsCount+1,lat: lat, lon: lon)
+            DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id), rssi: rssi, time: time, location: stringToBytes(location), id: contactsCount+1,lat: lat, lon: lon)
         }
     
     @objc(clearAllContacts)
@@ -45,7 +45,7 @@ public class DBClient: NSObject {
     
     
     // Hex string to bytes array
-    static func stringToBytes(_ string: String) -> [UInt8]? {
+    static func stringToBytes(_ string: String) -> [UInt8] {
         let length = string.count
         if length & 1 != 0 {
             return []
@@ -58,7 +58,7 @@ public class DBClient: NSObject {
             if let b = UInt8(string[index..<nextIndex], radix: 16) {
                 bytes.append(b)
             } else {
-                return nil
+                return []
             }
             index = nextIndex
         }

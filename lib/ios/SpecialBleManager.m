@@ -427,20 +427,25 @@ int resetBleStack = 0;
     {
         data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     }
-    else // TODO: only to tests!!! getting hardCoded file
+    else
     {
-        NSString* fileName = @"A-10_serverResponse";
-        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
-        if (!path)
-        {
-            return @"file not found";
-        }
-        data = [NSData dataWithContentsOfFile:path];
+        return @"[]";
+//        // TODO: only to tests!!! getting hardCoded file
+//        NSString* fileName = @"A-10_serverResponse";
+//        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
+//        if (!path)
+//        {
+//            return @"file not found";
+//        }
+//        data = [NSData dataWithContentsOfFile:path];
     }
+    if (!data)
+        return @"[]";
+    
     NSError* error;
     NSDictionary* matchDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     
-    if (error)
+    if (error || !matchDict)
     {
         NSLog(@"Error parsing JSON: %@",error);
         return @"Error parsing JSON";
@@ -451,21 +456,18 @@ int resetBleStack = 0;
         NSNumber* startDay = matchDict[@"startDay"];
         if (![matchDict[@"startDay"] isKindOfClass:[NSNumber class]])
         {
-            resJSON = @"[]";
-            return resJSON;
+            return @"[]";
         }
         NSArray* days = matchDict[@"days"];
         if (![days isKindOfClass:[NSArray class]])
         {
-            resJSON = @"[]";
-            return resJSON;
+            return @"[]";
         }
         for (id obj in days)
         {
             if (![obj isKindOfClass:[NSArray class]])
             {
-                resJSON = @"[]";
-                return resJSON;
+                return @"[]";
             }
         }
         resJSON = [CryptoClient findMatch:[startDay integerValue] :days];
@@ -485,18 +487,18 @@ int resetBleStack = 0;
     {
         data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     }
-    else // TODO: only to tests!!! getting hardCoded file
-    {
-        NSString* fileName = @"A-10_contacts";
-        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
-        if (!path)
-        {
-            NSLog(@"file not found");
-            return;
-        }
-        
-        data = [NSData dataWithContentsOfFile:path];
-    }
+//    else // TODO: only to tests!!! getting hardCoded file
+//    {
+//        NSString* fileName = @"A-10_contacts";
+//        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"json"];
+//        if (!path)
+//        {
+//            NSLog(@"file not found");
+//            return;
+//        }
+//
+//        data = [NSData dataWithContentsOfFile:path];
+//    }
     NSError* error;
     NSArray<NSDictionary*>* contactsArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
