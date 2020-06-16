@@ -40,8 +40,6 @@
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>We need your permission to turn on bluetooth so this app can understand when your phone is near another phone with this app.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Peripheral Bla Bla</string>
-	<key>NSBluetoothPeripheralUsageDescription - 2</key>
 	<string>We need your permission to turn on bluetooth so this app can understand when your phone is near another phone with this app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to find out where you are</string>
