@@ -150,10 +150,4 @@ public class DBClient: NSObject {
     public static func clearAllScans() {
         DBScanManager.shared.deleteAllScans()
     }
-    
-//// MARK: CSV file creating
-//    func creatCSV() {
-//
-//
-//    }
 }

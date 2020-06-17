@@ -104,18 +104,6 @@ RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
 /***********
  * Devices *
  ***********/
-//RCT_EXPORT_METHOD(getDeviceByKey:(NSString*) publicKey device:(void(^)(Device*))callback) {
-//    callback([DBClient getDeviceByKey:publicKey]);
-//}
-
-//RCT_EXPORT_METHOD(device:(Device*) device) {
-//    [DBClient updateDevice:device];
-//}
-
-//RCT_EXPORT_METHOD(addDevice:(NSDictionary*) deviceInfo) {
-//    [DBClient addDevice:deviceInfo];
-//}
-
 RCT_EXPORT_METHOD(getAllDevices:(RCTResponseSenderBlock)callback) {
     NSArray *array = [DBClient getAllDevices];
     callback(@[[NSNull null], array]);

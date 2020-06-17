@@ -21,7 +21,6 @@
 - (void)advertise:(NSString *)serviceUUIDString publicKey:(NSString*)publicKey withEventEmitter:(RCTEventEmitter*)emitter;
 - (void)stopAdvertise:(RCTEventEmitter*)emitter;
 
-//- (NSString*)fetchInfectionData;
 - (NSString*)findMatchForInfections:(NSString*)jsonString;
 - (void) writeContactsDB:(NSString*)jsonString;
 
