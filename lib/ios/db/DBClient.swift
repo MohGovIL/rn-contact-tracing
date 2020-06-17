@@ -43,6 +43,24 @@ public class DBClient: NSObject {
         DBContactManager.shared.deleteAllContacts()
     }
     
+    @objc(exportContactsCSV)
+    public static func exportContactsCSV() -> String {
+        var csvText = "ephemeral_id, rssi, timestamp, geohash, lat, lon\n"
+
+        if let fetchedObjects = DBClient.getContacts().fetchedObjects {
+        for contact in fetchedObjects {
+            let newLine = "\(contact.ephemeral_id.hex()),\(contact.rssi),\(contact.timestamp),\(contact.geohash.hex()),\(contact.lat),\(contact.lon)\n"
+            csvText.append(newLine)
+            }
+        }
+
+        return csvText
+    }
+    
+    @objc(exportAdvertismentsCSV)
+    public static func exportAdvertismentsCSV() -> String {
+        return "test"
+    }
     
     // Hex string to bytes array
     static func stringToBytes(_ string: String) -> [UInt8] {
@@ -133,4 +151,9 @@ public class DBClient: NSObject {
         DBScanManager.shared.deleteAllScans()
     }
     
+//// MARK: CSV file creating
+//    func creatCSV() {
+//
+//
+//    }
 }
