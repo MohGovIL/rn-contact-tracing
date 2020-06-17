@@ -62,6 +62,17 @@ RCT_EXPORT_METHOD(setConfig:(NSDictionary*)config) {
     [Config SetConfig:config];
 }
 
+#pragma mark - Exports
+
+RCT_EXPORT_METHOD(exportAllContactsAsCsv:(RCTResponseSenderBlock)callback) {
+    callback(@[[DBClient exportContactsCSV]]);
+}
+
+RCT_EXPORT_METHOD(exportAdvertiseAsCsv:(RCTResponseSenderBlock)callback) {
+    callback(@[[DBClient exportAdvertismentsCSV]]);
+}
+
+
 // ***** Aditional methods ***** //
 
 RCT_EXPORT_METHOD(startBLEScan:(NSString *) serviceUUID) {
@@ -86,15 +97,7 @@ RCT_EXPORT_METHOD(setPublicKeys:(NSArray*)keys) {
 }
 
 
-#pragma mark - Exports
 
-RCT_EXPORT_METHOD(exportAllDevicesCsv) {
-//    RCTLogInfo(@"exportAllDevicesCsv TBD");
-}
-
-RCT_EXPORT_METHOD(exportAllScansCsv) {
-//    RCTLogInfo(@"exportAllScansCsv TBD");
-}
 
 #pragma mark - Devices
 
