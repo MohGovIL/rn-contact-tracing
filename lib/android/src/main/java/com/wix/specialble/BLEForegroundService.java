@@ -7,12 +7,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -120,6 +123,8 @@ public class BLEForegroundService extends Service {
         super.onDestroy();
         isServiceRunning = false;
 
+        this.unregisterReceiver(this.mBatteryLevelReceiver);
+
         if (bleManager != null) {
             bleManager.stopScan();
             bleManager.stopAdvertise();
@@ -158,6 +163,8 @@ public class BLEForegroundService extends Service {
 
             isServiceRunning = true;
 
+            this.registerReceiver(this.mBatteryLevelReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
             createNotificationChannel();
             Config config = Config.getInstance(this);
 
@@ -181,7 +188,7 @@ public class BLEForegroundService extends Service {
             int resId = 0;
             if (config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0) {
                 try {
-                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", "com.rncontacttracing.demo");
+                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", getPackageName());
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -308,4 +315,23 @@ public class BLEForegroundService extends Service {
         return null;
     }
 
+    private BroadcastReceiver mBatteryLevelReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+            int prevLevel = PrefUtils.getPreviousBatteryLevel(context);
+            PrefUtils.setCurrentBatteryLevel(context, level);
+
+            if(level < prevLevel && level == 5) {
+
+                if(BLEForegroundService.isServiceRunning()) {
+                    PrefUtils.setStartServiceValue(context, false);
+                   isServiceRunning = false;
+                    stopService(new Intent(context, BLEForegroundService.class));
+                }
+            }
+        }
+    };
 }
