@@ -320,11 +320,13 @@ public class BLEForegroundService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int prevLevel = PrefUtils.getPreviousBatteryLevel(context);
+            int thresholdBatteryLevel = Config.getInstance(context).getBatteryBottomLevelThreshold();
+
             PrefUtils.setCurrentBatteryLevel(context, level);
 
-            if(level < prevLevel && level == 5) {
+            if(level <= prevLevel && level <= thresholdBatteryLevel) {
 
                 if(BLEForegroundService.isServiceRunning()) {
                     PrefUtils.setStartServiceValue(context, false);

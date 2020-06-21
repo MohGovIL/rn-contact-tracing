@@ -42,6 +42,7 @@ public class Config  {
     private static final String DEFAULT_NOTIFICATION_TITLE = "BLE Contact Tracing";
     private static final String DEFAULT_NOTIFICATION_CONTENT = "Be Safe";
     private static final String DEFAULT_NOTIFICATION_ICON_PATH = "";
+    public static final int BATTERY_BOTTOM_LEVEL_THRESHOLD_DEFAULT = 5; // percentages
 
     // General Config - Keys
     private static final String PREF_SERVICEUUID = "serviceUUID";
@@ -50,6 +51,7 @@ public class Config  {
     private static final String PREF_NOTIFICATION_CONTENT = "notification_content";
     private static final String PREF_LARGE_NOTIFICATION_ICON_PATH = "large_notification_icon_path";
     private static final String PREF_SMALL_NOTIFICATION_ICON_PATH = "small_notification_icon_path";
+    public static final String PREF_BATTERY_BOTTOM_LEVEL_THRESHOLD_KEY = "battery_level";
 
 
 
@@ -181,5 +183,13 @@ public class Config  {
 
     public String getSmallNotificationIconPath() {
         return sharedPrefs.getString(PREF_SMALL_NOTIFICATION_ICON_PATH, DEFAULT_NOTIFICATION_ICON_PATH);
+    }
+
+    public void setBatteryBottomThreshold(int batteryLevel) {
+        sharedPrefs.edit().putInt(PREF_BATTERY_BOTTOM_LEVEL_THRESHOLD_KEY, batteryLevel).apply();
+    }
+
+    public int getBatteryBottomLevelThreshold() {
+        return sharedPrefs.getInt(PREF_BATTERY_BOTTOM_LEVEL_THRESHOLD_KEY, BATTERY_BOTTOM_LEVEL_THRESHOLD_DEFAULT);
     }
 }

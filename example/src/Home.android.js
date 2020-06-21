@@ -15,7 +15,7 @@ import SpecialBle, {requestLocationPermission, checktLocationPermission} from 'r
 import {Button, Badge, Colors, Divider, View, TextField} from 'react-native-ui-lib';
 
 const SERVICE_UUID = '00000000-0000-1000-8000-00805F9B34FB';
-
+const BATTERY_LEVEL_THRESHOLD = 5;
 const TAG = "EXAMPLE";
 
 const ScanMatchMode = [
@@ -117,7 +117,8 @@ function HomeScreen() {
             setConfig({
                 ...config,
                 notificationLargeIconPath: 'large_icon.png',
-                notificationSmallIconPath: 'small_icon'
+                notificationSmallIconPath: 'small_icon',
+                batteryLevel: BATTERY_LEVEL_THRESHOLD
             })
         })
     }

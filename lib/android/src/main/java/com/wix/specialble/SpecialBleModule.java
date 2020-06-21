@@ -223,6 +223,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putString("notificationContent", config.getNotificationContent());
         configMap.putString("notificationLargeIconPath", config.getLargeNotificationIconPath());
         configMap.putString("notificationSmallIconPath", config.getSmallNotificationIconPath());
+        configMap.putInt("batteryLevel", config.getBatteryBottomLevelThreshold());
         callback.invoke(configMap);
     }
 
@@ -243,6 +244,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setNotificationContent(configMap.getString("notificationContent"));
         config.setLargeNotificationIconPath(configMap.getString("notificationLargeIconPath"));
         config.setSmallNotificationIconPath(configMap.getString("notificationSmallIconPath"));
+        config.setBatteryBottomThreshold(configMap.getInt("batteryLevel"));
     }
 
     @ReactMethod
