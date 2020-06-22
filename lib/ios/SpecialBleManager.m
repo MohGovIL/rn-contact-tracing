@@ -65,6 +65,27 @@ int resetBleStack = 0;
 
 - (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter
 {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+
+    NSString* filepath = [[NSString alloc] init];
+    NSError *err;
+
+    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
+
+    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
+
+    NSDate* now = [NSDate date];
+    
+
+    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - BLE service start",contents, now ];
+    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
+    
+    if (!ok) {
+        NSLog(@"Error writing file at %@\n%@",
+        filepath, [err localizedFailureReason]);
+    }
+    
     self.config = [Config GetConfig];
     
     if (self.locationManager == nil)
@@ -262,6 +283,25 @@ int resetBleStack = 0;
             NSLog(@"AdvertisementData: %@", advertisementData);
     }
         
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+
+    NSString* filepath = [[NSString alloc] init];
+    NSError *err;
+
+    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
+
+    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
+
+    NSDate* now = [NSDate date];
+    
+    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - Discovered peripheral: %@", contents, now, public_key];
+    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
+
+    if (!ok) {
+        NSLog(@"Error writing file at %@\n%@",
+        filepath, [err localizedFailureReason]);
+    }
     
     if (public_key.length == 0)
     {
@@ -382,6 +422,26 @@ int resetBleStack = 0;
         NSLog(@"didStartAdvertising: Error: %@", error);
         return;
     }
+    
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *documentsDirectory = [paths objectAtIndex:0];
+//
+//    NSString* filepath = [[NSString alloc] init];
+//    NSError *err;
+//
+//    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
+//
+//    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
+//
+//    NSDate* now = [NSDate date];
+//
+//    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - Advertise started",contents, now ];
+//    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
+//
+//    if (!ok) {
+//        NSLog(@"Error writing file at %@\n%@",
+//        filepath, [err localizedFailureReason]);
+//    }
     
     // ****** manage advertisement ***** //
 //    NSLog(@"didStartAdvertising, duration:%d , interval:%d",
