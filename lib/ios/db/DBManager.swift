@@ -19,10 +19,6 @@ class DBManager {
         
         var rawBundle: Bundle? {
 
-//            if let bundle = Bundle(identifier: "com.rn-contact-tracing.Framework") {
-//                return bundle
-//            }
-
             guard
                 let resourceBundleURL = Bundle(for: type(of: self)).url(forResource: "FrameworkModel", withExtension: "bundle"),
                 let realBundle = Bundle(url: resourceBundleURL) else {
@@ -55,17 +51,6 @@ class DBManager {
         
         return container
     }()
-    
-//    func addContact(_ contact: Contact) {
-//        let managedContext = self.persistentContainer.viewContext
-//        let entity = NSEntityDescription.entity(forEntityName: "Contact", in: managedContext)!
-//
-//        do {
-//            try managedContext.save()
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
-//    }
     
     func save(entity:String, attributes: [String:Any]) {
       
@@ -173,25 +158,5 @@ class DBManager {
 
     func updateScan(attributes: [String:Any]){
         // TODO: TBD
-//        let managedContext = self.persistentContainer.viewContext
-//        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Scan")
-//        fetchRequest.predicate = NSPredicate(format: "scan_id == %@", attributes["scan_id"] as! CVarArg)
-//
-//        do {
-//            let results = try managedContext.fetch(fetchRequest) as! [Device]
-//            if results.count != 0 {
-//                results[0].setValue(attributes["device_last_timestamp"], forKey: "device_last_timestamp")
-//                results[0].setValue(attributes["device_rssi"], forKey: "device_rssi")
-//            }
-//        } catch {
-//            print("Fetch Failed: \(error)")
-//        }
-//
-//        do {
-//            try managedContext.save()
-//           }
-//        catch {
-//            print("Saving Core Data Failed: \(error)")
-//        }
     }
 }

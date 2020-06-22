@@ -17,78 +17,29 @@ public class User : NSObject, Codable {
     var K_master_com:[UInt8] = []
     var K_master_ver:[UInt8] = []
     var epoch_keys:[Time:EpochKey] = [:]
-//    var contacts:[Contact] = []
     var curr_day: Int = 0
     var curr_day_master_key:[UInt8] = []
-//    var _get_epoch_keys:[UInt8]
-//    var past:Time?
-//    var future:Time?
-    
-//    public func encode(with aCoder: NSCoder) {
-//        aCoder.encode(user_id, forKey: "user_id")
-//        aCoder.encode(K_id, forKey: "K_id")
-//        aCoder.encode(K_master_com, forKey: "K_master_com")
-//        aCoder.encode(K_master_ver, forKey: "K_master_ver")
-//        aCoder.encode(epoch_keys, forKey: "epoch_keys")
-//        aCoder.encode(contacts, forKey: "contacts")
-//        aCoder.encode(curr_day, forKey: "curr_day")
-//        aCoder.encode(curr_day_master_key, forKey: "curr_day_master_key")
-//    }
-//
-//    public required convenience init(coder aDecoder: NSCoder) {
-//        let user_id = aDecoder.decodeObject(forKey: "user_id") as! [UInt8]
-//        let K_id = aDecoder.decodeObject(forKey: "K_id") as! [UInt8]
-//        let K_master_com = aDecoder.decodeObject(forKey: "K_master_com") as! [UInt8]
-//        let K_master_ver = aDecoder.decodeObject(forKey: "K_master_ver") as! [UInt8]
-////        let epoch_keys = aDecoder.decodeObject(forKey: "epoch_keys") as! [UInt8]
-////        let contacts = aDecoder.decodeObject(forKey: "contacts") as! [UInt8]
-//        let curr_day = aDecoder.decodeInteger(forKey: "curr_day")
-//        let curr_day_master_key = aDecoder.decodeObject(forKey: "curr_day_master_key") as! [UInt8]
-//        self.init(_user_id: user_id, _K_id: K_id, _K_master_com: K_master_com, _K_master_ver: K_master_ver, _curr_day: curr_day, _curr_day_master_key: curr_day_master_key)
-//    }
-//
-//    init(_user_id: [UInt8], _K_id: [UInt8], _K_master_com: [UInt8],_K_master_ver: [UInt8], _curr_day: Int, _curr_day_master_key: [UInt8]) {
-//        self.user_id = _user_id
-//        self.K_id = _K_id
-//        self.K_master_com = _K_master_com
-//        self.K_master_ver = _K_master_ver
-//        self.curr_day = _curr_day
-//        self.curr_day_master_key = _curr_day_master_key
-//    }
     
     override init(){
-//        super.init()
         self.user_id = []
         self.K_id = []
         self.K_master_com = []
         self.K_master_ver = []
         self.epoch_keys = [:]
-//        self.contacts = []
         self.curr_day = 0
         self.curr_day_master_key = []
     }
     
     init(user_id: [UInt8], master_key: [UInt8], init_time: Int) {
         super.init()
-//        print("user_id: \(user_id)")
-//        print("master_key: \(master_key)")
-//        print("init_time: \(init_time)")
         self.user_id = user_id
         self.K_id = Crypto.hmac_sha256_firstItems(key: master_key, data: STRINGS["id"]!, numberOfItems: const_KEY_LEN)
-//        print("key: \(master_key)")
-//        print("data: \(STRINGS["id"]!)")
-//        print("numberOfItems: \(const_KEY_LEN)")
-//        print("hmac_sha256[:KEY_LEN] result: \(self.K_id)")
         self.K_master_com = DerivationUtils.get_key_master_com(key_id: self.K_id, user_id: self.user_id)
         self.K_master_ver = Crypto.hmac_sha256_firstItems(key: master_key, data: STRINGS["verifkey"]!, numberOfItems: const_KEY_LEN)
         self.epoch_keys = [:]
-//        self.contacts = []
         self.curr_day = Time(init_time).day
         self.curr_day_master_key = DerivationUtils.get_next_day_master_key(prev_master_key: master_key, install_day: true)
         self._get_epoch_keys(target_day: self.curr_day)
-        
-//        self.past = Time(0)
-//        self.future = Time(0)
     }
     
     // Update the key database to store key's of specific time intreval.
@@ -255,18 +206,9 @@ public class User : NSObject, Codable {
             // Up to jitter
             return false
         }
-//        if contactsCount >= Constants.MAX_CONTACTS_IN_WINDOW {
-//            let past_contact_time = (DBClient.getContacts().fetchedObjects! )[DBClient.getContacts().fetchedObjects!.count - Constants.MAX_CONTACTS_IN_WINDOW].timestamp
-//            if time - past_contact_time < Constants.T_WINDOW {
-//                // If there have been too many contacts in this epoch, ignore this contact.
-//                return false
-//            }
-//        }
         
         DBContactManager.shared.addNewContact(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location, id: contactsCount+1,lat: lat, lon: lon)
-//        let contact = Contact()
-//        contact.setContactData(ephemeral_id: other_ephemeral_id, rssi: rssi, time: time, location: own_location)
-//        self.contacts.append(contact)
+
         return true
     }
     
@@ -274,7 +216,6 @@ public class User : NSObject, Codable {
     // :param contact: Contact to delete.
     func  delete_contact(contact: Contact) {
         DBClient.deleteContact(contact)
-//        self.contacts.removeAll{$0 == contact}
     }
     
     // Delete all history before a specific time.
@@ -289,7 +230,6 @@ public class User : NSObject, Codable {
         self.epoch_keys = self.epoch_keys.filter { $0.key >= t }
         CryptoClient.saveMyUserToDisk()
         DBClient.deleteContactsHistory(dtime: dtime)
-//        self.contacts = self.contacts.filter { $0.time >= dtime }
     }
     
     // Makes sure the user has all epoch keys corresponding to a given day
@@ -317,9 +257,6 @@ public class User : NSObject, Codable {
             let curr_day_key = DayKey(i: self.curr_day, master_key: self.curr_day_master_key, key_master_com: self.K_master_com, key_master_verification: self.K_master_ver)
             for epoch in [Int](0..<Constants.EPOCHS_IN_DAY) {
                 self.epoch_keys[Time(self.curr_day, epoch)] = EpochKey(i: self.curr_day, j: epoch, k_day: curr_day_key)
-//                if Time(self.curr_day, epoch).time == 1587688047 {
-//                    print("found time")
-//                }
             }
             self.curr_day += 1
             self.curr_day_master_key = DerivationUtils.get_next_day_master_key(prev_master_key: self.curr_day_master_key, install_day: false)
