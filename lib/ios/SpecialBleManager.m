@@ -106,6 +106,14 @@ int resetBleStack = 0;
     [self stopAdvertise:emitter];
 }
 
+- (void)internalStopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
+{
+//    self.advertisingIsOn = NO;
+//    self.scanningIsOn = NO;
+    [self stopScan:emitter];
+    [self stopAdvertise:emitter];
+}
+
 #pragma mark Scan tasks
 
 -(void)scan:(NSString *)serviceUUIDString withEventEmitter:(RCTEventEmitter*)emitter {
@@ -390,7 +398,15 @@ int resetBleStack = 0;
     7, 3 );
     // Schedule service stop
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(7 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self stopAdvertise:self.eventEmitter];
+        if(resetBleStack == 2)
+        {
+            [self internalStopBLEServicesWithEmitter:self.eventEmitter];
+        }
+        else
+        {
+            [self stopAdvertise:self.eventEmitter];
+        }
+//        [self stopAdvertise:self.eventEmitter];
         // Schedule service start
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (self.advertisingIsOn)
