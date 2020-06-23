@@ -50,10 +50,8 @@ class Server {
             
             self.epochs[day]![epoch]?.append((epoch_key, epoch_ver))
             
-            // TODO: fix randomize ???
             // randomize the order
-            self.epochs[day]![epoch]?.shuffle()// = self.epochs[day]![epoch]?.sorted(by: {$0<$1})
-            //            self.epochs[day][epoch] = sorted(self.epochs[day][epoch], key=lambda x: x[0])
+            self.epochs[day]![epoch]?.shuffle()
         }
     }
     
@@ -64,9 +62,6 @@ class Server {
             epochs[day] = [:]
             for epoch in self.epochs[day]!.keys {
                 epochs[day]![epoch] = self.epochs[day]![epoch]!.map { $0.0 }
-//                for x in self.epochs[day]![epoch]! {
-//                    epochs[day]![epoch]?.append(x.0)
-//                }
             }
         }
         return epochs

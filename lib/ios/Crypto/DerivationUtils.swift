@@ -26,7 +26,6 @@ class DerivationUtils
     {
 //        return Crypto.encrypt(key_master_com, day + b'\x00' * 12)
         //day must be 4 bytes
-        //TODO:: check return type not nil
         return Crypto.encrypt(key: key_master_com, plain: BytesUtils.pad(array: day, size: const_KEY_LEN));
     }
 

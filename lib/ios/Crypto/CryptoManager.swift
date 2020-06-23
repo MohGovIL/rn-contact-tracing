@@ -88,7 +88,7 @@ public class CryptoManager {
                 let currentEpochsHex = infectedArray[i][j]
                 
                 if currentEpochsHex.count > 0 {
-                    let currentEpochsBinary : [[UInt8]] = currentEpochsHex.map { DBClient.stringToBytes($0)! }
+                    let currentEpochsBinary : [[UInt8]] = currentEpochsHex.map { DBClient.stringToBytes($0) }
                     
                     infectedEpochs[i+startDay]![j] = currentEpochsBinary
                 } else {

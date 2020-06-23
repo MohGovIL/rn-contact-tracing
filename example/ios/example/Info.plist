@@ -38,9 +38,9 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Always Bla Bla </string>
+	<string>We need your permission to turn on bluetooth so this app can understand when your phone is near another phone with this app.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Peripheral Bla Bla</string>
+	<string>We need your permission to turn on bluetooth so this app can understand when your phone is near another phone with this app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to find out where you are</string>
 	<key>UIBackgroundModes</key>
