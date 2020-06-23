@@ -139,6 +139,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     private void startBLEService() {
 
         PrefUtils.setStartServiceValue(this.reactContext, true);
+        if(!DeviceUtil.isBatteryOptimizationDeactivated(reactContext) && !Config.getInstance(reactContext).getAllowBatteryOptimization()) {
+            DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+        }
         BLEForegroundService.startThisService(this.reactContext);
     }
 
@@ -223,6 +226,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putString("notificationContent", config.getNotificationContent());
         configMap.putString("notificationLargeIconPath", config.getLargeNotificationIconPath());
         configMap.putString("notificationSmallIconPath", config.getSmallNotificationIconPath());
+        configMap.putBoolean("isBatteryOptimizationAllowed", config.getAllowBatteryOptimization());
         callback.invoke(configMap);
     }
 
@@ -243,6 +247,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setNotificationContent(configMap.getString("notificationContent"));
         config.setLargeNotificationIconPath(configMap.getString("notificationLargeIconPath"));
         config.setSmallNotificationIconPath(configMap.getString("notificationSmallIconPath"));
+        config.setAllowBatteryOptimization(configMap.getBoolean("isBatteryOptimizationAllowed"));
     }
 
     @ReactMethod

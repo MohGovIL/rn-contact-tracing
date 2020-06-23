@@ -42,6 +42,7 @@ public class Config  {
     private static final String DEFAULT_NOTIFICATION_TITLE = "BLE Contact Tracing";
     private static final String DEFAULT_NOTIFICATION_CONTENT = "Be Safe";
     private static final String DEFAULT_NOTIFICATION_ICON_PATH = "";
+    private static final boolean DEFAULT_ALLOW_BATTERY_OPT = false;
 
     // General Config - Keys
     private static final String PREF_SERVICEUUID = "serviceUUID";
@@ -50,7 +51,7 @@ public class Config  {
     private static final String PREF_NOTIFICATION_CONTENT = "notification_content";
     private static final String PREF_LARGE_NOTIFICATION_ICON_PATH = "large_notification_icon_path";
     private static final String PREF_SMALL_NOTIFICATION_ICON_PATH = "small_notification_icon_path";
-
+    private static final String PREF_ALLOW_BATTERY_OPTIMIZATION = "allowBatteryOptimization";
 
 
     public static synchronized Config getInstance(Context context) {
@@ -181,5 +182,13 @@ public class Config  {
 
     public String getSmallNotificationIconPath() {
         return sharedPrefs.getString(PREF_SMALL_NOTIFICATION_ICON_PATH, DEFAULT_NOTIFICATION_ICON_PATH);
+    }
+
+    public void setAllowBatteryOptimization(boolean allow) {
+        sharedPrefs.edit().putBoolean(PREF_ALLOW_BATTERY_OPTIMIZATION, allow).apply();
+    }
+
+    public boolean getAllowBatteryOptimization() {
+        return sharedPrefs.getBoolean(PREF_ALLOW_BATTERY_OPTIMIZATION, DEFAULT_ALLOW_BATTERY_OPT);
     }
 }
