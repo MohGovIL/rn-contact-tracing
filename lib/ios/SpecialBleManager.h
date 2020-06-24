@@ -24,5 +24,6 @@
 - (NSString*)findMatchForInfections:(NSString*)jsonString;
 - (void) writeContactsDB:(NSString*)jsonString;
 
+- (void)keepAliveBLEStartForTask:(NSString*)taskName;
 
 @end

@@ -35,6 +35,7 @@ int resetBleStack = 0;
 @property NSDictionary* config;
 @property BOOL advertisingIsOn;
 @property BOOL scanningIsOn;
+@property int lastStartTimeStamp;
 
 @end
 
@@ -63,29 +64,61 @@ int resetBleStack = 0;
 
 #pragma mark BLE Services
 
+- (void)keepAliveBLEStartForTask:(NSString*)taskName
+{
+    int nowUnix = [[NSDate date] timeIntervalSince1970];
+    
+    // TODO: check if emitter null check is needed
+    if (nowUnix-self.lastStartTimeStamp < 8) // too soon || !self.eventEmitter) // too soon or not initialized
+        return;
+    
+    NSLog(@"Keep Alive");
+    [self writeLogToFileForTask:taskName];
+    
+    if (self.locationManager == nil)
+        self.locationManager = [[CLLocationManager alloc] init];
+
+    // advertising state flag
+    self.advertisingIsOn = YES;
+    self.scanningIsOn = YES;
+    // set singleton's data
+    self.publicKey = [CryptoClient getEphemeralId];
+    self.scanUUIDString = self.config[KEY_SERVICE_UUID] ;
+    self.advertiseUUIDString = self.config[KEY_SERVICE_UUID];
+    
+    // init and start the scan Central
+    if (!self.cbCentral)
+    {
+        self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+        if (!self.firstCreatedCentral)
+            self.firstCreatedCentral = self.cbCentral;
+    }
+    else
+        [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+    
+    // init and start the advertise Peropheral
+    if (!self.cbPeripheral)
+    {
+        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+    }
+    else
+        [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+    
+    self.lastStartTimeStamp = nowUnix;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Started" object:nil];
+}
+
 - (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
+    int nowUnix = [[NSDate date] timeIntervalSince1970];
 
-    NSString* filepath = [[NSString alloc] init];
-    NSError *err;
-
-    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
-
-    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
-
-    NSDate* now = [NSDate date];
+    if (self.advertisingIsOn && nowUnix-self.lastStartTimeStamp < 8)
+        return;
     
-
-    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - BLE service start",contents, now ];
-    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
+    [self writeLogToFileForTask:@"BLE Start"];
     
-    if (!ok) {
-        NSLog(@"Error writing file at %@\n%@",
-        filepath, [err localizedFailureReason]);
-    }
-    
+    // config
     self.config = [Config GetConfig];
     
     if (self.locationManager == nil)
@@ -117,6 +150,10 @@ int resetBleStack = 0;
     }
     else
         [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
+    
+    self.lastStartTimeStamp = nowUnix;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Started" object:nil];
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
@@ -125,6 +162,22 @@ int resetBleStack = 0;
     self.scanningIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
+}
+
+- (void)internalStopBLEServices
+{
+    [self stopScan:self.eventEmitter];
+    [self stopAdvertise:self.eventEmitter];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Stoped" object:nil];
+}
+
+- (void)internalStartBLEServices
+{
+    self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    [self _advertise];
+    int nowUnix = [[NSDate date] timeIntervalSince1970];
+    self.lastStartTimeStamp = nowUnix;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Started" object:nil];
 }
 
 #pragma mark Scan tasks
@@ -282,26 +335,9 @@ int resetBleStack = 0;
         if (advertisementData)
             NSLog(@"AdvertisementData: %@", advertisementData);
     }
-        
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-
-    NSString* filepath = [[NSString alloc] init];
-    NSError *err;
-
-    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
-
-    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
-
-    NSDate* now = [NSDate date];
-    
-    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - Discovered peripheral: %@", contents, now, public_key];
-    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
-
-    if (!ok) {
-        NSLog(@"Error writing file at %@\n%@",
-        filepath, [err localizedFailureReason]);
-    }
+      
+    NSString* discoveredString = [NSString stringWithFormat:@"Discovered peripheral: %@", public_key];
+    [self writeLogToFileForTask:discoveredString];
     
     if (public_key.length == 0)
     {
@@ -423,26 +459,6 @@ int resetBleStack = 0;
         return;
     }
     
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *documentsDirectory = [paths objectAtIndex:0];
-//
-//    NSString* filepath = [[NSString alloc] init];
-//    NSError *err;
-//
-//    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
-//
-//    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
-//
-//    NSDate* now = [NSDate date];
-//
-//    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - Advertise started",contents, now ];
-//    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
-//
-//    if (!ok) {
-//        NSLog(@"Error writing file at %@\n%@",
-//        filepath, [err localizedFailureReason]);
-//    }
-    
     // ****** manage advertisement ***** //
 //    NSLog(@"didStartAdvertising, duration:%d , interval:%d",
 //    [self.config[KEY_ADVERTISE_DURATION] intValue]/1000, [self.config[KEY_ADVERTISE_INTERVAL] intValue]/1000 );
@@ -450,15 +466,22 @@ int resetBleStack = 0;
     7, 3 );
     // Schedule service stop
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(7 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self stopAdvertise:self.eventEmitter];
+        if(resetBleStack == 2)
+        {
+            [self internalStopBLEServices];
+        }
+        else
+        {
+            [self stopAdvertise:self.eventEmitter];
+        }
+//        [self stopAdvertise:self.eventEmitter];
         // Schedule service start
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (self.advertisingIsOn)
             {
                 if(resetBleStack == 2)
                 {
-                    self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-                    [self _advertise];
+                    [self internalStartBLEServices];
                     resetBleStack = 0;
                 }
                 else
@@ -549,6 +572,17 @@ int resetBleStack = 0;
     {
         data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     }
+    else
+    {
+        NSLog(@"Error writing DB");
+        return;
+    }
+    
+    if (!data)
+    {
+        NSLog(@"Error writing DB");
+        return;
+    }
 //    else // TODO: only to tests!!! getting hardCoded file
 //    {
 //        NSString* fileName = @"A-10_contacts";
@@ -583,4 +617,29 @@ int resetBleStack = 0;
     }
 }
 
+- (void) writeLogToFileForTask:(NSString*)taskName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+
+    NSString* filepath = [[NSString alloc] init];
+    NSError *err;
+
+    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
+
+    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
+
+    NSDate* UTCNow = [NSDate date];
+    NSTimeZone *tz = [NSTimeZone defaultTimeZone];
+    NSInteger seconds = [tz secondsFromGMTForDate: UTCNow];
+    NSDate* now = [NSDate dateWithTimeInterval: seconds sinceDate: UTCNow];;
+
+    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - %@",contents, now, taskName ];
+    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
+    
+    if (!ok) {
+        NSLog(@"Error writing file at %@\n%@",
+        filepath, [err localizedFailureReason]);
+    }
+}
 @end
