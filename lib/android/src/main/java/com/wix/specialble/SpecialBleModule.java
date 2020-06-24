@@ -35,6 +35,7 @@ import com.wix.crypto.Match;
 import com.wix.crypto.MatchResponse;
 import com.wix.crypto.User;
 import com.wix.crypto.utilities.BytesUtils;
+import com.wix.crypto.utilities.DerivationUtils;
 import com.wix.crypto.utilities.Hex;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
@@ -134,6 +135,12 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         bleManager.stopScan();
     }
 
+    @ReactMethod
+    public void askToDisableBatteryOptimization() {
+        if(!DeviceUtil.isBatteryOptimizationDeactivated(reactContext)) {
+            DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+        }
+    }
 
     @ReactMethod
     private void startBLEService() {
