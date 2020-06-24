@@ -319,7 +319,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setType("*/*");
-        Uri fileUri = FileProvider.getUriForFile(reactContext, "com.wix.specialble" + ".provider", file);
+        Uri fileUri = FileProvider.getUriForFile(reactContext, reactContext.getPackageName() + ".provider", file);
         shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
