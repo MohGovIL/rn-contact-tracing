@@ -134,7 +134,7 @@ public class BLEForegroundService extends Service {
             wakeLock = null;
         }
 
-        //clear any pending wake up's
+        //make sure were clearing any pending wake up's
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         alarmIntent.setAction(WAKE_ME_UP);
