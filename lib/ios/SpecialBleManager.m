@@ -67,7 +67,7 @@ int resetBleStack = 0;
 - (void)keepAliveBLEStartForTask:(NSString*)taskName
 {
     int nowUnix = [[NSDate date] timeIntervalSince1970];
-    
+    // Test comment new git
     // TODO: check if emitter null check is needed
     if (nowUnix-self.lastStartTimeStamp < 8) // too soon || !self.eventEmitter) // too soon or not initialized
         return;
