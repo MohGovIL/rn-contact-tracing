@@ -144,7 +144,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     private void startBLEService() {
-
+        //Test comment
         PrefUtils.setStartServiceValue(this.reactContext, true);
         if(!DeviceUtil.isBatteryOptimizationDeactivated(reactContext) && Config.getInstance(reactContext).getDisableBatteryOptimization()) {
             DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
