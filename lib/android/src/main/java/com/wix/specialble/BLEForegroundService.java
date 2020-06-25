@@ -170,14 +170,14 @@ public class BLEForegroundService extends Service {
             Intent notificationIntent = new Intent(this, BLEForegroundService.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this,
                     0, notificationIntent, 0);
-            ////////////////////////////////////////////////////////////////////////////
-            //                  Prepare icons for notification display
-            //
-            //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()
-            //  Large icon comes from the field notificationLargeIconPath.
-            //  Small icon comes from the field notificationSmallIconPath.
-            //
-            ////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////
+            //                  Prepare icons for notification display                                     // 
+            //                                                                                             //     
+            //  The notification icon is sent from the host application via @SpecialBleModule.setConfig()  //
+            //  Large icon comes from the field notificationLargeIconPath.                                 // 
+            //  Small icon comes from the field notificationSmallIconPath.                                 // 
+            //                                                                                             // 
+            ////////////////////////////////////////////////////////////////////////////////////////////////
             int resId = 0;
             if (config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0) {
                 try {
