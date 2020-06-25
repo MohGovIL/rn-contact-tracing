@@ -35,6 +35,7 @@ import com.wix.crypto.Match;
 import com.wix.crypto.MatchResponse;
 import com.wix.crypto.User;
 import com.wix.crypto.utilities.BytesUtils;
+import com.wix.crypto.utilities.DerivationUtils;
 import com.wix.crypto.utilities.Hex;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
@@ -134,11 +135,20 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         bleManager.stopScan();
     }
 
+    @ReactMethod
+    public void askToDisableBatteryOptimization() {
+        if(!DeviceUtil.isBatteryOptimizationDeactivated(reactContext)) {
+            DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+        }
+    }
 
     @ReactMethod
     private void startBLEService() {
 
         PrefUtils.setStartServiceValue(this.reactContext, true);
+        if(!DeviceUtil.isBatteryOptimizationDeactivated(reactContext) && Config.getInstance(reactContext).getDisableBatteryOptimization()) {
+            DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+        }
         BLEForegroundService.startThisService(this.reactContext);
     }
 
@@ -223,6 +233,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putString("notificationContent", config.getNotificationContent());
         configMap.putString("notificationLargeIconPath", config.getLargeNotificationIconPath());
         configMap.putString("notificationSmallIconPath", config.getSmallNotificationIconPath());
+        configMap.putBoolean("disableBatteryOptimization", config.getDisableBatteryOptimization());
         callback.invoke(configMap);
     }
 
@@ -243,6 +254,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setNotificationContent(configMap.getString("notificationContent"));
         config.setLargeNotificationIconPath(configMap.getString("notificationLargeIconPath"));
         config.setSmallNotificationIconPath(configMap.getString("notificationSmallIconPath"));
+        config.setDisableBatteryOptimization(configMap.getBoolean("disableBatteryOptimization"));
     }
 
     @ReactMethod
@@ -314,7 +326,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setType("*/*");
-        Uri fileUri = FileProvider.getUriForFile(reactContext, "com.wix.specialble" + ".provider", file);
+        Uri fileUri = FileProvider.getUriForFile(reactContext, reactContext.getPackageName() + ".provider", file);
         shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
