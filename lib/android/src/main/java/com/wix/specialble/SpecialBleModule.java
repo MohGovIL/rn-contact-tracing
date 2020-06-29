@@ -1,9 +1,11 @@
 package com.wix.specialble;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
@@ -37,6 +40,7 @@ import com.wix.crypto.User;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.crypto.utilities.DerivationUtils;
 import com.wix.crypto.utilities.Hex;
+import com.wix.specialble.activities.BatteryOptimizationHolderActivity;
 import com.wix.specialble.bt.BLEManager;
 import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Scan;
@@ -74,7 +78,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     private final BLEManager bleManager;
     private static final String TAG = "SpecialBleModule";
     private EventToJSDispatcher mEventToJSDispatcher;
-
+    private Callback mBatteryOptimizationCallback;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public SpecialBleModule(ReactApplicationContext reactContext) {
@@ -87,6 +91,9 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
 
         bleManager = BLEManager.getInstance(reactContext);
         bleManager.setEventToJSDispatcher(mEventToJSDispatcher);
+        LocalBroadcastManager.getInstance(reactContext).registerReceiver(batteryOptimizationReceiver,
+                new IntentFilter(BatteryOptimizationHolderActivity.LOCAL_BROAD_CAST_INTENT ));
+
 //        ParseUtils.loadDatabase(reactContext.getApplicationContext());//open this to load db for testing from raw...
 
         //  registerEventLiveData();
@@ -336,8 +343,13 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void requestToDisableBatteryOptimization(){
-        DeviceUtil.askUserToTurnDozeModeOff(getCurrentActivity(), getReactApplicationContext().getPackageName());
+    public void requestToDisableBatteryOptimization(Callback callback){
+
+        if(!DeviceUtil.isBatteryOptimizationDeactivated(reactContext)) {
+            Intent in = new Intent(getCurrentActivity(), BatteryOptimizationHolderActivity.class);
+            getCurrentActivity().startActivity(in);
+            mBatteryOptimizationCallback = callback;
+        }
     }
 
     @ReactMethod
@@ -374,4 +386,14 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
     {
         ParseUtils.loadDatabase(reactContext.getApplicationContext(), db);
     }
+
+    BroadcastReceiver batteryOptimizationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(DeviceUtil.isBatteryOptimizationDeactivated(reactContext))
+                mBatteryOptimizationCallback.invoke(true);
+            else
+                mBatteryOptimizationCallback.invoke(false);
+        }
+    };
 }
