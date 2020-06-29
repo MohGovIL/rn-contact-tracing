@@ -13,6 +13,7 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
     <application>
+        <activity android:name=".activities.BatteryOptimizationHolderActivity" android:theme="@style/Theme.AppCompat.Translucent"></activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
