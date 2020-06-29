@@ -73,8 +73,6 @@ int resetBleStack = 0;
         return;
     
     NSLog(@"Keep Alive");
-    [self writeLogToFileForTask:taskName];
-    
     if (self.locationManager == nil)
         self.locationManager = [[CLLocationManager alloc] init];
 
@@ -115,9 +113,7 @@ int resetBleStack = 0;
 
     if (self.advertisingIsOn && nowUnix-self.lastStartTimeStamp < 8)
         return;
-    
-    [self writeLogToFileForTask:@"BLE Start"];
-    
+        
     // config
     self.config = [Config GetConfig];
     
@@ -335,10 +331,7 @@ int resetBleStack = 0;
         if (advertisementData)
             NSLog(@"AdvertisementData: %@", advertisementData);
     }
-      
-    NSString* discoveredString = [NSString stringWithFormat:@"Discovered peripheral: %@", public_key];
-    [self writeLogToFileForTask:discoveredString];
-    
+          
     if (public_key.length == 0)
     {
         return;
@@ -617,29 +610,4 @@ int resetBleStack = 0;
     }
 }
 
-- (void) writeLogToFileForTask:(NSString*)taskName
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-
-    NSString* filepath = [[NSString alloc] init];
-    NSError *err;
-
-    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
-
-    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
-
-    NSDate* UTCNow = [NSDate date];
-    NSTimeZone *tz = [NSTimeZone defaultTimeZone];
-    NSInteger seconds = [tz secondsFromGMTForDate: UTCNow];
-    NSDate* now = [NSDate dateWithTimeInterval: seconds sinceDate: UTCNow];;
-
-    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - %@",contents, now, taskName ];
-    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
-    
-    if (!ok) {
-        NSLog(@"Error writing file at %@\n%@",
-        filepath, [err localizedFailureReason]);
-    }
-}
 @end
