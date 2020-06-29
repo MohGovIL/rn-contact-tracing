@@ -35,6 +35,7 @@ int resetBleStack = 0;
 @property NSDictionary* config;
 @property BOOL advertisingIsOn;
 @property BOOL scanningIsOn;
+@property int lastStartTimeStamp;
 
 @end
 
@@ -63,8 +64,57 @@ int resetBleStack = 0;
 
 #pragma mark BLE Services
 
+- (void)keepAliveBLEStartForTask:(NSString*)taskName
+{
+    int nowUnix = [[NSDate date] timeIntervalSince1970];
+    // Test comment new git
+    // TODO: check if emitter null check is needed
+    if (nowUnix-self.lastStartTimeStamp < 8) // too soon || !self.eventEmitter) // too soon or not initialized
+        return;
+    
+    NSLog(@"Keep Alive");
+    if (self.locationManager == nil)
+        self.locationManager = [[CLLocationManager alloc] init];
+
+    // advertising state flag
+    self.advertisingIsOn = YES;
+    self.scanningIsOn = YES;
+    // set singleton's data
+    self.publicKey = [CryptoClient getEphemeralId];
+    self.scanUUIDString = self.config[KEY_SERVICE_UUID] ;
+    self.advertiseUUIDString = self.config[KEY_SERVICE_UUID];
+    
+    // init and start the scan Central
+    if (!self.cbCentral)
+    {
+        self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+        if (!self.firstCreatedCentral)
+            self.firstCreatedCentral = self.cbCentral;
+    }
+    else
+        [self scan:self.scanUUIDString withEventEmitter:self.eventEmitter];
+    
+    // init and start the advertise Peropheral
+    if (!self.cbPeripheral)
+    {
+        self.cbPeripheral = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
+    }
+    else
+        [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:self.eventEmitter];
+    
+    self.lastStartTimeStamp = nowUnix;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Started" object:nil];
+}
+
 - (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter
 {
+    int nowUnix = [[NSDate date] timeIntervalSince1970];
+
+    if (self.advertisingIsOn && nowUnix-self.lastStartTimeStamp < 8)
+        return;
+        
+    // config
     self.config = [Config GetConfig];
     
     if (self.locationManager == nil)
@@ -96,6 +146,10 @@ int resetBleStack = 0;
     }
     else
         [self advertise:self.advertiseUUIDString publicKey:self.publicKey withEventEmitter:emitter];
+    
+    self.lastStartTimeStamp = nowUnix;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Started" object:nil];
 }
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
@@ -104,6 +158,22 @@ int resetBleStack = 0;
     self.scanningIsOn = NO;
     [self stopScan:emitter];
     [self stopAdvertise:emitter];
+}
+
+- (void)internalStopBLEServices
+{
+    [self stopScan:self.eventEmitter];
+    [self stopAdvertise:self.eventEmitter];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Stoped" object:nil];
+}
+
+- (void)internalStartBLEServices
+{
+    self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    [self _advertise];
+    int nowUnix = [[NSDate date] timeIntervalSince1970];
+    self.lastStartTimeStamp = nowUnix;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Started" object:nil];
 }
 
 #pragma mark Scan tasks
@@ -261,8 +331,7 @@ int resetBleStack = 0;
         if (advertisementData)
             NSLog(@"AdvertisementData: %@", advertisementData);
     }
-        
-    
+          
     if (public_key.length == 0)
     {
         return;
@@ -390,15 +459,22 @@ int resetBleStack = 0;
     7, 3 );
     // Schedule service stop
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(7 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self stopAdvertise:self.eventEmitter];
+        if(resetBleStack == 2)
+        {
+            [self internalStopBLEServices];
+        }
+        else
+        {
+            [self stopAdvertise:self.eventEmitter];
+        }
+//        [self stopAdvertise:self.eventEmitter];
         // Schedule service start
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (self.advertisingIsOn)
             {
                 if(resetBleStack == 2)
                 {
-                    self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-                    [self _advertise];
+                    [self internalStartBLEServices];
                     resetBleStack = 0;
                 }
                 else
@@ -488,6 +564,17 @@ int resetBleStack = 0;
     if (jsonString.length > 0)
     {
         data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    else
+    {
+        NSLog(@"Error writing DB");
+        return;
+    }
+    
+    if (!data)
+    {
+        NSLog(@"Error writing DB");
+        return;
     }
 //    else // TODO: only to tests!!! getting hardCoded file
 //    {

@@ -50,7 +50,7 @@ public class CryptoManager {
     
     func getStringEphemeral() -> String {
         let timeS = Int(Date().timeIntervalSince1970)
-        let geoHash:[UInt8] = Array(repeating: 1, count: 5)
+        let geoHash:[UInt8] = Array(repeating: 0, count: 5)
         let ephemeralUInt8 = mySelf.generate_ephemeral_id(time: timeS, geo_hash: geoHash)
         
         // Encode to string
