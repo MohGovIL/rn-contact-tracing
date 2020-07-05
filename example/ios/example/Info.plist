@@ -40,13 +40,18 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>We need your permission to turn on bluetooth so this app can understand when your phone is near another phone with this app.</string>
+	<string>Always Bla Bla </string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>We need your permission to turn on bluetooth so this app can understand when your phone is near another phone with this app.</string>
+	<string>Peripheral Bla Bla</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>יש לאפשר גישה למיקום על מנת להשוות את נתיבך אל מול נתיבי חולי קורונה מאומתים</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>יש לאפשר גישה למיקום על מנת להשוות את נתיבך אל מול נתיבי חולי קורונה מאומתים</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to find out where you are</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
 		<string>external-accessory</string>

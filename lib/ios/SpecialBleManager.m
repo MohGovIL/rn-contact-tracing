@@ -79,6 +79,8 @@ int lastKeepAliveTimeStamp;
         return;
     
     NSLog(@"Keep Alive");
+    [self writeLogToFileForTask:taskName];
+
     if (self.locationManager == nil)
         self.locationManager = [[CLLocationManager alloc] init];
 
@@ -120,6 +122,8 @@ int lastKeepAliveTimeStamp;
     if (self.advertisingIsOn && nowUnix-self.lastStartTimeStamp < 8)
         return;
         
+    [self writeLogToFileForTask:@"BLE Start"];
+
     // config
     self.config = [Config GetConfig];
     
@@ -365,13 +369,16 @@ int lastKeepAliveTimeStamp;
 //            NSLog(@"AdvertisementData: %@", advertisementData);
 //        public_key = @"Empty";
     }
-          
+       
+    NSString* discoveredString = [NSString stringWithFormat:@"Discovered peripheral: %@", public_key];
+    [self writeLogToFileForTask:discoveredString];
+    
     if (public_key.length == 0)
     {
         return;
     }
     
-    NSLog(@"Public_Key: %@", public_key);
+//    NSLog(@"Public_Key: %@", public_key);
 //    if (advertisementData && advertisementData[@"kCBAdvDataTimestamp"]) {
 //        device_first_timestamp = advertisementData[@"kCBAdvDataTimestamp"];
 //    }
@@ -518,6 +525,9 @@ int lastKeepAliveTimeStamp;
     NSString* stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];// NSASCIIStringEncoding];
     if (!stringFromData) { return; }
     NSLog(@"received string value: %@", stringFromData);
+    
+    NSString* receivedString = [NSString stringWithFormat:@"Peripheral updateValue: %@", stringFromData];
+    [self writeLogToFileForTask:receivedString];
     
     [self sendKeepAlive];
     if (stringFromData.length < 16) { return; }
@@ -677,7 +687,7 @@ int lastKeepAliveTimeStamp;
     NSLog(@"Peripheral update name:%@", peripheral.name);
 }
 
-#pragma mark - private methods
+#pragma mark - GATT BLE methods
 
 -(void) sendKeepAlive
 {
@@ -688,7 +698,7 @@ int lastKeepAliveTimeStamp;
     }
     
     int unixtime = [[NSDate date] timeIntervalSince1970];
-    if (unixtime-lastKeepAliveTimeStamp < 60)
+    if (unixtime-lastKeepAliveTimeStamp < 8)
         return;
     
     // TODO: check if needed ascii encode for ephemeral key
@@ -825,6 +835,34 @@ int lastKeepAliveTimeStamp;
     else
     {
         NSLog(@"cannot parse json DB file: %@", error);
+    }
+}
+
+#pragma mark - Debug logs
+
+- (void) writeLogToFileForTask:(NSString*)taskName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+
+    NSString* filepath = [[NSString alloc] init];
+    NSError *err;
+
+    filepath = [documentsDirectory stringByAppendingPathComponent:@"BLE_logs.txt"];
+
+    NSString *contents = [NSString stringWithContentsOfFile:filepath encoding:(NSStringEncoding)NSUnicodeStringEncoding error:nil] ?: @"";
+
+    NSDate* UTCNow = [NSDate date];
+    NSTimeZone *tz = [NSTimeZone defaultTimeZone];
+    NSInteger seconds = [tz secondsFromGMTForDate: UTCNow];
+    NSDate* now = [NSDate dateWithTimeInterval: seconds sinceDate: UTCNow];;
+
+    NSString* text2log = [NSString stringWithFormat:@"%@\n%@ - %@",contents, now, taskName ];
+    BOOL ok = [text2log writeToFile:filepath atomically:YES encoding:NSUnicodeStringEncoding error:&err];
+    
+    if (!ok) {
+        NSLog(@"Error writing file at %@\n%@",
+        filepath, [err localizedFailureReason]);
     }
 }
 
