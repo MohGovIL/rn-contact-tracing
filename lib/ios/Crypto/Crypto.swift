@@ -40,9 +40,9 @@ class Crypto {
 
         CCHmac(algorithm, key, key.count, data, data.count, result)
         
-        let data = NSData(bytesNoCopy: result, length: digestLen)
+        let resultData = NSData(bytesNoCopy: result, length: digestLen)
 
-        return [UInt8](data)
+        return [UInt8](resultData as Data)
     }
     
     class func hmac_sha256_firstItems(key: [UInt8], data: [UInt8], numberOfItems: Int) -> [UInt8] {

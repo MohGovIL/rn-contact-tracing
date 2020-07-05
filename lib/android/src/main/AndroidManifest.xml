@@ -9,13 +9,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
     <application>
+        <activity android:name=".activities.BatteryOptimizationHolderActivity" android:theme="@style/Theme.AppCompat.Translucent"></activity>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.wix.specialble.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

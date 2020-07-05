@@ -19,7 +19,7 @@ public class CryptoClient : NSObject {
     @objc(getEphemeralId)
     static public func getEphemeralId() -> String {
         // TODO: change after tests
-        return ("GATT_" + UIDevice.current.name).count>15 ? String(("GATT_" + UIDevice.current.name).prefix(16)) : ("GATT_" + UIDevice.current.name)
+        return String(("GATT_" + UIDevice.current.name).prefix(16))
 //        return CryptoManager.shared.getStringEphemeral()
     }
     

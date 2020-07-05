@@ -3,6 +3,7 @@ package com.wix.crypto;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
@@ -552,7 +553,7 @@ public class User {
      *
      * Note -  deleting all keys and contacts.
      */
-    public void deleteHistory(int dTime)
+    public void deleteHistory(final int dTime)
     {
         Time t = new Time(dTime, Constants.None);
         Map<Time, EpochKey> dictEpochKeys = new HashMap<>();
@@ -566,7 +567,13 @@ public class User {
         mEpochKeys = dictEpochKeys;
         serialize();
 
-        dbClient.deleteContactHistory(dTime);
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                dbClient.deleteContactHistory(dTime);
+            }
+        });
     }
 
     /**

@@ -141,6 +141,20 @@ function HomeScreen() {
             alert(res);
           });
     }
+
+    // export contacts csv
+    function _exportContacts() {
+        SpecialBle.exportAllContactsAsCsv((res) => {
+            alert(res);
+        });
+    }
+    
+    // export advertisements csv
+    function _exportAdvertisements() {
+        SpecialBle.exportAdvertiseAsCsv((res) => {
+            alert(res);
+        });
+    }
     // function _match(infected_db) {
     //     return SpecialBle.match("infected_db");
 
@@ -189,8 +203,13 @@ function HomeScreen() {
                 {_renderButton('Add Contacts to DB', _writeContactsToDB)}
             </View>
 
-            {/* <View style = {{display: 'none'}}> */}
-            <View>
+            <View style={[styles.subContainer, {justifyContent: 'center'}]}>
+                {_renderButton('Export contacts CSV', _exportContacts)}
+                {_renderButton('Export advertisement CSV', _exportAdvertisements)}
+            </View>
+
+            <View style = {{display: 'none'}}>
+
                 <View style={styles.subContainer}>
                     {_renderButton('Start Scan', _startScan)}
                     {_renderButton('Start Advertise', _startAdvertise)}

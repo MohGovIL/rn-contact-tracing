@@ -35,7 +35,7 @@ public class DBClient: NSObject {
         public static func addJsonContact(ephemeral_id: String, rssi: Int, time: Int, location: String, lat: Double, lon: Double){
             let contactsCount = DBClient.getContacts().fetchedObjects?.count ?? 0
 
-            DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id)!, rssi: rssi, time: time, location: stringToBytes(location)!, id: contactsCount+1,lat: lat, lon: lon)
+            DBContactManager.shared.addNewContact(ephemeral_id: stringToBytes(ephemeral_id), rssi: rssi, time: time, location: stringToBytes(location), id: contactsCount+1,lat: lat, lon: lon)
         }
     
     @objc(clearAllContacts)
@@ -43,9 +43,27 @@ public class DBClient: NSObject {
         DBContactManager.shared.deleteAllContacts()
     }
     
+    @objc(exportContactsCSV)
+    public static func exportContactsCSV() -> String {
+        var csvText = "ephemeral_id, rssi, timestamp, geohash, lat, lon\n"
+
+        if let fetchedObjects = DBClient.getContacts().fetchedObjects {
+        for contact in fetchedObjects {
+            let newLine = "\(contact.ephemeral_id.hex()),\(contact.rssi),\(contact.timestamp),\(contact.geohash.hex()),\(contact.lat),\(contact.lon)\n"
+            csvText.append(newLine)
+            }
+        }
+
+        return csvText
+    }
+    
+    @objc(exportAdvertismentsCSV)
+    public static func exportAdvertismentsCSV() -> String {
+        return "test"
+    }
     
     // Hex string to bytes array
-    static func stringToBytes(_ string: String) -> [UInt8]? {
+    static func stringToBytes(_ string: String) -> [UInt8] {
         let length = string.count
         if length & 1 != 0 {
             return []
@@ -58,7 +76,7 @@ public class DBClient: NSObject {
             if let b = UInt8(string[index..<nextIndex], radix: 16) {
                 bytes.append(b)
             } else {
-                return nil
+                return []
             }
             index = nextIndex
         }
@@ -132,5 +150,4 @@ public class DBClient: NSObject {
     public static func clearAllScans() {
         DBScanManager.shared.deleteAllScans()
     }
-    
 }
