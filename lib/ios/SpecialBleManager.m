@@ -79,7 +79,7 @@ int lastKeepAliveTimeStamp;
         return;
     
     NSLog(@"Keep Alive");
-    [self writeLogToFileForTask:taskName];
+    [self writeLogToFileForTask:[NSString stringWithFormat:@"KeepAlive: %@", taskName]];
 
     if (self.locationManager == nil)
         self.locationManager = [[CLLocationManager alloc] init];
@@ -183,6 +183,10 @@ int lastKeepAliveTimeStamp;
 
 - (void)internalStartBLEServices
 {
+//    for (CBPeripheral* peripheral in [self.contactPeripherals allValues])
+//    {
+//        [self.cbCentral cancelPeripheralConnection:peripheral];
+//    }
     self.cbCentral = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     [self _advertise];
     int nowUnix = [[NSDate date] timeIntervalSince1970];
@@ -518,6 +522,7 @@ int lastKeepAliveTimeStamp;
 
 - (void)peripheralManager:(CBPeripheralManager *)peripheral didReceiveWriteRequests:(NSArray<CBATTRequest *> *)requests
 {
+    [self writeLogToFileForTask:@"Write Request received"];
 
     CBATTRequest*       request = [requests  objectAtIndex: 0];
     NSLog(@"peripheralManager didReceiveWriteRequest: %@", request.value);
@@ -526,7 +531,7 @@ int lastKeepAliveTimeStamp;
     if (!stringFromData) { return; }
     NSLog(@"received string value: %@", stringFromData);
     
-    NSString* receivedString = [NSString stringWithFormat:@"Peripheral writeValue: %@", stringFromData];
+    NSString* receivedString = [NSString stringWithFormat:@"GATT writeValue: %@", stringFromData];
     [self writeLogToFileForTask:receivedString];
     
 //    [self sendKeepAlive];
@@ -671,7 +676,7 @@ int lastKeepAliveTimeStamp;
 
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-    [self writeLogToFileForTask:@"didWriteValue to Characteristic"];
+    [self writeLogToFileForTask:[NSString stringWithFormat:@"didWriteValue to: %@", peripheral.name]];
     NSLog(@"peripheral didWriteValue");
 }
 
