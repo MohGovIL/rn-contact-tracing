@@ -21,7 +21,7 @@ Byte keepAliveValue = 0x00;
 NSString* keepAliveCharasteristicUUID = @"00000000-0000-1000-8000-00805F9B34FA";
 int lastKeepAliveTimeStamp;
 int lastUpdateValue;
-int lastConnectionTimestamp;
+//int lastConnectionTimestamp;
 
 @interface SpecialBleManager () <CLLocationManagerDelegate>
 
@@ -384,20 +384,6 @@ int lastConnectionTimestamp;
     NSString* public_key = @"";
     NSNumber *tx = @0;
     int64_t unixtime = [[NSDate date] timeIntervalSince1970];
-
-    if (unixtime - lastConnectionTimestamp > 120)
-    {
-        if (self.connectedPeripheral.state == CBPeripheralStateConnected)
-            [self.cbCentral cancelPeripheralConnection:self.connectedPeripheral];
-        self.connectedPeripheral = nil;
-    }
-    
-    if (!self.connectedPeripheral && unixtime - lastConnectionTimestamp > 60)
-    {
-        self.connectedPeripheral = peripheral;
-        [self writeLogToFile:@"BLE_Output.txt" forTask:[NSString stringWithFormat:@"*Connecting: %@", peripheral.name]];
-        [self.cbCentral connectPeripheral:peripheral options:nil];
-    }
     
     // get private_key
     if (advertisementData && advertisementData[CBAdvertisementDataServiceDataKey] && advertisementData[CBAdvertisementDataServiceUUIDsKey]) {
@@ -461,8 +447,8 @@ int lastConnectionTimestamp;
             @"device_first_timestamp": @(unixtime*1000),
             @"device_last_timestamp": @(unixtime*1000),
             @"device_tx": tx,
-            @"device_address": @"", //TODO: not used may remove
-            @"device_protocol": @"GAP" //TODO: not used may remove
+            @"device_address": @"",
+            @"device_protocol": @"GAP"
         }];
         [DBClient addDevice:device];
     }
@@ -478,6 +464,31 @@ int lastConnectionTimestamp;
     // send foundDevice event
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_DEVICE body:device];
 
+    // handle GATT connection
+    int deviceLastConnectionTimestamp = [[device objectForKey:@"last_connected_timestamp"] intValue];
+    if ( unixtime - deviceLastConnectionTimestamp > 60 &&
+         peripheral.state != CBPeripheralStateConnected)
+    {
+        self.connectedPeripheral = peripheral;
+        [self writeLogToFile:@"BLE_Output.txt" forTask:[NSString stringWithFormat:@"*Connecting: %@", peripheral.name]];
+        [self.cbCentral connectPeripheral:peripheral options:nil];
+        [device setValue:@(unixtime) forKey:@"last_connected_timestamp"];
+        [DBClient updateDevice:device];
+    }
+//    if (unixtime - deviceLastConnectionTimestamp > 120)
+//    {
+//        if (self.connectedPeripheral.state == CBPeripheralStateConnected)
+//            [self.cbCentral cancelPeripheralConnection:self.connectedPeripheral];
+//        self.connectedPeripheral = nil;
+//    }
+//
+//    if (!self.connectedPeripheral && unixtime - deviceLastConnectionTimestamp > 60)
+//    {
+//        self.connectedPeripheral = peripheral;
+//        [self writeLogToFile:@"BLE_Output.txt" forTask:[NSString stringWithFormat:@"*Connecting: %@", peripheral.name]];
+//        [self.cbCentral connectPeripheral:peripheral options:nil];
+//    }
+    
     // handle scans
     NSArray* scansArray = [DBClient getScanByKey:public_key];
     NSDictionary* scan = @{
@@ -502,7 +513,7 @@ int lastConnectionTimestamp;
     [self writeLogToFile:@"BLE_Output.txt" forTask:[NSString stringWithFormat:@"* Failed Connecting peripheral: %@, Error: %@", peripheral.name, error.localizedDescription]];
 
     self.connectedPeripheral = nil;
-    lastConnectionTimestamp = 0;
+//    lastConnectionTimestamp = 0;
     
     // TODO: retry connection timeout
 //    [self.cbCentral connectPeripheral:peripheral options:nil];
@@ -513,7 +524,7 @@ int lastConnectionTimestamp;
     NSLog(@"Connected peripheral: %@", peripheral.name);
     [self writeLogToFile:@"BLE_Output.txt" forTask:[NSString stringWithFormat:@"* Connected peripheral: %@", peripheral.name]];
     
-    lastConnectionTimestamp = [[NSDate date] timeIntervalSince1970];
+//    lastConnectionTimestamp = [[NSDate date] timeIntervalSince1970];
     
     peripheral.delegate = self;
     

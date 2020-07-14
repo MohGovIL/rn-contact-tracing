@@ -81,6 +81,9 @@ class DBManager {
             if results.count != 0 {
                 results[0].setValue(attributes["device_last_timestamp"], forKey: "device_last_timestamp")
                 results[0].setValue(attributes["device_rssi"], forKey: "device_rssi")
+                results[0].setValue(attributes["last_connected_timestamp"], forKey: "last_connected_timestamp")
+
+                
             }
         } catch {
             print("Fetch Failed: \(error)")

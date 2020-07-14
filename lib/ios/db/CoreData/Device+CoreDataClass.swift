@@ -21,6 +21,7 @@ public class Device: CoreDataCodable {
         case device_first_timestamp
         case device_last_timestamp
         case device_tx
+        case last_connected_timestamp
     }
     
     // MARK: - Decodable
@@ -53,5 +54,6 @@ public class Device: CoreDataCodable {
         try container.encode(device_first_timestamp, forKey: .device_first_timestamp)
         try container.encode(device_last_timestamp, forKey: .device_last_timestamp)
         try container.encode(device_tx, forKey: .device_tx)
+        try container.encode(last_connected_timestamp, forKey: .last_connected_timestamp)
     }
 }
