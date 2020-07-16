@@ -294,7 +294,7 @@ public class BLEScannerManager {
         @Override
         public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
             super.onConnectionStateChange(device, status, newState);
-            Log.e(TAG, " BluetoothGattServerCallback#onConnectionStateChange: device " + device.getName() + " \n address " + device.getAddress() + " \n newState " + newState);
+
             if (newState == BluetoothGatt.STATE_CONNECTED) {
 
                 Log.e(TAG, "BluetoothGattServerCallback#onConnectionStateChange: STATE_CONNECTED");
@@ -323,8 +323,6 @@ public class BLEScannerManager {
                     break;
                 }
                 Contact contactToSend = filteredContactListToSend.get(i);
-                Log.e(TAG, "onCharacteristicReadRequest: current contacts list length " + filteredContactListToSend.size());
-                Log.e(TAG, "onCharacteristicReadRequest: sending response " + new String(contactToSend.getEphemeral_id()));
                 byte[] curerntContact = BytesUtils.byteConcatenation(contactToSend.getEphemeral_id(), String.valueOf(contactToSend.getTimestamp()).getBytes());
                 fullResponse = BytesUtils.byteConcatenation(fullResponse, curerntContact);
             }
@@ -383,9 +381,6 @@ public class BLEScannerManager {
                     }
 
                     filteredContactListToSend = new ArrayList<>(filteredMap.values());
-
-                    Log.e(TAG, "BluetoothGattServerCallback#onCharacteristicWriteRequest: after filtration size is " + filteredContactListToSend.size() );
-
                 }
             });
 
