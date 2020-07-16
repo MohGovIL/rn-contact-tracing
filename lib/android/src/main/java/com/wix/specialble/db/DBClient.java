@@ -96,7 +96,7 @@ public class DBClient {
      **************/
     public List<Contact> getAllContacts() { return bleDevicesDB.contactDao().getAllContacts(); }
 
-    public List<Contact> getAllContactsWithGattServerConnection(int timeConstraint) { return bleDevicesDB.contactDao().getContactsByGattServerConnectionTimestamp(timeConstraint); }
+    public List<Contact> getAllContactsWithGattServerConnection(final int timeConstraint) { return bleDevicesDB.contactDao().getContactsByGattServerConnectionTimestamp(timeConstraint); }
 
     public void storeContact(Contact contact)
     {

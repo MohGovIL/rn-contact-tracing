@@ -45,5 +45,5 @@ public interface ContactDao
     public void deleteContactHistory(int history);
 
     @Query("SELECT * FROM Contacts where gatt_server_connection_timestamp != -1 and ((strftime('%s','now') || substr(strftime('%f','now'),4)) - gatt_server_connection_timestamp) <= :timeConstraint")
-    List<Contact> getContactsByGattServerConnectionTimestamp(int timeConstraint);
+    List<Contact> getContactsByGattServerConnectionTimestamp(final int timeConstraint);
 }
