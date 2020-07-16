@@ -47,6 +47,9 @@ public class Contact{
     @ColumnInfo(name = "lon")
     private double lon;
 
+    @ColumnInfo(name = "gatt_server_connection_timestamp")
+    private long gattServerConnectionTimestamp;
+
     /**
      * A contact which was sent the user a BLE message.
      *
@@ -57,7 +60,7 @@ public class Contact{
      * @param lat - latitude value
      * @param lon - longitude value
      */
-    public Contact(byte[] ephemeralId, byte[] rssi, int time, byte[] location, double lat, double lon) {
+    public Contact(byte[] ephemeralId, byte[] rssi, int time, byte[] location, double lat, double lon, long gattServerConnectionTimestamp) {
 
         assert ephemeralId.length == Constants.MESSAGE_LEN;
 
@@ -68,6 +71,7 @@ public class Contact{
 //        this.user_id = user_id;
         this.lat = lat;
         this.lon = lon;
+        this.gattServerConnectionTimestamp = gattServerConnectionTimestamp;
     }
 
     public Contact(){}
@@ -157,5 +161,13 @@ public class Contact{
         }
 
         return jo;
+    }
+
+    public long getGattServerConnectionTimestamp() {
+        return gattServerConnectionTimestamp;
+    }
+
+    public void setGattServerConnectionTimestamp(long gattServerConnectionTimestamp) {
+        this.gattServerConnectionTimestamp = gattServerConnectionTimestamp;
     }
 }

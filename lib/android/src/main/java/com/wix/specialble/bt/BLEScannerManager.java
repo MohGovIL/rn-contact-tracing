@@ -2,6 +2,13 @@ package com.wix.specialble.bt;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattServer;
+import android.bluetooth.BluetoothGattServerCallback;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -15,8 +22,11 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.ParcelUuid;
+import android.util.Base64;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
+
+import com.wix.crypto.Contact;
 import com.wix.crypto.CryptoManager;
 import com.wix.crypto.utilities.BytesUtils;
 import com.wix.specialble.config.Config;
@@ -29,9 +39,15 @@ import com.wix.specialble.sensor.SensorUtils;
 import com.wix.specialble.util.Constants;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class BLEScannerManager {
+
+    private static final String PRIMARY_SERVICE_UUID = "00000000-0000-1000-8000-00805F9B34FB";
+    private static final String KEEP_ALIVE_UUID = "00000000-0000-1000-8000-00805F9B34FA";
 
     private static final String SCANNING_STATUS = "scanningStatus";
     private static final String FOUND_DEVICE = "foundDevice";
@@ -49,6 +65,16 @@ public class BLEScannerManager {
     private String TAG = "BLEScannerManager";
     private IEventListener mEventListenerCallback;
 
+    private BluetoothGattService gattService;
+    private BluetoothGattServer gattServer;
+    private BluetoothGattCharacteristic primary;
+    private BluetoothGattCharacteristic keepAlive;
+
+    private static int contactsConstraint = 19;
+    private static int timeConstraint = 60 * 1000;
+    private Map<String, List<Contact>> ephemeralsToSendMap;
+    private static final byte[] END_OFF_GATT_READ_RESPONSE = "no_more_contacts".getBytes();
+    List<Contact> filteredContactListToSend;
 
     // this is a place holder for Geo-Hash Data
     // it should be injected from the application container level on every change from LocationManager
@@ -70,6 +96,17 @@ public class BLEScannerManager {
         mAccelerometerManager = new AccelerometerManager(sensorManager);
         mRotationVectorManager = new RotationVectorManager(sensorManager);
 
+        gattService = new BluetoothGattService(UUID.fromString(PRIMARY_SERVICE_UUID),BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        primary = new BluetoothGattCharacteristic(UUID.fromString(PRIMARY_SERVICE_UUID), BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY | BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE);
+        keepAlive = new BluetoothGattCharacteristic(UUID.fromString(KEEP_ALIVE_UUID), BluetoothGattCharacteristic.PROPERTY_NOTIFY | BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE );
+
+        gattService.addCharacteristic(primary);
+        gattService.addCharacteristic(keepAlive);
+
+        gattServer = ((BluetoothManager)context.getSystemService(Context.BLUETOOTH_SERVICE)).openGattServer(context, bluetoothGattServerCallback);
+        gattServer.addService(gattService);
+
+        ephemeralsToSendMap = new HashMap<>();
     }
 
     public void startScan(String serviceUUID) {
@@ -82,8 +119,11 @@ public class BLEScannerManager {
             int scanMatchMode = config.getScanMatchMode();
 
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUID.fromString(serviceUUID))).build();
+            ScanFilter nullFilter = new ScanFilter.Builder().setServiceUuid(null).setManufacturerData(76, Base64.decode("AQAAAAAAAAAAAEAAAAAAAAA=",Base64.DEFAULT)).build(); // .setManufacturerData(76, Base64.decode("AQAAAAAAAAAAAEAAAAAAAAA=",Base64.DEFAULT))
+
             ArrayList<ScanFilter> filters = new ArrayList<>();
             filters.add(filter);
+            filters.add(nullFilter);
 
             ScanSettings settings = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -180,7 +220,8 @@ public class BLEScannerManager {
                         result.getDevice().getAddress(),
                         BLEManager.BLEProtocol.GAP.toString(),
                         result.getRssi(),
-                        tx, mProximityManager.getEvents()[0], mAccelerometerManager.getEvents(), mRotationVectorManager.getEvents(), SensorUtils.getBatteryPercentage(mContext));
+                        tx, mProximityManager.getEvents()[0], mAccelerometerManager.getEvents(),
+                        mRotationVectorManager.getEvents(), SensorUtils.getBatteryPercentage(mContext));
 
                 dbClient.addScan(newScan);
 
@@ -215,7 +256,7 @@ public class BLEScannerManager {
                 }
 
                 //TODO:: do we need to make sure our key is exactly 16 byte len as per the spec ?
-                CryptoManager.getInstance(mContext).mySelf.storeContact(byteScannedToken, rssi, currentTime, sGeoHash, lat, lon);
+                CryptoManager.getInstance(mContext).mySelf.storeContact(byteScannedToken, rssi, currentTime, sGeoHash, lat, lon, -1);
 
                 mEventListenerCallback.onEvent(FOUND_SCAN, newScan.toWritableMap());
             }
@@ -231,6 +272,11 @@ public class BLEScannerManager {
                 BLEManager.BLEProtocol.GAP.toString(), result.getRssi(), tx);
     }
 
+    private Device getNewDevice(int rssi, BluetoothDevice device, int tx, String scannedToken, long firstSeenTime, long lastSeenTime) {
+        return new Device(firstSeenTime, lastSeenTime, scannedToken, device.getAddress(),
+                BLEManager.BLEProtocol.GAP.toString(), rssi, tx);
+    }
+
     private void registerSensors() {
         mProximityManager.registerListener();
         mAccelerometerManager.registerListener();
@@ -242,4 +288,126 @@ public class BLEScannerManager {
         mAccelerometerManager.unregisterListener();
         mRotationVectorManager.unregisterListener();
     }
+
+    private BluetoothGattServerCallback bluetoothGattServerCallback = new BluetoothGattServerCallback() {
+
+        @Override
+        public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
+            super.onConnectionStateChange(device, status, newState);
+            Log.e(TAG, " BluetoothGattServerCallback#onConnectionStateChange: device " + device.getName() + " \n address " + device.getAddress() + " \n newState " + newState);
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
+
+                Log.e(TAG, "BluetoothGattServerCallback#onConnectionStateChange: STATE_CONNECTED");
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                Log.e(TAG, "BluetoothGattServerCallback#onConnectionStateChange: STATE_DISCONNECTED ");
+                ephemeralsToSendMap.remove(device.getAddress());
+                gattServer.cancelConnection(device);
+            }
+        }
+
+        @Override
+        public void onServiceAdded(int status, BluetoothGattService service) {
+            super.onServiceAdded(status, service);
+            Log.e(TAG, "BluetoothGattServerCallback#onServiceAdded: status " + status + " service uuid " + service.getUuid().toString());
+        }
+
+        @Override
+        public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic characteristic) {
+            super.onCharacteristicReadRequest(device, requestId, offset, characteristic);
+            Log.e(TAG, "BluetoothGattServerCallback#onCharacteristicReadRequest: for device " + device.getAddress());
+//            gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, "success".getBytes());
+
+            byte[] fullResponse = new byte[0];
+            for (int i = 0; i < filteredContactListToSend.size(); i++) {
+                if (i == contactsConstraint) {
+                    break;
+                }
+                Contact contactToSend = filteredContactListToSend.get(i);
+                Log.e(TAG, "onCharacteristicReadRequest: current contacts list length " + filteredContactListToSend.size());
+                Log.e(TAG, "onCharacteristicReadRequest: sending response " + new String(contactToSend.getEphemeral_id()));
+                byte[] curerntContact = BytesUtils.byteConcatenation(contactToSend.getEphemeral_id(), String.valueOf(contactToSend.getTimestamp()).getBytes());
+                fullResponse = BytesUtils.byteConcatenation(fullResponse, curerntContact);
+            }
+                gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, fullResponse);
+
+        }
+
+        @Override
+        public void onCharacteristicWriteRequest(final BluetoothDevice device, int requestId, final BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, final byte[] value) {
+            super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+            Log.e(TAG, "BluetoothGattServerCallback#onCharacteristicWriteRequest: value is " + new String(value) + " for device " + device.getAddress());
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+
+                    Device oldDevice = dbClient.getDeviceByKey(new String(value)); // get device from database
+                    Device newDevice;
+
+                    if (oldDevice != null) {
+                        newDevice = getNewDevice(0,device,0,new String(value), oldDevice.getFirstTimestamp(), System.currentTimeMillis());
+//                        if (hasUpdateRequirements(oldDevice, result)) {
+                            dbClient.updateDevice(newDevice);
+//                        }
+                    } else {
+                        newDevice = getNewDevice(0,device,0,new String(value), System.currentTimeMillis(), System.currentTimeMillis());
+                        dbClient.addDevice(newDevice);
+                    }
+
+                    Scan newScan = new Scan(System.currentTimeMillis(),
+                            new String(value),
+                            device.getAddress(),
+                            BLEManager.BLEProtocol.GAP.toString(),
+                            0,
+                            0, mProximityManager.getEvents()[0], mAccelerometerManager.getEvents(),
+                            mRotationVectorManager.getEvents(), SensorUtils.getBatteryPercentage(mContext));
+
+                    dbClient.addScan(newScan);
+
+                    int currentTime = (int) (System.currentTimeMillis() / 1000);
+
+                    byte[] rssi = BytesUtils.numToBytes(0, 4);
+
+                    double lat = 0;
+                    double lon = 0;
+
+                    CryptoManager.getInstance(mContext).mySelf.storeContact(value, rssi, currentTime, sGeoHash, lat, lon, System.currentTimeMillis());
+
+                    List<Contact> contacts = DBClient.getInstance(mContext).getAllContactsWithGattServerConnection(timeConstraint);
+                    Log.e(TAG, "BluetoothGattServerCallback#onCharacteristicWriteRequest: fetched  " + contacts.size() + " from database" );
+
+                    Map<String, Contact> filteredMap = new HashMap<>();
+                    for(Contact contact : contacts) {
+                        if(!filteredMap.containsKey(new String(contact.getEphemeral_id()))) {
+                            filteredMap.put(new String(contact.getEphemeral_id()), contact);
+                        }
+                    }
+
+                    filteredContactListToSend = new ArrayList<>(filteredMap.values());
+
+                    Log.e(TAG, "BluetoothGattServerCallback#onCharacteristicWriteRequest: after filtration size is " + filteredContactListToSend.size() );
+
+                }
+            });
+
+            if(responseNeeded) {
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, ("success write").getBytes());
+            }
+        }
+
+        @Override
+        public void onExecuteWrite(BluetoothDevice device, int requestId, boolean execute) {
+            super.onExecuteWrite(device, requestId, execute);
+            Log.e(TAG, "BluetoothGattServerCallback#onExecuteWrite: " );
+        }
+
+        @Override
+        public void onNotificationSent(BluetoothDevice device, int status) {
+            super.onNotificationSent(device, status);
+            Log.e(TAG, "BluetoothGattServerCallback#onNotificationSent: status " + status);
+        }
+
+    };
 }
+
+// BluetoothGattCallback
+// BluetoothGattServerCallback

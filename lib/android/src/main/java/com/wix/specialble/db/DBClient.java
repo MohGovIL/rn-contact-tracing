@@ -25,7 +25,7 @@ public class DBClient {
 
     private DBClient(Context context) {
         this.context = context;
-        bleDevicesDB = Room.databaseBuilder(context, SpecialBLEDatabase.class, "BLEDevices").build();
+        bleDevicesDB = Room.databaseBuilder(context, SpecialBLEDatabase.class, "BLEDevices").fallbackToDestructiveMigration().build();
         publicKeysDB = Room.databaseBuilder(context, PublicKeysDatabase.class, "PublicKeys").build();
     }
 
@@ -96,11 +96,12 @@ public class DBClient {
      **************/
     public List<Contact> getAllContacts() { return bleDevicesDB.contactDao().getAllContacts(); }
 
+    public List<Contact> getAllContactsWithGattServerConnection(int timeConstraint) { return bleDevicesDB.contactDao().getContactsByGattServerConnectionTimestamp(timeConstraint); }
+
     public void storeContact(Contact contact)
     {
         bleDevicesDB.contactDao().insert(contact);
     }
-
 
     public Cursor getCursorAll()
     {

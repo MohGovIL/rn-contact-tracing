@@ -168,7 +168,10 @@ public class ParseUtils {
                      lat = jo.getDouble("lat");
                 if(jo.has("lon"))
                     lon = jo.getDouble("lon");
-                DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
+                long gattServerConnectionTimestamp = -1;
+                if(jo.has("gattServerConnectionTimestamp"))
+                    gattServerConnectionTimestamp = jo.getLong("gattServerConnectionTimestamp");
+                DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon, gattServerConnectionTimestamp));
             }
 
 

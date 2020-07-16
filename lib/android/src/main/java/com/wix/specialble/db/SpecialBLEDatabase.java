@@ -7,7 +7,7 @@ import com.wix.specialble.bt.Device;
 import com.wix.specialble.bt.Event;
 import com.wix.specialble.bt.Scan;
 
-@Database(entities = {Device.class, Scan.class, Contact.class, Event.class}, version = 6, exportSchema = true)
+@Database(entities = {Device.class, Scan.class, Contact.class, Event.class}, version = 8, exportSchema = true)
 public abstract class SpecialBLEDatabase extends RoomDatabase {
     public abstract DeviceDao deviceDao();
     public abstract ScanDao scanDao();

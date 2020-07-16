@@ -286,7 +286,8 @@ public class User {
                     c.getInt(c.getColumnIndex("timestamp")),
                     c.getBlob(c.getColumnIndex("geohash")),
                     c.getDouble(c.getColumnIndex("lat")),
-                    c.getDouble(c.getColumnIndex("lon"))
+                    c.getDouble(c.getColumnIndex("lon")),
+                    c.getLong(c.getColumnIndex("gatt_server_connection_timestamp"))
             );
 
             int time = contact.getTimestamp() - Time.JITTER_THRESHOLD;
@@ -506,7 +507,7 @@ public class User {
      * @param ownLocation - current location
      * @return
      */
-    public boolean storeContact(byte[] otherEphemeralId, byte[] rssi, int time, byte[] ownLocation, double lat, double lon) {
+    public boolean storeContact(byte[] otherEphemeralId, byte[] rssi, int time, byte[] ownLocation, double lat, double lon, long gattServerConnectionTimestamp) {
 
 //        if (mContacts.size() >= Time.MAX_CONTACTS_IN_WINDOW) {
 //            int pastContactTime = mContacts.get(mContacts.size() - Time.MAX_CONTACTS_IN_WINDOW).getTimestamp();
@@ -517,7 +518,7 @@ public class User {
 //        }
 //
 //
-        dbClient.storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
+        dbClient.storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon, gattServerConnectionTimestamp));
         return true;
     }
 

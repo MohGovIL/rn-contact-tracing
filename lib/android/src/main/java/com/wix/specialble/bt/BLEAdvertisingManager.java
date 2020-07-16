@@ -102,7 +102,7 @@ public class BLEAdvertisingManager {
             settingsBuilder.setAdvertiseMode(config.getAdvertiseMode());
             settingsBuilder.setTimeout((int) config.getAdvertiseDuration());
             settingsBuilder.setTxPowerLevel(config.getAdvertiseTXPowerLevel());
-            settingsBuilder.setConnectable(false);
+            settingsBuilder.setConnectable(true);
 
             if(advertiser != null)
                 advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
