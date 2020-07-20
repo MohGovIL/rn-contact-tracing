@@ -113,32 +113,6 @@ RCT_EXPORT_METHOD(cleanDevicesDB) {
     [DBClient clearAllDevices];
 }
 
-RCT_EXPORT_METHOD(addDemoDevice) {
-    NSDate *date = [NSDate date]; // current date
-    int unixtime = [date timeIntervalSince1970];
-    NSDictionary* demoDevice = @{
-        @"public_key": [SpecialBle randomStringWithLength:8],
-        @"device_rssi": [NSNumber numberWithInt:555],
-        @"device_first_timestamp": [NSNumber numberWithInt:unixtime],
-        @"device_last_timestamp": [NSNumber numberWithInt:unixtime],
-        @"device_tx": [NSNumber numberWithInt:0]
-    };
-    [DBClient addDevice:demoDevice];
-}
-
-NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-+(NSString *) randomStringWithLength: (int) len {
-
-    NSMutableString *randomString = [NSMutableString stringWithCapacity: len];
-
-    for (int i=0; i<len; i++) {
-         [randomString appendFormat: @"%C", [letters characterAtIndex: arc4random_uniform([letters length])]];
-    }
-
-    return randomString;
-}
-
 #pragma mark - Scans
 
 /***********
