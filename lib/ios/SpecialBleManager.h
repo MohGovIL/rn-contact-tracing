@@ -11,7 +11,7 @@
 
 
 
-@interface SpecialBleManager : NSObject <CBCentralManagerDelegate> //, CBPeripheralManagerDelegate, CBPeripheralDelegate>
+@interface SpecialBleManager : NSObject <CBCentralManagerDelegate>
 
 + (id)sharedManager;
 - (void)startBLEServicesWithEventEmitter:(RCTEventEmitter*)emitter;
