@@ -89,26 +89,30 @@ public class ParseUtils {
     public static Map<Integer, Map<Integer, ArrayList<byte[]>>> extractInfectedDbFromJson(String epochs, Context applicationContext) {
         Map<Integer, Map<Integer, ArrayList<byte[]>>> infectedDb = new HashMap<>();
         try {
-            JSONObject jsonRes;
+            JSONObject jsonRes = null;
+
             if (epochs != null)
                 jsonRes = new JSONObject(epochs);
-            else
-                jsonRes = new JSONObject(loadJSONFromAsset(applicationContext)); ///for testing
+//            else
+//                jsonRes = new JSONObject(loadJSONFromAsset(applicationContext)); ///for testing
 
-            JSONArray infected = jsonRes.getJSONArray(INFECTED);
-            int startDay = jsonRes.getInt(START_DAY);
+            if(jsonRes != null) {
 
-            for (int i = 0; i < infected.length(); i++, startDay++) {
-                infectedDb.put(startDay, new HashMap<Integer, ArrayList<byte[]>>());
-                JSONArray epochsArray = infected.getJSONArray(i);
+                JSONArray infected = jsonRes.getJSONArray(INFECTED);
+                int startDay = jsonRes.getInt(START_DAY);
 
-                for (int j = 0; j < epochsArray.length(); j++) {
-                    JSONArray eph = epochsArray.getJSONArray(j);
-                    infectedDb.get(startDay).put(j, new ArrayList<byte[]>());
-                    for (int k = 0; k < eph.length(); k++) {
-                        String epoc = eph.getString(k);
-                        byte[] epocBytes = Hex.hexStringToByteArray(epoc);
-                        infectedDb.get(startDay).get(j).add(epocBytes);
+                for (int i = 0; i < infected.length(); i++, startDay++) {
+                    infectedDb.put(startDay, new HashMap<Integer, ArrayList<byte[]>>());
+                    JSONArray epochsArray = infected.getJSONArray(i);
+
+                    for (int j = 0; j < epochsArray.length(); j++) {
+                        JSONArray eph = epochsArray.getJSONArray(j);
+                        infectedDb.get(startDay).put(j, new ArrayList<byte[]>());
+                        for (int k = 0; k < eph.length(); k++) {
+                            String epoc = eph.getString(k);
+                            byte[] epocBytes = Hex.hexStringToByteArray(epoc);
+                            infectedDb.get(startDay).get(j).add(epocBytes);
+                        }
                     }
                 }
             }
@@ -120,62 +124,62 @@ public class ParseUtils {
         return infectedDb;
     }
 
-    public static String loadJSONFromAsset(Context ctx) {
-        String json = null;
-        try {
-            InputStream is = ctx.getResources().openRawResource(R.raw.infected);//ctx.getAssets().open("infected.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
+//    public static String loadJSONFromAsset(Context ctx) {
+//        String json = null;
+//        try {
+//            InputStream is = ctx.getResources().openRawResource(R.raw.infected);//ctx.getAssets().open("infected.json");
+//            int size = is.available();
+//            byte[] buffer = new byte[size];
+//            is.read(buffer);
+//            is.close();
+//            json = new String(buffer, "UTF-8");
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//            return null;
+//        }
+//        return json;
+//    }
 
-    public static void loadDatabase(Context ctx, String jsonArray) {
-        String json = null;
-        try {
-            JSONArray dbArray;
-            if (jsonArray != null && jsonArray.length() > 0) {
-                dbArray = new JSONArray(jsonArray);
-            } else {
-
-                InputStream is = ctx.getResources().openRawResource(R.raw.outputcontacts);
-                int size = is.available();
-                byte[] buffer = new byte[size];
-                is.read(buffer);
-                is.close();
-                json = new String(buffer, "UTF-8");
-
-                dbArray = new JSONArray(json);
-            }
-
-            for (int i = 0; i < dbArray.length(); i++)
-            {
-                JSONObject jo = dbArray.getJSONObject(i);
-
-                byte[] otherEphemeralId = Hex.hexStringToByteArray(jo.getString("ephemeral_id"));
-                byte[] rssi = BytesUtils.numToBytes(jo.getInt("rssi"),4);
-                byte[] ownLocation = Hex.hexStringToByteArray(jo.getString("geohash"));
-                int time = jo.getInt("timestamp");
-                double lat = 0;
-                double lon = 0;
-                if(jo.has("lat"))
-                     lat = jo.getDouble("lat");
-                if(jo.has("lon"))
-                    lon = jo.getDouble("lon");
-                DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
-            }
-
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+//    public static void loadDatabase(Context ctx, String jsonArray) {
+//        String json = null;
+//        try {
+//            JSONArray dbArray;
+//            if (jsonArray != null && jsonArray.length() > 0) {
+//                dbArray = new JSONArray(jsonArray);
+//            } else {
+//
+//                InputStream is = ctx.getResources().openRawResource(R.raw.outputcontacts);
+//                int size = is.available();
+//                byte[] buffer = new byte[size];
+//                is.read(buffer);
+//                is.close();
+//                json = new String(buffer, "UTF-8");
+//
+//                dbArray = new JSONArray(json);
+//            }
+//
+//            for (int i = 0; i < dbArray.length(); i++)
+//            {
+//                JSONObject jo = dbArray.getJSONObject(i);
+//
+//                byte[] otherEphemeralId = Hex.hexStringToByteArray(jo.getString("ephemeral_id"));
+//                byte[] rssi = BytesUtils.numToBytes(jo.getInt("rssi"),4);
+//                byte[] ownLocation = Hex.hexStringToByteArray(jo.getString("geohash"));
+//                int time = jo.getInt("timestamp");
+//                double lat = 0;
+//                double lon = 0;
+//                if(jo.has("lat"))
+//                     lat = jo.getDouble("lat");
+//                if(jo.has("lon"))
+//                    lon = jo.getDouble("lon");
+//                DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
+//            }
+//
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     public static String parseResultToJson(List<MatchResponse> matches)
     {
