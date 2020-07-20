@@ -140,13 +140,14 @@ public class ParseUtils {
 //        return json;
 //    }
 
-//    public static void loadDatabase(Context ctx, String jsonArray) {
-//        String json = null;
-//        try {
-//            JSONArray dbArray;
-//            if (jsonArray != null && jsonArray.length() > 0) {
-//                dbArray = new JSONArray(jsonArray);
-//            } else {
+    public static void loadDatabase(Context ctx, String jsonArray) {
+        String json = null;
+        try {
+            JSONArray dbArray = new JSONArray();
+            if (jsonArray != null && jsonArray.length() > 0) {
+                dbArray = new JSONArray(jsonArray);
+            }
+//            else {
 //
 //                InputStream is = ctx.getResources().openRawResource(R.raw.outputcontacts);
 //                int size = is.available();
@@ -157,29 +158,29 @@ public class ParseUtils {
 //
 //                dbArray = new JSONArray(json);
 //            }
-//
-//            for (int i = 0; i < dbArray.length(); i++)
-//            {
-//                JSONObject jo = dbArray.getJSONObject(i);
-//
-//                byte[] otherEphemeralId = Hex.hexStringToByteArray(jo.getString("ephemeral_id"));
-//                byte[] rssi = BytesUtils.numToBytes(jo.getInt("rssi"),4);
-//                byte[] ownLocation = Hex.hexStringToByteArray(jo.getString("geohash"));
-//                int time = jo.getInt("timestamp");
-//                double lat = 0;
-//                double lon = 0;
-//                if(jo.has("lat"))
-//                     lat = jo.getDouble("lat");
-//                if(jo.has("lon"))
-//                    lon = jo.getDouble("lon");
-//                DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
-//            }
-//
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
+
+            for (int i = 0; i < dbArray.length(); i++)
+            {
+                JSONObject jo = dbArray.getJSONObject(i);
+
+                byte[] otherEphemeralId = Hex.hexStringToByteArray(jo.getString("ephemeral_id"));
+                byte[] rssi = BytesUtils.numToBytes(jo.getInt("rssi"),4);
+                byte[] ownLocation = Hex.hexStringToByteArray(jo.getString("geohash"));
+                int time = jo.getInt("timestamp");
+                double lat = 0;
+                double lon = 0;
+                if(jo.has("lat"))
+                     lat = jo.getDouble("lat");
+                if(jo.has("lon"))
+                    lon = jo.getDouble("lon");
+                DBClient.getInstance(ctx).storeContact(new Contact(otherEphemeralId, rssi, time, ownLocation, lat, lon));
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public static String parseResultToJson(List<MatchResponse> matches)
     {
