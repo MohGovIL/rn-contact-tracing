@@ -137,6 +137,7 @@ int resetBleStack = 0;
 
 - (void)stopBLEServicesWithEmitter:(RCTEventEmitter*)emitter
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Stoped" object:nil];
     self.advertisingIsOn = NO;
     self.scanningIsOn = NO;
     [self stopScan:emitter];
@@ -144,8 +145,8 @@ int resetBleStack = 0;
 
 - (void)internalStopBLEServices
 {
-    [self stopScan:self.eventEmitter];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"BLE_Stoped" object:nil];
+    [self stopScan:self.eventEmitter];
 }
 
 - (void)internalStartBLEServices
@@ -320,6 +321,7 @@ int resetBleStack = 0;
     
     [DBClient addContactWithAsciiEphemeral:public_key :[RSSI integerValue] :(int)unixtime :geo :lat :lon];
     
+#ifdef DEBUG
     // get current device from DB
     NSArray* devicesArray = [DBClient getDeviceByKey:public_key];
 
@@ -366,6 +368,7 @@ int resetBleStack = 0;
 
     // send foundScan event
     [self.eventEmitter sendEventWithName:EVENTS_FOUND_SCAN body:scan];
+    #endif
 }
 
 #pragma mark - Match API methods
@@ -424,6 +427,7 @@ int resetBleStack = 0;
 
 - (void) writeContactsDB:(NSString*)jsonString
 {
+#ifdef DEBUG
     NSData *data;
     if (jsonString.length > 0)
     {
@@ -461,6 +465,7 @@ int resetBleStack = 0;
     {
         NSLog(@"cannot parse json DB file: %@", error);
     }
+#endif
 }
 
 @end

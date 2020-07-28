@@ -9,14 +9,18 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   rn-contact-tracing
                    DESC
-  s.homepage     = "https://github.com/github_account/rn-contact-tracing"
+  s.homepage     = "https://github.com/MohGovIL/rn-contact-tracing"
   # brief license entry:
   s.license      = "MIT"
   # optional - use expanded license entry instead:
   # s.license    = { :type => "MIT", :file => "LICENSE" }
-  s.authors      = { "Lev" => "lev.vidrak@gmail.com" }
+  s.authors      = { "Ofer Davidyan" => "ofer@igates.co.il",
+                     "Yonatan Rimon" => "yoni.rimon@igates.co.il",
+                     "Hagai Rotshild" => "hagai.rotshild@igates.co.il",
+                     "Lev" => "lev.vidrak@gmail.com"
+  }
   s.platforms    = { :ios => "10.0" }
-  s.source       = { :git => "https://github.com/wix-incubator/rn-contact-tracing.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/MohGovIL/rn-contact-tracing.git", :tag => "#{s.version}" }
 
   s.source_files = "lib/ios/**/*.{h,m,swift}"
   s.resources = 'rn-contact-tracing/*.xcdatamodel'
@@ -27,4 +31,3 @@ Pod::Spec.new do |s|
   # ...
   # s.dependency "..."
 end
-

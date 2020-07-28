@@ -5,17 +5,18 @@
   "description": "React Native Library For Contact Tracing Over BLE (Bluetooth Low Energy) To Fight COVID-19 Pandemic",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wix-incubator/rn-contact-tracing.git"
+    "url": "https://github.com/MohGovIL/rn-contact-tracing.git"
   },
   "main": "lib/src/index.js",
   "contributors": [
-    "Lev Vidrak <levv@wix.com>",
-    "Ran Greenberg <rang@wix.com>"
+    "Ministry Of Health"
   ],
-  "author": {
-    "name": "Lev",
-    "email": "lev.vidrak@gmail.com"
-  },
+  "authors": [
+    "Ofer Davidyan", 
+    "Yonatan Rimon", 
+    "Hagai Rotshild", 
+    "Lev Vidrak"
+  ],
   "keywords": [
     "react-native",
     "COVID-19",
