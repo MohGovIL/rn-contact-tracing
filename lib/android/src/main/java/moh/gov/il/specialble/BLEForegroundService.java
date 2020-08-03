@@ -175,33 +175,36 @@ public class BLEForegroundService extends Service {
             //  Small icon comes from the field notificationSmallIconPath.
             //
             ////////////////////////////////////////////////////////////////////////////
-            int resId = 0;
-            if (config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0) {
-                try {
-                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", "com.rncontacttracing.demo");
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
-            Bitmap bitmap = null;
-            if (config.getLargeNotificationIconPath() != null && config.getLargeNotificationIconPath().length() > 0) {
 
-                try {
-                    InputStream ims = getAssets().open(config.getLargeNotificationIconPath());
-                    bitmap = BitmapFactory.decodeStream(ims);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+//            int resId = R.mipmap.ic_launcher;
+//            if (config.getSmallNotificationIconPath() != null && config.getSmallNotificationIconPath().length() > 0) {
+//                try {
+//                    resId = getResources().getIdentifier(config.getSmallNotificationIconPath(), "drawable", getPackageName());
+//                } catch (Throwable throwable) {
+//                    throwable.printStackTrace();
+//                }
+//            }
+//            Bitmap bitmap = null;
+//            if (config.getLargeNotificationIconPath() != null && config.getLargeNotificationIconPath().length() > 0) {
+//
+//                try {
+//                    InputStream ims = getAssets().open(config.getLargeNotificationIconPath());
+//                    bitmap = BitmapFactory.decodeStream(ims);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(config.getNotificationTitle())
                     .setContentText(config.getNotificationContent())
-                    .setSmallIcon(resId)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentIntent(mainActivityIntent);
-            if (bitmap != null) {
-                notificationBuilder.setLargeIcon(bitmap);
-            }
+
+            notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                    R.mipmap.ic_launcher));
+//            if (bitmap != null) {
+//            }
             Notification notification = notificationBuilder.build();
 
             startForeground(1, notification);
