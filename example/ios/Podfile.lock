@@ -492,7 +492,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   ReactNativeUiLib: 9883f80a22b855d4a866ceee433d1e24b1014a2a
-  rn-contact-tracing: fe147c2be110646d1aa401e15c0065ad1bc25fd8
+  rn-contact-tracing: 1763fde360c27068877fd9f2dcb23c38e6821f47
   RNCMaskedView: 5dba3cb07493765fb66156c83c3dd281ca709a48
   RNDateTimePicker: 0f657a34a0f6465ab7d0255c24954693bc7a8cf6
   RNFBApp: 7b539bb25520fa73d6a240f5c6ea569e27683645

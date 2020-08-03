@@ -95,7 +95,7 @@ class DBContactManager {
         do {
             try managedContext.execute(batchDeleteRequest)
         } catch let error as NSError {
-            print("Detele contact error :", error)
+            print("Delete contact error :", error)
         }
     }
     
