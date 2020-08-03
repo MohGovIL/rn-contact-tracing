@@ -3,8 +3,8 @@ package com.rncontacttracing.demo;
 import android.content.Intent;
 
 import com.facebook.react.ReactActivity;
-import com.wix.specialble.bt.BLEManager;
-import com.wix.specialble.util.DeviceUtil;
+import moh.gov.il.specialble.bt.BLEManager;
+import moh.gov.il.specialble.util.DeviceUtil;
 
 public class MainActivity extends ReactActivity {
 

@@ -9,7 +9,7 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.wix.specialble.SpecialBlePackage;
+import moh.gov.il.specialble.SpecialBlePackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

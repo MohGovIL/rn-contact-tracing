@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wix.specialble">
+    package="moh.gov.il.specialble">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
     <application>
-        <activity android:name=".activities.BatteryOptimizationHolderActivity" android:theme="@style/Theme.AppCompat.Translucent"></activity>
+        <activity android:name="moh.gov.il.specialble.activities.BatteryOptimizationHolderActivity" android:theme="@style/Theme.AppCompat.Translucent"></activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -23,9 +23,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <service android:name="com.wix.specialble.BLEForegroundService" />
-        <receiver android:name="com.wix.specialble.receivers.AlarmReceiver"/>
-        <receiver android:name=".BLEReceiver">
+        <service android:name="moh.gov.il.specialble.BLEForegroundService" />
+        <receiver android:name="moh.gov.il.specialble.receivers.AlarmReceiver"/>
+        <receiver android:name="moh.gov.il.specialble.BLEReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
