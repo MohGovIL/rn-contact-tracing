@@ -85,7 +85,6 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'de.siegmar:fastcsv:1.0.3'
 }
 
 def configureReactNativePom(def pom) {
@@ -95,7 +94,7 @@ def configureReactNativePom(def pom) {
         name packageJson.title
         artifactId packageJson.name
         version = packageJson.version
-        group = "com.wix.specialble"
+        group = "moh.gov.il.specialble"
         description packageJson.description
         url packageJson.repository.baseUrl
 
