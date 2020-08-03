@@ -6,7 +6,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/rn-contact-tracing"><img src="https://img.shields.io/npm/v/rn-contact-tracing" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/rn-contact-tracing" alt="License"></a>
-  <a href="https://github.com/wix-incubator/rn-contact-tracing/actions?query=workflow%3ACI"><img src="https://github.com/wix-incubator/rn-contact-tracing/workflows/CI/badge.svg?style=flat-square" alt="CI"></a>
+  <a href="https://github.com/MohGovIL/rn-contact-tracing/actions?query=workflow%3ACI"><img src="https://github.com/MohGovIL/rn-contact-tracing/workflows/CI/badge.svg?style=flat-square" alt="CI"></a>
 </p>
 
 ---
@@ -99,7 +99,7 @@ dependencies {
 On top, where imports are:
 
 ```java
-import com.wix.specialble.SpecialBlePackage;
+    import moh.gov.il.specialble.SpecialBlePackage;
 ```
 
 Add the `RNLocationPackage` class to your list of exported packages.
