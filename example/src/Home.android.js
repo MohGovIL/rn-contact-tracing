@@ -118,7 +118,8 @@ function HomeScreen() {
                 ...config,
                 notificationLargeIconPath: 'large_icon.png',
                 notificationSmallIconPath: 'small_icon',
-                disableBatteryOptimization: false
+                disableBatteryOptimization: false,
+                isAppDebuggable: false
             })
         })
     }
