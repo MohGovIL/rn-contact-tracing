@@ -53,6 +53,8 @@ public class Config  {
     private static final String PREF_SMALL_NOTIFICATION_ICON_PATH = "small_notification_icon_path";
     private static final String PREF_DISABLE_BATTERY_OPTIMIZATION = "disableBatteryOptimization";
 
+    private static final String IS_DEBUGGABLE = "is_debuggable";
+    private static final boolean DEFAULT_IS_DEBUGABLE_VALUE = true;
 
     public static synchronized Config getInstance(Context context) {
         if (instance == null) {
@@ -190,5 +192,13 @@ public class Config  {
 
     public boolean getDisableBatteryOptimization() {
         return sharedPrefs.getBoolean(PREF_DISABLE_BATTERY_OPTIMIZATION, DEFAULT_DISABLE_BATTERY_OPT);
+    }
+
+    public void setIsDebuggable(boolean isDebuggable) {
+        sharedPrefs.edit().putBoolean(IS_DEBUGGABLE, isDebuggable).apply();
+    }
+
+    public boolean getIsDebuggable() {
+        return  sharedPrefs.getBoolean(IS_DEBUGGABLE, DEFAULT_IS_DEBUGABLE_VALUE);
     }
 }
