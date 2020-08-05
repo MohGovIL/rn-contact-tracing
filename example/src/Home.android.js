@@ -119,7 +119,7 @@ function HomeScreen() {
                 notificationLargeIconPath: 'large_icon.png',
                 notificationSmallIconPath: 'small_icon',
                 disableBatteryOptimization: false,
-                isAppDebuggable: true
+                isAppDebuggable: false
             })
         })
     }

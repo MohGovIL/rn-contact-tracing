@@ -54,7 +54,7 @@ public class Config  {
     private static final String PREF_DISABLE_BATTERY_OPTIMIZATION = "disableBatteryOptimization";
 
     private static final String IS_DEBUGGABLE = "is_debuggable";
-    private static final boolean DEFAULT_IS_DEBUGABLE_VALUE = true;
+    private static final boolean DEFAULT_IS_DEBUGGABLE_VALUE = false;
 
     public static synchronized Config getInstance(Context context) {
         if (instance == null) {
@@ -199,6 +199,6 @@ public class Config  {
     }
 
     public boolean getIsDebuggable() {
-        return  sharedPrefs.getBoolean(IS_DEBUGGABLE, DEFAULT_IS_DEBUGABLE_VALUE);
+        return  sharedPrefs.getBoolean(IS_DEBUGGABLE, DEFAULT_IS_DEBUGGABLE_VALUE);
     }
 }
