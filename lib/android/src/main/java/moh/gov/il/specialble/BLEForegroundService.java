@@ -198,11 +198,11 @@ public class BLEForegroundService extends Service {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(config.getNotificationTitle())
                     .setContentText(config.getNotificationContent())
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.notification_icon)
                     .setContentIntent(mainActivityIntent);
 
-            notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                    R.mipmap.ic_launcher));
+//            notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+//                    R.mipmap.ic_launcher));
 //            if (bitmap != null) {
 //            }
             Notification notification = notificationBuilder.build();
