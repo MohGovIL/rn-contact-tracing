@@ -30,7 +30,7 @@ public class Time implements Comparable<Time> {
     //TODO: create two constructors one with two params and one with only unix time
     public Time(int unixTime, int epoch) {
 
-        if(epoch == Constants.None) { // TODO: check what should be the right condition
+        if(epoch == Constants.None) {
 
             this.mTime = unixTime;
             this.mDay = unixTime / DAY;
