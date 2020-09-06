@@ -82,7 +82,7 @@ public class DerivationUtils {
         return Arrays.copyOf(result, Constants.KEY_LEN);
     }
 
-    //TODO:: problem with Pair data type.
+
     public static Pair<byte[],byte[]> getEpochKeys(byte[] epochKey, int day, int epoch) {
 
         byte[] prefix = BytesUtils.byteConcatenation(BytesUtils.numToBytes(day, 4), BytesUtils.numToBytes(epoch, 1));

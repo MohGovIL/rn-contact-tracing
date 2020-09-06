@@ -147,7 +147,7 @@ public class BLEScannerManager {
                 mEventListenerCallback.onEvent(SCANNING_STATUS, false);
             }
 
-            if(BuildConfig.DEBUG) {
+            if(Config.getInstance(mContext).getIsDebuggable()) {
 
                 AsyncTask.execute(new Runnable() {
 
@@ -166,7 +166,7 @@ public class BLEScannerManager {
             @Override
             public void run() {
 
-                if(BuildConfig.DEBUG) {
+                if(Config.getInstance(mContext).getIsDebuggable()) {
 
                     DBClient.getInstance(mContext).insert(new Event(System.currentTimeMillis(), scannedToken, Constants.ACTION_SCAN, "success", "", SensorUtils.getBatteryPercentage(mContext)));
 

@@ -76,7 +76,7 @@ public class User {
         mKeyMasterVerification = DerivationUtils.getKeyMasterVerification(masterKey);
         mEpochKeys = new HashMap<>();
 //        mContacts = new ArrayList<>();
-        Time t = new Time(initTime, Constants.None); //TODO: check if correct way
+        Time t = new Time(initTime, Constants.None);
         mCurrentDay = t.getDay();
         mCurrentDayMasterKey = DerivationUtils.getNextDayMasterKey(masterKey, true);
 
@@ -194,8 +194,8 @@ public class User {
      */
     public void updateKeyDatabase(int pastTime, int futureTime) {
 
-        Time past = new Time(pastTime, Constants.None); // TODO: check if correct
-        Time future = new Time(futureTime, Constants.None); // TODE: check if correct
+        Time past = new Time(pastTime, Constants.None);
+        Time future = new Time(futureTime, Constants.None);
 
         generateEpochKeys(future.getDay());
         deleteHistory(past.getTime());
@@ -215,7 +215,7 @@ public class User {
     {
 
         assert geoHash.length == Constants.GEOHASH_LEN;
-        Time t = new Time(time, Constants.None); // TODO: check if correct
+        Time t = new Time(time, Constants.None);
 
         EpochKey epochKey = null;
         if(!mEpochKeys.containsKey(t) && mEpochKeys.get(t) == null)// "Epoch key is not present";
@@ -264,7 +264,7 @@ public class User {
 //            @Override
 //            public int compare(Contact o1, Contact o2) {
 //
-//                return o1.getTimestamp() - o2.getTimestamp(); // TODO: check if correct comparisson
+//                return o1.getTimestamp() - o2.getTimestamp();
 //            }
 //        });
 
@@ -457,8 +457,8 @@ public class User {
      */
     public void deleteMyKeys(int startTime, int endTime) {
 
-        Time start = new Time(startTime,Constants.None); //TODO: check if correct
-        Time end = new Time(endTime, Constants.None); //TODO: check if correct
+        Time start = new Time(startTime,Constants.None);
+        Time end = new Time(endTime, Constants.None);
 
         List<Time> epochKeysToDelete = new ArrayList<>();
         for(Time t : mEpochKeys.keySet()) {
@@ -526,7 +526,7 @@ public class User {
      */
     public void deleteContact(Contact contact) {
 //
-//        //TODO: check if correct impl
+//
 //
 //        List<Contact> contacts = new ArrayList<>();
 //

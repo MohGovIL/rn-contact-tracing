@@ -35,7 +35,7 @@ public class BLEAdvertisingManager {
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             super.onStartSuccess(settingsInEffect);
 
-            if(BuildConfig.DEBUG)
+            if(Config.getInstance(mContext).getIsDebuggable())
                 insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERTISE_SUCCESS, "", SensorUtils.getBatteryPercentage(mContext)));
 
             mEventListenerCallback.onEvent(BLEAdvertisingManager.ADVERTISING_STATUS, true);
@@ -45,7 +45,7 @@ public class BLEAdvertisingManager {
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
 
-            if(BuildConfig.DEBUG)
+            if(Config.getInstance(mContext).getIsDebuggable())
                 insertToDb(new Event(System.currentTimeMillis(), Config.getInstance(mContext).getToken(), Constants.ACTION_ADVERTISE, Constants.ADVERTISE_FAIL, "error code: " + errorCode, SensorUtils.getBatteryPercentage(mContext)));
 
             mEventListenerCallback.onEvent(ADVERTISING_STATUS, errorCode == ADVERTISE_FAILED_ALREADY_STARTED);

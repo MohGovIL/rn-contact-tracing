@@ -18,7 +18,7 @@ public class BytesUtils {
         return result;
     }
 
-    // TODO: check if this method is correct
+
     public static byte[] hexToBytes(String s) {
 
         int len = s.length();
@@ -42,7 +42,7 @@ public class BytesUtils {
         return result;
     }
 
-    // TODO: check if this method is correct
+
     public static byte[] xor(byte[] first, byte[] second) {
 
         assert first.length == second.length;

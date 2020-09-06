@@ -214,6 +214,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         configMap.putString("notificationLargeIconPath", config.getLargeNotificationIconPath());
         configMap.putString("notificationSmallIconPath", config.getSmallNotificationIconPath());
         configMap.putBoolean("disableBatteryOptimization", config.getDisableBatteryOptimization());
+        configMap.putBoolean("isAppDebuggable", config.getIsDebuggable());
         callback.invoke(configMap);
     }
 
@@ -235,6 +236,7 @@ public class SpecialBleModule extends ReactContextBaseJavaModule {
         config.setLargeNotificationIconPath(configMap.getString("notificationLargeIconPath"));
         config.setSmallNotificationIconPath(configMap.getString("notificationSmallIconPath"));
         config.setDisableBatteryOptimization(configMap.getBoolean("disableBatteryOptimization"));
+        config.setIsDebuggable(configMap.getBoolean("isAppDebuggable"));
     }
 
     @ReactMethod
