@@ -30,7 +30,6 @@
     "start": "watchman watch-del-all && react-native start",
     "test": ":",
     "lint": "eslint .",
-    "postinstall": "rm -rf ../node_modules",
     "pod": "node scripts/pod.js"
   },
   "license": "MIT",
